@@ -24,7 +24,15 @@
 http://127.0.0.1:8766/
 ```
 
+## 公开网页
+
+- 访问地址：<https://sunjinyang52-eng.github.io/wz-monitor-site/>
+- 私有开发仓库：`sunjinyang52-eng/wz-monitor`
+- 公开展示仓库：`sunjinyang52-eng/wz-monitor-site`
+- 更新 `main` 后，将同一版本推送到公开仓库即可触发 GitHub Pages 重新发布：`git push public-site main:main`
+- 新电脑若没有 `public-site` 远端，先执行：`git remote add public-site https://github.com/sunjinyang52-eng/wz-monitor-site.git`
+
 ## 当前状态
 
 - 2026-08-11：完成白色长页面重构、信息顺序调整、舆情风险模块优化和话题热度榜简化。
-- 代码仓库托管在 GitHub；当前未配置 GitHub Pages 自动发布。
+- 2026-08-11：公开展示仓库已启用 GitHub Pages，私有开发仓库继续用于多电脑协作。
