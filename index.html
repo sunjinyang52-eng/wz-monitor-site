@@ -196,6 +196,13 @@
     content: "";
   }
 
+  .title-count {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
   .section-note {
     color: var(--muted);
     font-size: 12px;
@@ -285,7 +292,7 @@
   .risk-label strong { color: var(--red); font-size: 20px; }
   .risk-label span { color: #8d5d60; font-size: 12px; }
 
-  .risk-list { margin: 0; padding: 0 18px; list-style: none; }
+  .risk-list { margin: 0; padding: 6px 18px; list-style: none; display: flex; flex-direction: column; justify-content: center; }
 
   .risk-item {
     display: grid;
@@ -525,8 +532,8 @@
 <body>
 <a class="skip-link" href="#main-content">跳到主要内容</a>
 <nav class="section-rail" aria-label="页面章节">
-  <a href="#recommendation" aria-current="true"><b>01</b><span>值得推荐</span></a>
-  <a href="#sentiment"><b>02</b><span>舆情表现</span></a>
+  <a href="#recommendation" aria-current="true"><b>01</b><span>值得关注</span></a>
+  <a href="#sentiment"><b>02</b><span>话题讨论度</span></a>
   <a href="#updates-section"><b>03</b><span>更新内容</span></a>
 </nav>
 <div class="report">
@@ -565,7 +572,7 @@
 
     <section class="section" id="recommendation" aria-labelledby="focus-title">
       <div class="section-heading">
-        <h2 id="focus-title">值得推荐</h2>
+        <h2 id="focus-title">值得关注</h2>
         <span class="section-note">本期正向表现与重点争议</span>
       </div>
 
@@ -573,7 +580,7 @@
         <div>
           <span class="eyebrow good">舆情较好</span>
           <h3>超极限狂潮</h3>
-          <p>英雄技能冷却大幅缩短，体型随战斗变化，主打高频技能释放与爽感对抗，玩家对玩法节奏和娱乐性的反馈集中向好。</p>
+          <p>英雄技能冷却大幅缩短、体型随战斗夸张变化，玩法轻松爽快。玩家反馈娱乐性强，并催生大量趣味名场面（如关羽骑摩托、奥特曼乱入），社区呼吁转为常驻模式。</p>
         </div>
         <div class="focus-proof">
           <span class="proof-label">外部表现</span>
@@ -585,7 +592,7 @@
       <div class="risk-panel">
         <div class="risk-label">
           <strong>舆情风险</strong>
-          <span>2项重点关注</span>
+          <span>1项重点关注</span>
         </div>
         <ul class="risk-list" id="risk-list"></ul>
       </div>
@@ -593,7 +600,7 @@
 
     <section class="section" id="sentiment" aria-labelledby="sentiment-title">
       <div class="section-heading">
-        <h2 id="sentiment-title">舆情表现</h2>
+        <h2 id="sentiment-title">近期话题讨论度<small class="title-count">（本周统计 <span id="sentiment-count"></span> 条评论）</small></h2>
         <span class="section-note">近7日话题讨论热度</span>
       </div>
 
@@ -618,7 +625,7 @@
   </main>
 
   <footer>
-    数据来源：公开更新信息、社区平台与有数舆情汇总。评论总量按百条取整，跨平台点赞仅作外部表现参考；未核实爆料不进入正式更新列表。
+    评论总量按百条取整，跨平台点赞仅作外部表现参考；未核实爆料不进入正式更新列表。
   </footer>
 </div>
 
@@ -629,13 +636,8 @@ const DATA = {
   totalComments: "92,500",
   risks: [
     {
-      name: "澜无双祈愿价格争议",
-      copy: "讨论集中在抽取成本与保底信息表达，需继续关注价格感知与机制透明度。",
-      status: "讨论升温"
-    },
-    {
       name: "周瑜剧情争议",
-      copy: "争议集中在角色塑造与历史人物表达，官方回应后仍需跟踪情绪回落。",
+      copy: "争议集中于动画将周瑜塑造为诸葛亮的陪衬（“万年老二”），被玩家指为丑化角色；官方回应后仍需跟踪情绪回落。",
       status: "仍需跟踪"
     }
   ],
@@ -669,10 +671,10 @@ const DATA = {
     }
   ],
   topics: [
-    { name: "超极限狂潮", focus: "玩家集中讨论玩法爽感、英雄表现与是否常驻。", signal: "最高点赞视频 140 万" },
-    { name: "澜无双祈愿价格争议", focus: "讨论集中在抽取成本、保底机制与信息透明度。", signal: "价格讨论持续" },
-    { name: "周瑜剧情争议", focus: "讨论集中在角色塑造与历史人物表达。", signal: "剧情争议持续" },
-    { name: "新英雄卢雅那", focus: "玩家主要讨论致盲机制、英雄强度与实战体验。", signal: "单条视频最高 24.5 万赞" },
+    { name: "超极限狂潮", focus: "英雄体型被夸张放大，出现关羽骑着摩托车带着奥特曼这类被放大的搞笑名场面，玩家觉得非常有趣。", signal: "最高点赞视频 140 万" },
+    { name: "澜·雾影狼魂皮肤", focus: "玩家对闪光海报高度赞扬，认为造型非常帅气；另有部分玩家认为技能特效品质未匹配无双定价。", signal: "海报口碑突出" },
+    { name: "周瑜剧情争议", focus: "争议集中于动画将周瑜塑造为诸葛亮的陪衬（“万年老二”），被玩家指为丑化角色。", signal: "剧情争议持续" },
+    { name: "新英雄卢雅那", focus: "玩家围绕致盲机制的强度与平衡性展开讨论，是本期值得关注的英雄设计话题。", signal: "单条视频最高 24.5 万赞" },
     { name: "夏日农友节峡谷", focus: "讨论集中在主题玩法、活动参与和福利内容。", signal: "玩法与福利讨论" }
   ]
 };
@@ -686,6 +688,7 @@ const escapeHTML = value => String(value)
 
 document.getElementById("report-date").textContent = DATA.date;
 document.getElementById("comment-total").textContent = DATA.totalComments;
+document.getElementById("sentiment-count").textContent = DATA.totalComments;
 
 document.getElementById("risk-list").innerHTML = DATA.risks.map(item => `
   <li class="risk-item">
