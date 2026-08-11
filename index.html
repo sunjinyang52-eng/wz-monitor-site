@@ -6,6 +6,8 @@
 <meta name="color-scheme" content="light">
 <meta name="description" content="王者荣耀更新与舆情监控内部日报">
 <title>王者荣耀 · 更新与舆情监控</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
   :root {
     color-scheme: light;
@@ -26,7 +28,7 @@
     --red-soft: #fff5f4;
     --red-line: #f2b8b4;
     --amber: #b86c08;
-    --shadow: 0 18px 55px rgba(28, 53, 94, 0.08);
+    --shadow: 0 14px 42px rgba(28, 53, 94, 0.07);
     --radius: 14px;
   }
 
@@ -36,7 +38,9 @@
 
   body {
     margin: 0;
-    background: var(--page);
+    background:
+      radial-gradient(circle at 50% -180px, rgba(56, 114, 226, 0.1), transparent 440px),
+      linear-gradient(180deg, #f8faff 0%, var(--page) 54%, #edf2f8 100%);
     color: var(--text);
     font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
     font-size: 15px;
@@ -65,19 +69,31 @@
     margin: 28px auto;
     padding: 0 22px 22px;
     overflow: hidden;
-    border: 1px solid #e2e8f1;
+    border: 1px solid #dfe7f2;
     border-radius: 18px;
-    background: var(--surface);
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
     box-shadow: var(--shadow);
   }
 
   .masthead {
+    position: relative;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 24px;
     padding: 32px 2px 20px;
     border-bottom: 1px solid var(--line);
+  }
+
+  .masthead::after {
+    position: absolute;
+    bottom: -1px;
+    left: 2px;
+    width: min(32%, 360px);
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--blue), #5f8ff0);
+    content: "";
   }
 
   .masthead h1 {
@@ -110,7 +126,8 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    background: var(--surface-soft);
+    background: linear-gradient(115deg, #fbfdff 0%, #f4f8ff 52%, #fbfdff 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 24px rgba(28, 53, 94, 0.04);
   }
 
   .metric {
@@ -119,7 +136,10 @@
     gap: 14px;
     min-width: 0;
     padding: 24px 26px;
+    transition: background-color 0.18s ease;
   }
+
+  .metric:hover { background: rgba(237, 244, 255, 0.46); }
 
   .metric + .metric { border-left: 1px solid var(--line); }
 
@@ -129,11 +149,15 @@
     height: 46px;
     place-items: center;
     border-radius: 50%;
-    background: var(--blue-soft);
+    border: 1px solid #dce8fb;
+    background: linear-gradient(145deg, #f8fbff, #e4efff);
     color: var(--blue);
-    font-size: 14px;
+    font-size: 21px;
     font-weight: 800;
+    box-shadow: 0 7px 18px rgba(11, 91, 211, 0.1), inset 0 1px 0 #fff;
   }
+
+  .metric-mark i { display: block; line-height: 1; }
 
   .metric-label {
     display: block;
@@ -164,7 +188,8 @@
     padding: 22px 18px 18px;
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    background: var(--surface);
+    background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+    box-shadow: 0 7px 24px rgba(28, 53, 94, 0.035), inset 0 1px 0 #fff;
   }
 
   .section-heading {
@@ -210,13 +235,53 @@
   }
 
   .focus-card {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1.25fr) minmax(240px, 0.75fr);
     gap: 28px;
     padding: 24px;
     border: 1px solid var(--green-line);
     border-radius: 11px;
-    background: var(--green-soft);
+    background: linear-gradient(120deg, #f7fff9 0%, #edf9f3 70%, #f8fffb 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 22px rgba(10, 153, 83, 0.05);
+    overflow: hidden;
+  }
+
+  .focus-card::after {
+    position: absolute;
+    top: -90px;
+    right: -70px;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(68, 190, 125, 0.1), transparent 68%);
+    pointer-events: none;
+    content: "";
+  }
+
+  .focus-title-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 12px;
+  }
+
+  .focus-title-row > div { min-width: 0; }
+
+  .focus-icon {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    background: linear-gradient(145deg, #18af67, #078947);
+    color: #fff;
+    font-size: 21px;
+    box-shadow: 0 8px 20px rgba(10, 153, 83, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.28);
   }
 
   .eyebrow {
@@ -236,7 +301,7 @@
   .eyebrow.risk { color: var(--red); background: #fff; }
 
   .focus-card h3 {
-    margin: 0 0 10px;
+    margin: 0;
     color: var(--green);
     font-size: clamp(25px, 3vw, 36px);
     line-height: 1.2;
@@ -246,12 +311,17 @@
   .focus-card p { margin: 0; font-size: 16px; }
 
   .focus-proof {
+    position: relative;
+    z-index: 1;
     align-self: stretch;
     padding-left: 28px;
     border-left: 1px solid var(--green-line);
   }
 
   .proof-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     color: var(--muted);
     font-size: 12px;
   }
@@ -264,6 +334,7 @@
     line-height: 1.2;
     letter-spacing: -0.035em;
     font-variant-numeric: tabular-nums;
+    text-shadow: 0 2px 10px rgba(10, 153, 83, 0.08);
   }
 
   .proof-note { color: #4b6b5a; font-size: 12px; }
@@ -274,7 +345,8 @@
     margin-top: 14px;
     border: 1px solid var(--red-line);
     border-radius: 11px;
-    background: var(--red-soft);
+    background: linear-gradient(112deg, #fffafa 0%, #fff3f2 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 7px 20px rgba(226, 45, 45, 0.035);
     overflow: hidden;
   }
 
@@ -286,18 +358,31 @@
     gap: 8px;
     padding: 20px;
     border-right: 1px solid #f2cbc8;
-    background: rgba(255, 255, 255, 0.38);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 245, 244, 0.42));
   }
 
+  .risk-heading-icon,
+  .risk-item-icon {
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #f63d3d, #d82020);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(226, 45, 45, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+
+  .risk-heading-icon { width: 34px; height: 34px; font-size: 17px; }
+  .risk-item-icon { width: 30px; height: 30px; font-size: 15px; }
+
   .risk-label strong { color: var(--red); font-size: 20px; }
-  .risk-label span { color: #8d5d60; font-size: 12px; }
+  .risk-label > span:not(.risk-heading-icon) { color: #8d5d60; font-size: 12px; }
 
   .risk-list { margin: 0; padding: 6px 18px; list-style: none; display: flex; flex-direction: column; justify-content: center; }
 
   .risk-item {
     display: grid;
-    grid-template-columns: minmax(210px, 0.45fr) minmax(0, 1fr) auto;
-    gap: 22px;
+    grid-template-columns: 30px minmax(190px, 0.42fr) minmax(0, 1fr) auto;
+    gap: 16px;
     align-items: center;
     padding: 15px 0;
   }
@@ -308,6 +393,10 @@
   .risk-copy { color: #695456; font-size: 13px; }
 
   .risk-status {
+    padding: 3px 9px;
+    border: 1px solid rgba(226, 45, 45, 0.28);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.66);
     color: var(--red);
     font-size: 12px;
     font-weight: 800;
@@ -331,15 +420,19 @@
     height: 26px;
     place-items: center;
     border-radius: 7px;
-    background: var(--blue-soft);
-    font-size: 12px;
+    border: 1px solid #dce8fb;
+    background: linear-gradient(145deg, #f7faff, #e6f0ff);
+    font-size: 14px;
     font-variant-numeric: tabular-nums;
+    box-shadow: 0 4px 12px rgba(11, 91, 211, 0.07), inset 0 1px 0 #fff;
   }
 
   .update-table {
     overflow: hidden;
     border: 1px solid var(--line);
     border-radius: 10px;
+    background: #fff;
+    box-shadow: inset 0 1px 0 #fff;
   }
 
   .update-row {
@@ -347,7 +440,10 @@
     grid-template-columns: minmax(185px, 0.34fr) minmax(0, 1fr) auto;
     min-height: 48px;
     align-items: center;
+    transition: background-color 0.18s ease;
   }
+
+  .update-row:hover { background: #f8fbff; }
 
   .update-row + .update-row { border-top: 1px solid var(--line); }
 
@@ -365,11 +461,23 @@
     white-space: nowrap;
   }
 
+  .update-tag::before {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: #8aa5cf;
+    vertical-align: 2px;
+    content: "";
+  }
+
   .topic-board {
     border: 1px solid var(--line);
     border-radius: 10px;
     background: var(--surface);
     overflow: hidden;
+    box-shadow: inset 0 1px 0 #fff;
   }
 
   .topic-board-head,
@@ -390,22 +498,31 @@
 
   .topic-ranking { margin: 0; padding: 0; list-style: none; }
 
-  .topic-row { min-height: 76px; padding: 14px 18px; }
+  .topic-row { min-height: 76px; padding: 14px 18px; transition: background-color 0.18s ease; }
   .topic-row + .topic-row { border-top: 1px solid var(--line); }
+  .topic-row:hover { background: #f8fbff; }
 
   .topic-rank {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    color: var(--blue);
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 8px;
+    background: #98a4b6;
+    color: #fff;
+    box-shadow: 0 5px 12px rgba(73, 91, 122, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.25);
   }
 
-  .topic-rank small { color: var(--muted); font-size: 10px; }
+  .topic-rank small { display: none; }
   .topic-rank strong {
-    font-size: 24px;
+    font-size: 15px;
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
+
+  .topic-row:nth-child(1) .topic-rank { background: linear-gradient(145deg, #f04438, #d92d20); }
+  .topic-row:nth-child(2) .topic-rank { background: linear-gradient(145deg, #ff8a34, #f15a16); }
+  .topic-row:nth-child(3) .topic-rank { background: linear-gradient(145deg, #f6b914, #e89a00); }
 
   .topic-main strong { display: block; color: var(--ink); font-size: 15px; }
   .topic-main span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
@@ -427,7 +544,7 @@
     overflow: hidden;
     border: 1px solid var(--line);
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.94);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(247, 250, 255, 0.95));
     box-shadow: 0 12px 35px rgba(28, 53, 94, 0.09);
     transform: translateY(-50%);
     backdrop-filter: blur(12px);
@@ -454,7 +571,7 @@
 
   .section-rail b {
     color: inherit;
-    font-size: 10px;
+    font-size: 15px;
     font-variant-numeric: tabular-nums;
   }
 
@@ -486,7 +603,7 @@
     .focus-proof { padding: 18px 0 0; border-top: 1px solid var(--green-line); border-left: 0; }
     .risk-panel { grid-template-columns: 150px minmax(0, 1fr); }
     .risk-label { padding: 16px; }
-    .risk-item { grid-template-columns: minmax(180px, 0.5fr) minmax(0, 1fr); gap: 12px 18px; }
+    .risk-item { grid-template-columns: 30px minmax(180px, 0.5fr) minmax(0, 1fr); gap: 12px 16px; }
     .risk-status { grid-column: 1 / -1; }
   }
 
@@ -503,7 +620,7 @@
     .masthead-meta strong { font-size: 13px; }
     main { padding-top: 18px; }
     .metric { grid-template-columns: 40px 1fr; padding: 17px 16px; }
-    .metric-mark { width: 38px; height: 38px; font-size: 12px; }
+    .metric-mark { width: 38px; height: 38px; font-size: 18px; }
     .metric-value { font-size: 23px; }
     .section { margin-top: 12px; padding: 18px 12px 12px; }
     .section-heading { align-items: flex-start; margin-bottom: 14px; }
@@ -515,8 +632,10 @@
     .risk-panel { grid-template-columns: 1fr; }
     .risk-label { padding: 14px; border-right: 0; border-bottom: 1px solid #f2cbc8; }
     .risk-list { padding: 0 14px; }
-    .risk-item { grid-template-columns: 1fr; gap: 5px; }
-    .risk-status { grid-column: auto; }
+    .risk-item { grid-template-columns: 30px minmax(0, 1fr); gap: 5px 10px; }
+    .risk-item-icon { grid-row: 1 / span 3; }
+    .risk-copy,
+    .risk-status { grid-column: 2; }
     .update-row { grid-template-columns: 1fr; padding: 11px 13px; }
     .update-name,
     .update-copy,
@@ -532,9 +651,9 @@
 <body>
 <a class="skip-link" href="#main-content">跳到主要内容</a>
 <nav class="section-rail" aria-label="页面章节">
-  <a href="#recommendation" aria-current="true"><b>01</b><span>值得关注</span></a>
-  <a href="#sentiment"><b>02</b><span>话题讨论度</span></a>
-  <a href="#updates-section"><b>03</b><span>更新内容</span></a>
+  <a href="#recommendation" aria-current="true"><b aria-hidden="true"><i class="bi bi-stars"></i></b><span>值得关注</span></a>
+  <a href="#sentiment"><b aria-hidden="true"><i class="bi bi-bar-chart-fill"></i></b><span>话题讨论度</span></a>
+  <a href="#updates-section"><b aria-hidden="true"><i class="bi bi-list-check"></i></b><span>更新内容</span></a>
 </nav>
 <div class="report">
   <header class="masthead">
@@ -548,21 +667,21 @@
   <main id="main-content">
     <section class="metrics" aria-label="本期关键数据">
       <div class="metric">
-        <span class="metric-mark" aria-hidden="true">评</span>
+        <span class="metric-mark" aria-hidden="true"><i class="bi bi-chat-square-dots-fill"></i></span>
         <div>
           <span class="metric-label">评论总量</span>
           <strong class="metric-value"><span id="comment-total"></span> <small>条</small></strong>
         </div>
       </div>
       <div class="metric">
-        <span class="metric-mark" aria-hidden="true">时</span>
+        <span class="metric-mark" aria-hidden="true"><i class="bi bi-clock"></i></span>
         <div>
           <span class="metric-label">更新时间</span>
           <strong class="metric-value">每天上午10:30</strong>
         </div>
       </div>
       <div class="metric">
-        <span class="metric-mark" aria-hidden="true">焦</span>
+        <span class="metric-mark" aria-hidden="true"><i class="bi bi-star"></i></span>
         <div>
           <span class="metric-label">最值得关注</span>
           <strong class="metric-value">超极限狂潮</strong>
@@ -578,12 +697,17 @@
 
       <article class="focus-card">
         <div>
-          <span class="eyebrow good">舆情较好</span>
-          <h3>超极限狂潮</h3>
+          <div class="focus-title-row">
+            <span class="focus-icon" aria-hidden="true"><i class="bi bi-trophy-fill"></i></span>
+            <div>
+              <span class="eyebrow good">舆情较好</span>
+              <h3>超极限狂潮</h3>
+            </div>
+          </div>
           <p>英雄技能冷却大幅缩短、体型随战斗夸张变化，玩法轻松爽快。玩家反馈娱乐性强，并催生大量趣味名场面（如关羽骑摩托、奥特曼乱入），社区呼吁转为常驻模式。</p>
         </div>
         <div class="focus-proof">
-          <span class="proof-label">外部表现</span>
+          <span class="proof-label"><i class="bi bi-hand-thumbs-up-fill" aria-hidden="true"></i>外部表现</span>
           <div class="proof-value">140 万点赞</div>
           <div class="proof-note">本期监测到的相关视频最高点赞量</div>
         </div>
@@ -591,6 +715,7 @@
 
       <div class="risk-panel">
         <div class="risk-label">
+          <span class="risk-heading-icon" aria-hidden="true"><i class="bi bi-exclamation-lg"></i></span>
           <strong>舆情风险</strong>
           <span>1项重点关注</span>
         </div>
@@ -692,16 +817,19 @@ document.getElementById("sentiment-count").textContent = DATA.totalComments;
 
 document.getElementById("risk-list").innerHTML = DATA.risks.map(item => `
   <li class="risk-item">
+    <span class="risk-item-icon" aria-hidden="true"><i class="bi bi-exclamation-lg"></i></span>
     <span class="risk-name">${escapeHTML(item.name)}</span>
     <span class="risk-copy">${escapeHTML(item.copy)}</span>
     <span class="risk-status">${escapeHTML(item.status)}</span>
   </li>
 `).join("");
 
+const GROUP_ICONS = ["bi-controller", "bi-tag-fill", "bi-gift-fill"];
+
 document.getElementById("updates").innerHTML = DATA.updates.map((group, index) => `
   <section class="update-group" aria-labelledby="update-group-${index}">
     <h3 class="update-group-title" id="update-group-${index}">
-      <span class="group-index">0${index + 1}</span>${escapeHTML(group.title)}
+      <span class="group-index" aria-hidden="true"><i class="bi ${GROUP_ICONS[index] || "bi-list-check"}"></i></span>${escapeHTML(group.title)}
     </h3>
     <div class="update-table">
       ${group.rows.map(row => `
