@@ -3,208 +3,744 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="description" content="王者荣耀更新与舆情监控内部日报">
 <title>王者荣耀 · 更新与舆情监控</title>
 <style>
-  :root{
-    --bg:#0a0c12; --bg2:#0e111a; --card:#141824; --line:#232838; --line2:#2d3446;
-    --txt:#eceef4; --sub:#8b93a7; --dim:#5c6377;
-    --gold:#e8c46a; --gold2:#c99a3c; --goldbg:rgba(232,196,106,.1);
-    --pos:#4ade80; --posbg:rgba(74,222,128,.12);
-    --neg:#f87171; --negbg:rgba(248,113,113,.12);
-    --mid:#6b7488; --blue:#60a5fa; --bluebg:rgba(96,165,250,.12);
-    --warn:#fbbf24; --warnbg:rgba(251,191,36,.12);
-    --shadow:0 4px 24px rgba(0,0,0,.4);
+  :root {
+    color-scheme: light;
+    --page: #f3f6fb;
+    --surface: #ffffff;
+    --surface-soft: #f8faff;
+    --ink: #101b38;
+    --text: #293754;
+    --muted: #6f7d98;
+    --line: #dce4f0;
+    --line-strong: #cbd6e6;
+    --blue: #0b5bd3;
+    --blue-soft: #edf4ff;
+    --green: #0a9953;
+    --green-soft: #f0fbf5;
+    --green-line: #a9dfc3;
+    --red: #e22d2d;
+    --red-soft: #fff5f4;
+    --red-line: #f2b8b4;
+    --amber: #b86c08;
+    --shadow: 0 18px 55px rgba(28, 53, 94, 0.08);
+    --radius: 14px;
   }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{background:var(--bg);color:var(--txt);font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;line-height:1.65;padding:0 0 70px;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-  header{position:relative;overflow:hidden;border-bottom:1px solid var(--line);padding:40px 0 30px;margin-bottom:32px;background:radial-gradient(120% 140% at 15% 0%,#1c1608 0%,var(--bg2) 45%,var(--bg) 100%)}
-  header::after{content:"";position:absolute;top:-40%;right:-5%;width:320px;height:320px;background:radial-gradient(circle,rgba(232,196,106,.14),transparent 65%);pointer-events:none}
-  .htop{display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:relative}
-  .logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(140deg,#f0d488,var(--gold2));display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:800;color:#241a07;box-shadow:0 4px 16px rgba(232,196,106,.3)}
-  h1{font-size:25px;font-weight:800;letter-spacing:.3px}
-  .htag{color:var(--gold);font-size:12.5px;font-weight:600;background:var(--goldbg);border:1px solid rgba(232,196,106,.25);padding:3px 11px;border-radius:20px}
-  .stats{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap;position:relative}
-  .stat{flex:1;min-width:150px;background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:12px;padding:13px 16px}
-  .stat .lbl{color:var(--sub);font-size:11.5px;margin-bottom:3px}
-  .stat .val{font-size:19px;font-weight:800}
-  .stat.risk .val{color:var(--warn)}
-  .stat.auto .val{color:var(--gold);font-size:14px}
-  .sec{margin-bottom:38px}
-  .sec-h{display:flex;align-items:center;gap:11px;margin-bottom:18px}
-  .sec-h .ic{font-size:18px}
-  .sec-h h2{font-size:18px;font-weight:800;letter-spacing:.2px}
-  .sec-h .line{flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
-  .sec-h .cnt{color:var(--dim);font-size:12.5px}
-  .flags{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .flag{position:relative;background:linear-gradient(135deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px 16px 20px;overflow:hidden;transition:.18s}
-  .flag::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
-  .flag.up::before{background:linear-gradient(180deg,var(--pos),#2f9e5a)}
-  .flag.avoid::before{background:linear-gradient(180deg,var(--neg),#c14444)}
-  .flag:hover{border-color:var(--line2);transform:translateY(-2px);box-shadow:var(--shadow)}
-  .flag .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:2px 9px;border-radius:6px;margin-bottom:8px}
-  .flag.up .badge{background:var(--posbg);color:var(--pos)}
-  .flag.avoid .badge{background:var(--negbg);color:var(--neg)}
-  .flag .f-head{font-weight:700;font-size:15px;margin-bottom:5px;line-height:1.4}
-  .flag .f-why{font-size:13px;color:var(--sub);line-height:1.6}
-  .panel{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:22px 24px;box-shadow:var(--shadow)}
-  .panel-t{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:16px}
-  .legend{display:flex;gap:16px;margin-bottom:16px;font-size:12px;color:var(--sub)}
-  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
-  .bar-row{display:flex;align-items:center;gap:13px;margin-bottom:11px;font-size:12.5px}
-  .bar-row:last-child{margin-bottom:0}
-  .bar-row .d{width:38px;color:var(--sub);flex-shrink:0;font-weight:600}
-  .bar-row .d.peak{color:var(--gold)}
-  .bar-row .cnt2{width:58px;color:var(--txt);text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
-  .barbox{flex:1;height:20px;background:#0c0f17;border-radius:5px;overflow:hidden;display:flex;min-width:120px;border:1px solid rgba(255,255,255,.03)}
-  .barbox .p{background:linear-gradient(90deg,#3fbf6f,var(--pos))}
-  .barbox .m{background:var(--mid);opacity:.28}
-  .barbox .n{background:linear-gradient(90deg,var(--neg),#e05555)}
-  .bar-row .neg-lbl{width:50px;text-align:right;flex-shrink:0;font-weight:700;font-variant-numeric:tabular-nums}
-  .bar-row .note{color:var(--dim);font-size:12px;min-width:150px;flex-shrink:0}
-  .topic{background:linear-gradient(135deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:15px 18px;margin-bottom:11px;display:flex;gap:16px;align-items:flex-start;transition:.18s}
-  .topic:hover{border-color:var(--line2);transform:translateX(3px)}
-  .topic .rank{font-size:22px;flex-shrink:0;width:38px;text-align:center;line-height:1.3}
-  .topic .rank.n{font-size:15px;font-weight:800;color:var(--dim);background:var(--bg);border:1px solid var(--line2);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
-  .topic .body{flex:1;min-width:0}
-  .topic .t-name{font-weight:700;font-size:15px;margin-bottom:4px;display:flex;align-items:center;flex-wrap:wrap;gap:8px}
-  .topic .t-data{color:var(--sub);font-size:12.5px;margin-bottom:6px}
-  .topic .t-voice{font-size:13px;color:var(--sub);opacity:.95;padding-left:11px;border-left:2px solid var(--line2)}
-  .chip{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;font-weight:700}
-  .chip.hot{background:var(--negbg);color:var(--neg)}
-  .chip.good{background:var(--posbg);color:var(--pos)}
-  .chip.warn2{background:var(--warnbg);color:var(--warn)}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
-  .card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:.18s}
-  .card:hover{border-color:var(--line2);box-shadow:var(--shadow)}
-  .card .c-head{display:flex;align-items:center;gap:9px;padding:14px 18px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.015)}
-  .card .c-head .cic{font-size:16px}
-  .card .c-head .ctit{font-size:13.5px;font-weight:700;color:var(--gold)}
-  .card .c-body{padding:6px 18px 12px}
-  .row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13.5px;align-items:center}
-  .row:last-child{border-bottom:none}
-  .row .k{color:var(--txt);font-weight:500}
-  .row .v{color:var(--sub);text-align:right;white-space:nowrap;font-size:12.5px;display:flex;align-items:center;gap:6px;justify-content:flex-end}
-  .tag{font-size:10.5px;padding:1px 7px;border-radius:5px;font-weight:700;flex-shrink:0}
-  .tag.official{background:var(--posbg);color:var(--pos)}
-  .tag.rumor{background:rgba(107,116,136,.18);color:var(--mid)}
-  .tag.soon{background:var(--bluebg);color:var(--blue)}
-  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);color:var(--dim);font-size:12px;text-align:center;line-height:1.9}
-  .badge-auto{display:inline-block;background:var(--goldbg);color:var(--gold);border:1px solid rgba(232,196,106,.2);font-size:11px;font-weight:600;padding:2px 10px;border-radius:6px}
-  @media(max-width:680px){.flags{grid-template-columns:1fr}.bar-row .note{display:none}}
-</style></head>
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+    font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  .skip-link {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    transform: translateY(-150%);
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .skip-link:focus { transform: translateY(0); }
+
+  .report {
+    width: min(1180px, calc(100% - 32px));
+    margin: 28px auto;
+    padding: 0 22px 22px;
+    overflow: hidden;
+    border: 1px solid #e2e8f1;
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  .masthead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 32px 2px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .masthead h1 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(25px, 3vw, 34px);
+    line-height: 1.22;
+    letter-spacing: -0.035em;
+  }
+
+  .masthead-meta {
+    flex: 0 0 auto;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+    text-align: right;
+  }
+
+  .masthead-meta strong {
+    display: block;
+    color: var(--text);
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  main { padding-top: 30px; }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface-soft);
+  }
+
+  .metric {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 14px;
+    min-width: 0;
+    padding: 24px 26px;
+  }
+
+  .metric + .metric { border-left: 1px solid var(--line); }
+
+  .metric-mark {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--blue-soft);
+    color: var(--blue);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .metric-label {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .metric-value {
+    display: block;
+    overflow-wrap: anywhere;
+    color: var(--blue);
+    font-size: clamp(22px, 2.6vw, 31px);
+    font-weight: 800;
+    line-height: 1.3;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .metric-value small {
+    font-size: 0.58em;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  .section {
+    margin-top: 20px;
+    padding: 22px 18px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+  }
+
+  .section-heading h2 {
+    position: relative;
+    margin: 0;
+    padding-left: 16px;
+    color: var(--ink);
+    font-size: 24px;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  .section-heading h2::before {
+    position: absolute;
+    top: 4px;
+    bottom: 3px;
+    left: 0;
+    width: 4px;
+    border-radius: 3px;
+    background: var(--blue);
+    content: "";
+  }
+
+  .section-note {
+    color: var(--muted);
+    font-size: 12px;
+    text-align: right;
+  }
+
+  .focus-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(240px, 0.75fr);
+    gap: 28px;
+    padding: 24px;
+    border: 1px solid var(--green-line);
+    border-radius: 11px;
+    background: var(--green-soft);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin-bottom: 10px;
+    padding: 4px 10px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.35;
+  }
+
+  .eyebrow.good { color: var(--green); background: #fff; }
+  .eyebrow.risk { color: var(--red); background: #fff; }
+
+  .focus-card h3 {
+    margin: 0 0 10px;
+    color: var(--green);
+    font-size: clamp(25px, 3vw, 36px);
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+  }
+
+  .focus-card p { margin: 0; font-size: 16px; }
+
+  .focus-proof {
+    align-self: stretch;
+    padding-left: 28px;
+    border-left: 1px solid var(--green-line);
+  }
+
+  .proof-label {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .proof-value {
+    margin: 7px 0 5px;
+    color: var(--green);
+    font-size: clamp(25px, 3vw, 36px);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.035em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .proof-note { color: #4b6b5a; font-size: 12px; }
+
+  .risk-panel {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr);
+    margin-top: 14px;
+    border: 1px solid var(--red-line);
+    border-radius: 11px;
+    background: var(--red-soft);
+    overflow: hidden;
+  }
+
+  .risk-label {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px;
+    border-right: 1px solid #f2cbc8;
+    background: rgba(255, 255, 255, 0.38);
+  }
+
+  .risk-label strong { color: var(--red); font-size: 20px; }
+  .risk-label span { color: #8d5d60; font-size: 12px; }
+
+  .risk-list { margin: 0; padding: 0 18px; list-style: none; }
+
+  .risk-item {
+    display: grid;
+    grid-template-columns: minmax(210px, 0.45fr) minmax(0, 1fr) auto;
+    gap: 22px;
+    align-items: center;
+    padding: 15px 0;
+  }
+
+  .risk-item + .risk-item { border-top: 1px solid #f2d6d3; }
+
+  .risk-name { color: var(--red); font-weight: 800; }
+  .risk-copy { color: #695456; font-size: 13px; }
+
+  .risk-status {
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .update-group + .update-group { margin-top: 20px; }
+
+  .update-group-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 8px;
+    color: var(--blue);
+    font-size: 17px;
+  }
+
+  .group-index {
+    display: inline-grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border-radius: 7px;
+    background: var(--blue-soft);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .update-table {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+
+  .update-row {
+    display: grid;
+    grid-template-columns: minmax(185px, 0.34fr) minmax(0, 1fr) auto;
+    min-height: 48px;
+    align-items: center;
+  }
+
+  .update-row + .update-row { border-top: 1px solid var(--line); }
+
+  .update-name,
+  .update-copy,
+  .update-tag { padding: 11px 16px; }
+
+  .update-name { color: var(--blue); font-weight: 800; }
+  .update-copy { border-left: 1px solid var(--line); color: var(--text); font-size: 13px; }
+
+  .update-tag {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .topic-board {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .topic-board-head,
+  .topic-row {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr) minmax(190px, 0.34fr);
+    gap: 20px;
+    align-items: center;
+  }
+
+  .topic-board-head {
+    padding: 11px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-soft);
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .topic-ranking { margin: 0; padding: 0; list-style: none; }
+
+  .topic-row { min-height: 76px; padding: 14px 18px; }
+  .topic-row + .topic-row { border-top: 1px solid var(--line); }
+
+  .topic-rank {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    color: var(--blue);
+  }
+
+  .topic-rank small { color: var(--muted); font-size: 10px; }
+  .topic-rank strong {
+    font-size: 24px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .topic-main strong { display: block; color: var(--ink); font-size: 15px; }
+  .topic-main span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+  .topic-signal { color: var(--blue); font-size: 12px; font-weight: 700; }
+
+  .method-note {
+    margin: 16px 2px 0;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .section-rail {
+    position: fixed;
+    top: 50%;
+    left: calc(50% + 610px);
+    z-index: 5;
+    display: grid;
+    width: 132px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 12px 35px rgba(28, 53, 94, 0.09);
+    transform: translateY(-50%);
+    backdrop-filter: blur(12px);
+  }
+
+  .section-rail a {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 8px;
+    align-items: center;
+    min-height: 52px;
+    padding: 10px 12px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.18s ease, background 0.18s ease;
+  }
+
+  .section-rail a + a { border-top: 1px solid var(--line); }
+  .section-rail a:hover,
+  .section-rail a:focus-visible,
+  .section-rail a[aria-current="true"] { color: var(--blue); background: var(--blue-soft); }
+
+  .section-rail b {
+    color: inherit;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  footer {
+    margin-top: 20px;
+    padding: 18px 2px 2px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 900px) {
+    .report { width: min(100% - 20px, 760px); margin: 10px auto; }
+    .metrics { grid-template-columns: 1fr; }
+    .metric + .metric { border-top: 1px solid var(--line); border-left: 0; }
+    .focus-card { grid-template-columns: 1fr; }
+    .focus-proof { padding: 18px 0 0; border-top: 1px solid var(--green-line); border-left: 0; }
+    .risk-panel { grid-template-columns: 150px minmax(0, 1fr); }
+    .risk-label { padding: 16px; }
+    .risk-item { grid-template-columns: minmax(180px, 0.5fr) minmax(0, 1fr); gap: 12px 18px; }
+    .risk-status { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 1399px) {
+    .section-rail { display: none; }
+  }
+
+  @media (max-width: 620px) {
+    body { font-size: 14px; }
+    .report { width: 100%; margin: 0; padding: 0 12px 16px; border: 0; border-radius: 0; box-shadow: none; }
+    .masthead { padding: 22px 2px 16px; }
+    .masthead h1 { font-size: 24px; }
+    .masthead-meta { font-size: 11px; }
+    .masthead-meta strong { font-size: 13px; }
+    main { padding-top: 18px; }
+    .metric { grid-template-columns: 40px 1fr; padding: 17px 16px; }
+    .metric-mark { width: 38px; height: 38px; font-size: 12px; }
+    .metric-value { font-size: 23px; }
+    .section { margin-top: 12px; padding: 18px 12px 12px; }
+    .section-heading { align-items: flex-start; margin-bottom: 14px; }
+    .section-heading h2 { font-size: 20px; }
+    .section-note { max-width: 120px; }
+    .focus-card { gap: 18px; padding: 18px; }
+    .focus-card h3 { font-size: 28px; }
+    .focus-card p { font-size: 14px; }
+    .risk-panel { grid-template-columns: 1fr; }
+    .risk-label { padding: 14px; border-right: 0; border-bottom: 1px solid #f2cbc8; }
+    .risk-list { padding: 0 14px; }
+    .risk-item { grid-template-columns: 1fr; gap: 5px; }
+    .risk-status { grid-column: auto; }
+    .update-row { grid-template-columns: 1fr; padding: 11px 13px; }
+    .update-name,
+    .update-copy,
+    .update-tag { padding: 0; }
+    .update-copy { margin-top: 5px; border-left: 0; }
+    .update-tag { margin-top: 7px; }
+    .topic-board-head { display: none; }
+    .topic-row { grid-template-columns: 54px minmax(0, 1fr); gap: 12px; padding: 14px; }
+    .topic-signal { grid-column: 2; }
+  }
+</style>
+</head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="htop">
-      <div class="logo">王</div>
-      <h1>王者荣耀 · 监控日报</h1>
-      <span class="htag" id="tag-period"></span>
+<a class="skip-link" href="#main-content">跳到主要内容</a>
+<nav class="section-rail" aria-label="页面章节">
+  <a href="#recommendation" aria-current="true"><b>01</b><span>值得推荐</span></a>
+  <a href="#sentiment"><b>02</b><span>舆情表现</span></a>
+  <a href="#updates-section"><b>03</b><span>更新内容</span></a>
+</nav>
+<div class="report">
+  <header class="masthead">
+    <h1>王者荣耀更新与舆情监控</h1>
+    <div class="masthead-meta">
+      <strong id="report-date"></strong>
+      <span>每天上午10:30更新</span>
     </div>
-    <div class="stats">
-      <div class="stat"><div class="lbl">📅 生成日期</div><div class="val" id="m-date"></div></div>
-      <div class="stat"><div class="lbl">💬 舆情总量（周）</div><div class="val" id="m-total"></div></div>
-      <div class="stat risk"><div class="lbl">⚠️ 整体风险</div><div class="val" id="m-risk"></div></div>
-      <div class="stat auto"><div class="lbl">🔄 更新频率</div><div class="val">每日 10:30 自动</div></div>
-    </div>
-  </div>
-</header>
-<div class="wrap">
-  <div class="sec">
-    <div class="sec-h"><span class="ic">⭐</span><h2>值得关注</h2><span class="line"></span><span class="cnt">可学 / 避坑</span></div>
-    <div class="flags" id="flags"></div>
-  </div>
-  <div class="sec">
-    <div class="sec-h"><span class="ic">📊</span><h2>舆情情况</h2><span class="line"></span></div>
-    <div class="panel">
-      <div class="panel-t">一周情感趋势</div>
-      <div class="legend"><span><i style="background:var(--pos)"></i>正面</span><span><i style="background:var(--mid);opacity:.4"></i>中性</span><span><i style="background:var(--neg)"></i>负面</span></div>
-      <div id="trend-bars"></div>
-    </div>
-    <h3 style="font-size:14px;margin:22px 0 12px;color:var(--gold);font-weight:700">🔥 话题热度排名</h3>
-    <div id="topics"></div>
-  </div>
-  <div class="sec">
-    <div class="sec-h"><span class="ic">🎮</span><h2>更新情况</h2><span class="line"></span><span class="cnt">商业化 · 玩法 · 英雄 · 装备 · 生态</span></div>
-    <div class="grid" id="updates-grid"></div>
-  </div>
+  </header>
+
+  <main id="main-content">
+    <section class="metrics" aria-label="本期关键数据">
+      <div class="metric">
+        <span class="metric-mark" aria-hidden="true">评</span>
+        <div>
+          <span class="metric-label">评论总量</span>
+          <strong class="metric-value"><span id="comment-total"></span> <small>条</small></strong>
+        </div>
+      </div>
+      <div class="metric">
+        <span class="metric-mark" aria-hidden="true">时</span>
+        <div>
+          <span class="metric-label">更新时间</span>
+          <strong class="metric-value">每天上午10:30</strong>
+        </div>
+      </div>
+      <div class="metric">
+        <span class="metric-mark" aria-hidden="true">焦</span>
+        <div>
+          <span class="metric-label">最值得关注</span>
+          <strong class="metric-value">超极限狂潮</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="recommendation" aria-labelledby="focus-title">
+      <div class="section-heading">
+        <h2 id="focus-title">值得推荐</h2>
+        <span class="section-note">本期正向表现与重点争议</span>
+      </div>
+
+      <article class="focus-card">
+        <div>
+          <span class="eyebrow good">舆情较好</span>
+          <h3>超极限狂潮</h3>
+          <p>英雄技能冷却大幅缩短，体型随战斗变化，主打高频技能释放与爽感对抗，玩家对玩法节奏和娱乐性的反馈集中向好。</p>
+        </div>
+        <div class="focus-proof">
+          <span class="proof-label">外部表现</span>
+          <div class="proof-value">140 万点赞</div>
+          <div class="proof-note">本期监测到的相关视频最高点赞量</div>
+        </div>
+      </article>
+
+      <div class="risk-panel">
+        <div class="risk-label">
+          <strong>舆情风险</strong>
+          <span>2项重点关注</span>
+        </div>
+        <ul class="risk-list" id="risk-list"></ul>
+      </div>
+    </section>
+
+    <section class="section" id="sentiment" aria-labelledby="sentiment-title">
+      <div class="section-heading">
+        <h2 id="sentiment-title">舆情表现</h2>
+        <span class="section-note">近7日话题讨论热度</span>
+      </div>
+
+      <div class="topic-board">
+        <div class="topic-board-head" aria-hidden="true">
+          <span>排名</span>
+          <span>话题与讨论焦点</span>
+          <span>热度依据</span>
+        </div>
+        <ol class="topic-ranking" id="topic-ranking"></ol>
+      </div>
+      <p class="method-note">说明：榜单用于回答“大家本周都在讨论什么”，按评论量、互动量与讨论持续度综合排序。</p>
+    </section>
+
+    <section class="section" id="updates-section" aria-labelledby="updates-title">
+      <div class="section-heading">
+        <h2 id="updates-title">更新内容</h2>
+        <span class="section-note">玩法 → 商业化 → 运营活动</span>
+      </div>
+      <div id="updates"></div>
+    </section>
+  </main>
+
   <footer>
-    <div id="foot-gen"></div>
-    <div style="margin-top:6px;opacity:.7">⚠️ 舆情系统对"好评但无争议"内容存在系统性低估，热度需结合玩法参与度综合判断</div>
+    数据来源：公开更新信息、社区平台与有数舆情汇总。评论总量按百条取整，跨平台点赞仅作外部表现参考；未核实爆料不进入正式更新列表。
   </footer>
 </div>
+
 <script>
-/* ===== 数据区（定时任务每天只替换这个 DATA）===== */
+/* 每日数据入口：定时任务仅需更新 DATA。 */
 const DATA = {
-  date:"2026-08-11", period:"8/4 – 8/11", totalComments:"92,500", risk:"🟡 关注",
-  flags:[
-    { type:"up", head:"超极限狂潮（限时魔改玩法）", why:"好评爆、玩家刷屏求常驻，是本周娱乐向正面标杆" },
-    { type:"avoid", head:"澜无双 400 元抽奖翻车", why:"高价低保障被骂太黑，蛋仔入场费/爆率是同款雷区" },
-    { type:"avoid", head:"周瑜剧情丑化 → 负面 72%", why:"踩角色/文化认同红线，蛋仔联动/剧情的活教材" },
-    { type:"up", head:"扁鹊免费皮 · 零负面", why:"免费福利是口碑对冲的有效手段" },
-    { type:"avoid", head:"舆情系统低估「无争议好评」", why:"超极限狂潮关键词仅 154 条，真实热度全榜第 6——用关键词判热度会误判" }
+  date: "2026年8月11日",
+  totalComments: "92,500",
+  risks: [
+    {
+      name: "澜无双祈愿价格争议",
+      copy: "讨论集中在抽取成本与保底信息表达，需继续关注价格感知与机制透明度。",
+      status: "讨论升温"
+    },
+    {
+      name: "周瑜剧情争议",
+      copy: "争议集中在角色塑造与历史人物表达，官方回应后仍需跟踪情绪回落。",
+      status: "仍需跟踪"
+    }
   ],
-  trend:[
-    { d:"8/4", cnt:"27,859", pos:16, mid:72, neg:12, note:"皮肤爆料·峰值", peak:true },
-    { d:"8/5", cnt:"19,690", pos:14, mid:72, neg:14, note:"卢雅那技能公布" },
-    { d:"8/6", cnt:"13,582", pos:13, mid:69, neg:18, note:"卢雅那上线·超极限狂潮" },
-    { d:"8/7", cnt:"9,359",  pos:12, mid:69, neg:19, note:"皮肤预热·澜无双祈愿" },
-    { d:"8/8", cnt:"9,198",  pos:11, mid:57, neg:32, note:"🔴 周瑜剧情翻车" },
-    { d:"8/9", cnt:"6,469",  pos:13, mid:54, neg:33, note:"周瑜扩散·负面峰值" },
-    { d:"8/10",cnt:"6,197",  pos:16, mid:62, neg:22, note:"降温中" }
+  updates: [
+    {
+      title: "玩法",
+      rows: [
+        { name: "超极限狂潮", copy: "限时玩法。英雄技能冷却大幅缩短，体型随战斗变化，强调高频技能与爽感对抗。", tag: "已上线" },
+        { name: "夏日农友节峡谷", copy: "主题玩法。峡谷加入身份牌与“种土豆”等互动，对局内完成目标可获得主题奖励。", tag: "已上线" },
+        { name: "血战华容 5v5v5", copy: "三阵营混战，通过击败英雄与占领据点积累积分，并为落后阵营提供追赶空间。", tag: "玩法预告" },
+        { name: "新英雄卢雅那", copy: "定位射手，核心玩法包含远程持续输出与致盲机制；英雄内容统一归入玩法。", tag: "已上线" }
+      ]
+    },
+    {
+      title: "商业化",
+      rows: [
+        { name: "澜·雾影狼魂", copy: "无双限定，祈愿抽取；本期监测口径显示保底成本约400元。", tag: "价格关注" },
+        { name: "海月·真言先知", copy: "传说品质，8月8日上架，售价990点券。", tag: "皮肤" },
+        { name: "百里守约·暗夜巡卫", copy: "传说品质，8月13日上架，售价990点券。", tag: "皮肤" },
+        { name: "扁鹊·双面药师", copy: "史诗品质，通过活动免费获取。", tag: "福利" },
+        { name: "心魔六耳·未来纪元", copy: "勇者品质，首周售价60点券。", tag: "皮肤" }
+      ]
+    },
+    {
+      title: "运营活动",
+      rows: [
+        { name: "夏日农友节", copy: "主题玩法与登录福利联动，围绕对局参与和主题奖励展开。", tag: "主题活动" },
+        { name: "城市派对·青岛站", copy: "8月5日至8月9日开展线下城市活动。", tag: "线下" },
+        { name: "明星农友赛", copy: "8月7日开展明星参与的主题对抗活动。", tag: "社区活动" }
+      ]
+    }
   ],
-  topics:[
-    { rank:"🥇", name:"无尽之局皮肤系列", chip:{t:"hot",x:"最热"}, data:"8/4 单日 27,859 条 · 官抖 4 视频 67,000+ 评论", voice:"澜海报封神但抽奖太黑 · 海月性价比高 · 扁鹊免费真香" },
-    { rank:"🥈", name:"新英雄卢雅那", chip:{t:"hot",x:"高热"}, data:"TOP1 单条 24.5 万赞 · 抖音热门 43.7 万+", voice:"致盲太超标 vs 其实不强，两极分化" },
-    { rank:"🥉", name:"周瑜剧情翻车", chip:{t:"hot",x:"高危"}, data:"3,881 条 · 负面 ~72%", voice:"角色被丑化，多群体抗议，官方道歉重做" },
-    { rank:"4", name:"超极限狂潮", chip:{t:"good",x:"好评"}, data:"全量热度 TOP6（14.2 万赞）· 关键词命中 154 条", voice:"太好玩求常驻，负面集中在个别英雄平衡" },
-    { rank:"5", name:"扁鹊免费皮 + 农友节福利", chip:{t:"good",x:"纯利好"}, data:"好评 38.5% · 零负面", voice:"口碑最好的运营动作" },
-    { rank:"6", name:"假霸体 Bug", chip:{t:"warn2",x:"待修"}, data:"单条 5 万赞", voice:"长期未修，持续累积不满" }
-  ],
-  updates:[
-    { icon:"💰", title:"商业化 / 皮肤", rows:[
-      { k:"澜·雾影狼魂", v:"无双限定 · 保底约400元", tag:"official" },
-      { k:"海月·真言先知", v:"传说 · 8/8 · 990点券", tag:"official" },
-      { k:"百里守约·暗夜巡卫", v:"传说 · 8/13 · 990点券", tag:"official" },
-      { k:"扁鹊·双面药师", v:"史诗 · 免费送", tag:"official" },
-      { k:"心魔六耳·未来纪元", v:"勇者 · 8/8 · 首周60", tag:"official" },
-      { k:"诡秘之主/狐妖联动", v:"8月中下旬", tag:"rumor" }
-    ]},
-    { icon:"🕹️", title:"玩法", rows:[
-      { k:"超极限狂潮", v:"限时·CD暴减+体型可变", tag:"official" },
-      { k:"夏日农友节峡谷", v:"选身份牌·种土豆", tag:"official" },
-      { k:"血战华容 5v5v5", v:"合纵连横·落后方逆袭", tag:"soon" }
-    ]},
-    { icon:"🦸", title:"新英雄", rows:[
-      { k:"卢雅那", v:"射手·8/6·致盲机制", tag:"official" },
-      { k:"票选参与", v:"全球 4800 万召唤师", tag:"official" },
-      { k:"新英雄「暃」", v:"8/16", tag:"rumor" }
-    ]},
-    { icon:"⚔️", title:"装备 / 平衡", rows:[
-      { k:"新装备 无相神器", v:"法师·随大招变效果", tag:"rumor" },
-      { k:"法球装削弱", v:"暴击装增强", tag:"rumor" },
-      { k:"对抗路传送阵", v:"可同传 2 人", tag:"rumor" }
-    ]},
-    { icon:"🌐", title:"生态 / 线下", rows:[
-      { k:"王者万象棋", v:"定档9月·5000万预约", tag:"official" },
-      { k:"城市派对·青岛站", v:"8/5–9", tag:"official" },
-      { k:"明星农友赛", v:"8/7", tag:"official" }
-    ]}
+  topics: [
+    { name: "超极限狂潮", focus: "玩家集中讨论玩法爽感、英雄表现与是否常驻。", signal: "最高点赞视频 140 万" },
+    { name: "澜无双祈愿价格争议", focus: "讨论集中在抽取成本、保底机制与信息透明度。", signal: "价格讨论持续" },
+    { name: "周瑜剧情争议", focus: "讨论集中在角色塑造与历史人物表达。", signal: "剧情争议持续" },
+    { name: "新英雄卢雅那", focus: "玩家主要讨论致盲机制、英雄强度与实战体验。", signal: "单条视频最高 24.5 万赞" },
+    { name: "夏日农友节峡谷", focus: "讨论集中在主题玩法、活动参与和福利内容。", signal: "玩法与福利讨论" }
   ]
 };
-/* ===== 渲染 ===== */
-const $=id=>document.getElementById(id);
-$('tag-period').textContent=DATA.period;
-$('m-date').textContent=DATA.date;
-$('m-total').textContent=DATA.totalComments;
-$('m-risk').textContent=DATA.risk;
-$('foot-gen').textContent='报告生成时间：'+DATA.date+' 10:30';
-$('flags').innerHTML=DATA.flags.map(f=>`<div class="flag ${f.type}"><div class="badge">${f.type==='up'?'👍 可学':'⚠️ 避坑'}</div><div class="f-head">${f.head}</div><div class="f-why">${f.why}</div></div>`).join('');
-$('trend-bars').innerHTML=DATA.trend.map(t=>`<div class="bar-row"><span class="d ${t.peak?'peak':''}">${t.d}</span><span class="cnt2">${t.cnt}</span><div class="barbox"><div class="p" style="width:${t.pos}%"></div><div class="m" style="width:${t.mid}%"></div><div class="n" style="width:${t.neg}%"></div></div><span class="neg-lbl" style="color:${t.neg>=30?'var(--neg)':'var(--sub)'}">负 ${t.neg}%</span><span class="note">${t.note}</span></div>`).join('');
-$('topics').innerHTML=DATA.topics.map(t=>{const r=/^\d+$/.test(t.rank)?`<div class="rank n">${t.rank}</div>`:`<div class="rank">${t.rank}</div>`;return `<div class="topic">${r}<div class="body"><div class="t-name">${t.name}<span class="chip ${t.chip.t}">${t.chip.x}</span></div><div class="t-data">${t.data}</div><div class="t-voice">💬 ${t.voice}</div></div></div>`}).join('');
-const tn={official:'官方',rumor:'爆料',soon:'即将'};
-$('updates-grid').innerHTML=DATA.updates.map(c=>`<div class="card"><div class="c-head"><span class="cic">${c.icon}</span><span class="ctit">${c.title}</span></div><div class="c-body">${c.rows.map(r=>`<div class="row"><span class="k">${r.k}</span><span class="v">${r.v}<span class="tag ${r.tag}">${tn[r.tag]}</span></span></div>`).join('')}</div></div>`).join('');
+
+const escapeHTML = value => String(value)
+  .replaceAll("&", "&amp;")
+  .replaceAll("<", "&lt;")
+  .replaceAll(">", "&gt;")
+  .replaceAll('"', "&quot;")
+  .replaceAll("'", "&#039;");
+
+document.getElementById("report-date").textContent = DATA.date;
+document.getElementById("comment-total").textContent = DATA.totalComments;
+
+document.getElementById("risk-list").innerHTML = DATA.risks.map(item => `
+  <li class="risk-item">
+    <span class="risk-name">${escapeHTML(item.name)}</span>
+    <span class="risk-copy">${escapeHTML(item.copy)}</span>
+    <span class="risk-status">${escapeHTML(item.status)}</span>
+  </li>
+`).join("");
+
+document.getElementById("updates").innerHTML = DATA.updates.map((group, index) => `
+  <section class="update-group" aria-labelledby="update-group-${index}">
+    <h3 class="update-group-title" id="update-group-${index}">
+      <span class="group-index">0${index + 1}</span>${escapeHTML(group.title)}
+    </h3>
+    <div class="update-table">
+      ${group.rows.map(row => `
+        <div class="update-row">
+          <span class="update-name">${escapeHTML(row.name)}</span>
+          <span class="update-copy">${escapeHTML(row.copy)}</span>
+          <span class="update-tag">${escapeHTML(row.tag)}</span>
+        </div>
+      `).join("")}
+    </div>
+  </section>
+`).join("");
+
+document.getElementById("topic-ranking").innerHTML = DATA.topics.map((topic, index) => `
+  <li class="topic-row">
+    <span class="topic-rank"><small>第</small><strong>${index + 1}</strong></span>
+    <span class="topic-main">
+      <strong>${escapeHTML(topic.name)}</strong>
+      <span>${escapeHTML(topic.focus)}</span>
+    </span>
+    <span class="topic-signal">${escapeHTML(topic.signal)}</span>
+  </li>
+`).join("");
+
+const railLinks = [...document.querySelectorAll(".section-rail a")];
+const railSections = railLinks
+  .map(link => document.querySelector(link.getAttribute("href")))
+  .filter(Boolean);
+
+const railObserver = new IntersectionObserver(entries => {
+  const visible = entries
+    .filter(entry => entry.isIntersecting)
+    .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+  if (!visible) return;
+  railLinks.forEach(link => {
+    const active = link.getAttribute("href") === `#${visible.target.id}`;
+    if (active) link.setAttribute("aria-current", "true");
+    else link.removeAttribute("aria-current");
+  });
+}, { rootMargin: "-25% 0px -55% 0px", threshold: [0.05, 0.25, 0.5] });
+
+railSections.forEach(section => railObserver.observe(section));
 </script>
 </body>
 </html>
