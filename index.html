@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>王者荣耀 · 更新与舆情监控</title>
+<style>
+  :root{
+    --bg:#0a0c12; --bg2:#0e111a; --card:#141824; --line:#232838; --line2:#2d3446;
+    --txt:#eceef4; --sub:#8b93a7; --dim:#5c6377;
+    --gold:#e8c46a; --gold2:#c99a3c; --goldbg:rgba(232,196,106,.1);
+    --pos:#4ade80; --posbg:rgba(74,222,128,.12);
+    --neg:#f87171; --negbg:rgba(248,113,113,.12);
+    --mid:#6b7488; --blue:#60a5fa; --bluebg:rgba(96,165,250,.12);
+    --warn:#fbbf24; --warnbg:rgba(251,191,36,.12);
+    --shadow:0 4px 24px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;line-height:1.65;padding:0 0 70px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  header{position:relative;overflow:hidden;border-bottom:1px solid var(--line);padding:40px 0 30px;margin-bottom:32px;background:radial-gradient(120% 140% at 15% 0%,#1c1608 0%,var(--bg2) 45%,var(--bg) 100%)}
+  header::after{content:"";position:absolute;top:-40%;right:-5%;width:320px;height:320px;background:radial-gradient(circle,rgba(232,196,106,.14),transparent 65%);pointer-events:none}
+  .htop{display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:relative}
+  .logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(140deg,#f0d488,var(--gold2));display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:800;color:#241a07;box-shadow:0 4px 16px rgba(232,196,106,.3)}
+  h1{font-size:25px;font-weight:800;letter-spacing:.3px}
+  .htag{color:var(--gold);font-size:12.5px;font-weight:600;background:var(--goldbg);border:1px solid rgba(232,196,106,.25);padding:3px 11px;border-radius:20px}
+  .stats{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap;position:relative}
+  .stat{flex:1;min-width:150px;background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:12px;padding:13px 16px}
+  .stat .lbl{color:var(--sub);font-size:11.5px;margin-bottom:3px}
+  .stat .val{font-size:19px;font-weight:800}
+  .stat.risk .val{color:var(--warn)}
+  .stat.auto .val{color:var(--gold);font-size:14px}
+  .sec{margin-bottom:38px}
+  .sec-h{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+  .sec-h .ic{font-size:18px}
+  .sec-h h2{font-size:18px;font-weight:800;letter-spacing:.2px}
+  .sec-h .line{flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+  .sec-h .cnt{color:var(--dim);font-size:12.5px}
+  .flags{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .flag{position:relative;background:linear-gradient(135deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px 16px 20px;overflow:hidden;transition:.18s}
+  .flag::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+  .flag.up::before{background:linear-gradient(180deg,var(--pos),#2f9e5a)}
+  .flag.avoid::before{background:linear-gradient(180deg,var(--neg),#c14444)}
+  .flag:hover{border-color:var(--line2);transform:translateY(-2px);box-shadow:var(--shadow)}
+  .flag .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:2px 9px;border-radius:6px;margin-bottom:8px}
+  .flag.up .badge{background:var(--posbg);color:var(--pos)}
+  .flag.avoid .badge{background:var(--negbg);color:var(--neg)}
+  .flag .f-head{font-weight:700;font-size:15px;margin-bottom:5px;line-height:1.4}
+  .flag .f-why{font-size:13px;color:var(--sub);line-height:1.6}
+  .panel{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:22px 24px;box-shadow:var(--shadow)}
+  .panel-t{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:16px}
+  .legend{display:flex;gap:16px;margin-bottom:16px;font-size:12px;color:var(--sub)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  .bar-row{display:flex;align-items:center;gap:13px;margin-bottom:11px;font-size:12.5px}
+  .bar-row:last-child{margin-bottom:0}
+  .bar-row .d{width:38px;color:var(--sub);flex-shrink:0;font-weight:600}
+  .bar-row .d.peak{color:var(--gold)}
+  .bar-row .cnt2{width:58px;color:var(--txt);text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+  .barbox{flex:1;height:20px;background:#0c0f17;border-radius:5px;overflow:hidden;display:flex;min-width:120px;border:1px solid rgba(255,255,255,.03)}
+  .barbox .p{background:linear-gradient(90deg,#3fbf6f,var(--pos))}
+  .barbox .m{background:var(--mid);opacity:.28}
+  .barbox .n{background:linear-gradient(90deg,var(--neg),#e05555)}
+  .bar-row .neg-lbl{width:50px;text-align:right;flex-shrink:0;font-weight:700;font-variant-numeric:tabular-nums}
+  .bar-row .note{color:var(--dim);font-size:12px;min-width:150px;flex-shrink:0}
+  .topic{background:linear-gradient(135deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:15px 18px;margin-bottom:11px;display:flex;gap:16px;align-items:flex-start;transition:.18s}
+  .topic:hover{border-color:var(--line2);transform:translateX(3px)}
+  .topic .rank{font-size:22px;flex-shrink:0;width:38px;text-align:center;line-height:1.3}
+  .topic .rank.n{font-size:15px;font-weight:800;color:var(--dim);background:var(--bg);border:1px solid var(--line2);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+  .topic .body{flex:1;min-width:0}
+  .topic .t-name{font-weight:700;font-size:15px;margin-bottom:4px;display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+  .topic .t-data{color:var(--sub);font-size:12.5px;margin-bottom:6px}
+  .topic .t-voice{font-size:13px;color:var(--sub);opacity:.95;padding-left:11px;border-left:2px solid var(--line2)}
+  .chip{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;font-weight:700}
+  .chip.hot{background:var(--negbg);color:var(--neg)}
+  .chip.good{background:var(--posbg);color:var(--pos)}
+  .chip.warn2{background:var(--warnbg);color:var(--warn)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+  .card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:.18s}
+  .card:hover{border-color:var(--line2);box-shadow:var(--shadow)}
+  .card .c-head{display:flex;align-items:center;gap:9px;padding:14px 18px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.015)}
+  .card .c-head .cic{font-size:16px}
+  .card .c-head .ctit{font-size:13.5px;font-weight:700;color:var(--gold)}
+  .card .c-body{padding:6px 18px 12px}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13.5px;align-items:center}
+  .row:last-child{border-bottom:none}
+  .row .k{color:var(--txt);font-weight:500}
+  .row .v{color:var(--sub);text-align:right;white-space:nowrap;font-size:12.5px;display:flex;align-items:center;gap:6px;justify-content:flex-end}
+  .tag{font-size:10.5px;padding:1px 7px;border-radius:5px;font-weight:700;flex-shrink:0}
+  .tag.official{background:var(--posbg);color:var(--pos)}
+  .tag.rumor{background:rgba(107,116,136,.18);color:var(--mid)}
+  .tag.soon{background:var(--bluebg);color:var(--blue)}
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);color:var(--dim);font-size:12px;text-align:center;line-height:1.9}
+  .badge-auto{display:inline-block;background:var(--goldbg);color:var(--gold);border:1px solid rgba(232,196,106,.2);font-size:11px;font-weight:600;padding:2px 10px;border-radius:6px}
+  @media(max-width:680px){.flags{grid-template-columns:1fr}.bar-row .note{display:none}}
+</style></head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="htop">
+      <div class="logo">王</div>
+      <h1>王者荣耀 · 监控日报</h1>
+      <span class="htag" id="tag-period"></span>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="lbl">📅 生成日期</div><div class="val" id="m-date"></div></div>
+      <div class="stat"><div class="lbl">💬 舆情总量（周）</div><div class="val" id="m-total"></div></div>
+      <div class="stat risk"><div class="lbl">⚠️ 整体风险</div><div class="val" id="m-risk"></div></div>
+      <div class="stat auto"><div class="lbl">🔄 更新频率</div><div class="val">每日 10:30 自动</div></div>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <div class="sec">
+    <div class="sec-h"><span class="ic">⭐</span><h2>值得关注</h2><span class="line"></span><span class="cnt">可学 / 避坑</span></div>
+    <div class="flags" id="flags"></div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><span class="ic">📊</span><h2>舆情情况</h2><span class="line"></span></div>
+    <div class="panel">
+      <div class="panel-t">一周情感趋势</div>
+      <div class="legend"><span><i style="background:var(--pos)"></i>正面</span><span><i style="background:var(--mid);opacity:.4"></i>中性</span><span><i style="background:var(--neg)"></i>负面</span></div>
+      <div id="trend-bars"></div>
+    </div>
+    <h3 style="font-size:14px;margin:22px 0 12px;color:var(--gold);font-weight:700">🔥 话题热度排名</h3>
+    <div id="topics"></div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><span class="ic">🎮</span><h2>更新情况</h2><span class="line"></span><span class="cnt">商业化 · 玩法 · 英雄 · 装备 · 生态</span></div>
+    <div class="grid" id="updates-grid"></div>
+  </div>
+  <footer>
+    <div id="foot-gen"></div>
+    <div style="margin-top:6px;opacity:.7">⚠️ 舆情系统对"好评但无争议"内容存在系统性低估，热度需结合玩法参与度综合判断</div>
+  </footer>
+</div>
+<script>
+/* ===== 数据区（定时任务每天只替换这个 DATA）===== */
+const DATA = {
+  date:"2026-08-11", period:"8/4 – 8/11", totalComments:"92,500", risk:"🟡 关注",
+  flags:[
+    { type:"up", head:"超极限狂潮（限时魔改玩法）", why:"好评爆、玩家刷屏求常驻，是本周娱乐向正面标杆" },
+    { type:"avoid", head:"澜无双 400 元抽奖翻车", why:"高价低保障被骂太黑，蛋仔入场费/爆率是同款雷区" },
+    { type:"avoid", head:"周瑜剧情丑化 → 负面 72%", why:"踩角色/文化认同红线，蛋仔联动/剧情的活教材" },
+    { type:"up", head:"扁鹊免费皮 · 零负面", why:"免费福利是口碑对冲的有效手段" },
+    { type:"avoid", head:"舆情系统低估「无争议好评」", why:"超极限狂潮关键词仅 154 条，真实热度全榜第 6——用关键词判热度会误判" }
+  ],
+  trend:[
+    { d:"8/4", cnt:"27,859", pos:16, mid:72, neg:12, note:"皮肤爆料·峰值", peak:true },
+    { d:"8/5", cnt:"19,690", pos:14, mid:72, neg:14, note:"卢雅那技能公布" },
+    { d:"8/6", cnt:"13,582", pos:13, mid:69, neg:18, note:"卢雅那上线·超极限狂潮" },
+    { d:"8/7", cnt:"9,359",  pos:12, mid:69, neg:19, note:"皮肤预热·澜无双祈愿" },
+    { d:"8/8", cnt:"9,198",  pos:11, mid:57, neg:32, note:"🔴 周瑜剧情翻车" },
+    { d:"8/9", cnt:"6,469",  pos:13, mid:54, neg:33, note:"周瑜扩散·负面峰值" },
+    { d:"8/10",cnt:"6,197",  pos:16, mid:62, neg:22, note:"降温中" }
+  ],
+  topics:[
+    { rank:"🥇", name:"无尽之局皮肤系列", chip:{t:"hot",x:"最热"}, data:"8/4 单日 27,859 条 · 官抖 4 视频 67,000+ 评论", voice:"澜海报封神但抽奖太黑 · 海月性价比高 · 扁鹊免费真香" },
+    { rank:"🥈", name:"新英雄卢雅那", chip:{t:"hot",x:"高热"}, data:"TOP1 单条 24.5 万赞 · 抖音热门 43.7 万+", voice:"致盲太超标 vs 其实不强，两极分化" },
+    { rank:"🥉", name:"周瑜剧情翻车", chip:{t:"hot",x:"高危"}, data:"3,881 条 · 负面 ~72%", voice:"角色被丑化，多群体抗议，官方道歉重做" },
+    { rank:"4", name:"超极限狂潮", chip:{t:"good",x:"好评"}, data:"全量热度 TOP6（14.2 万赞）· 关键词命中 154 条", voice:"太好玩求常驻，负面集中在个别英雄平衡" },
+    { rank:"5", name:"扁鹊免费皮 + 农友节福利", chip:{t:"good",x:"纯利好"}, data:"好评 38.5% · 零负面", voice:"口碑最好的运营动作" },
+    { rank:"6", name:"假霸体 Bug", chip:{t:"warn2",x:"待修"}, data:"单条 5 万赞", voice:"长期未修，持续累积不满" }
+  ],
+  updates:[
+    { icon:"💰", title:"商业化 / 皮肤", rows:[
+      { k:"澜·雾影狼魂", v:"无双限定 · 保底约400元", tag:"official" },
+      { k:"海月·真言先知", v:"传说 · 8/8 · 990点券", tag:"official" },
+      { k:"百里守约·暗夜巡卫", v:"传说 · 8/13 · 990点券", tag:"official" },
+      { k:"扁鹊·双面药师", v:"史诗 · 免费送", tag:"official" },
+      { k:"心魔六耳·未来纪元", v:"勇者 · 8/8 · 首周60", tag:"official" },
+      { k:"诡秘之主/狐妖联动", v:"8月中下旬", tag:"rumor" }
+    ]},
+    { icon:"🕹️", title:"玩法", rows:[
+      { k:"超极限狂潮", v:"限时·CD暴减+体型可变", tag:"official" },
+      { k:"夏日农友节峡谷", v:"选身份牌·种土豆", tag:"official" },
+      { k:"血战华容 5v5v5", v:"合纵连横·落后方逆袭", tag:"soon" }
+    ]},
+    { icon:"🦸", title:"新英雄", rows:[
+      { k:"卢雅那", v:"射手·8/6·致盲机制", tag:"official" },
+      { k:"票选参与", v:"全球 4800 万召唤师", tag:"official" },
+      { k:"新英雄「暃」", v:"8/16", tag:"rumor" }
+    ]},
+    { icon:"⚔️", title:"装备 / 平衡", rows:[
+      { k:"新装备 无相神器", v:"法师·随大招变效果", tag:"rumor" },
+      { k:"法球装削弱", v:"暴击装增强", tag:"rumor" },
+      { k:"对抗路传送阵", v:"可同传 2 人", tag:"rumor" }
+    ]},
+    { icon:"🌐", title:"生态 / 线下", rows:[
+      { k:"王者万象棋", v:"定档9月·5000万预约", tag:"official" },
+      { k:"城市派对·青岛站", v:"8/5–9", tag:"official" },
+      { k:"明星农友赛", v:"8/7", tag:"official" }
+    ]}
+  ]
+};
+/* ===== 渲染 ===== */
+const $=id=>document.getElementById(id);
+$('tag-period').textContent=DATA.period;
+$('m-date').textContent=DATA.date;
+$('m-total').textContent=DATA.totalComments;
+$('m-risk').textContent=DATA.risk;
+$('foot-gen').textContent='报告生成时间：'+DATA.date+' 10:30';
+$('flags').innerHTML=DATA.flags.map(f=>`<div class="flag ${f.type}"><div class="badge">${f.type==='up'?'👍 可学':'⚠️ 避坑'}</div><div class="f-head">${f.head}</div><div class="f-why">${f.why}</div></div>`).join('');
+$('trend-bars').innerHTML=DATA.trend.map(t=>`<div class="bar-row"><span class="d ${t.peak?'peak':''}">${t.d}</span><span class="cnt2">${t.cnt}</span><div class="barbox"><div class="p" style="width:${t.pos}%"></div><div class="m" style="width:${t.mid}%"></div><div class="n" style="width:${t.neg}%"></div></div><span class="neg-lbl" style="color:${t.neg>=30?'var(--neg)':'var(--sub)'}">负 ${t.neg}%</span><span class="note">${t.note}</span></div>`).join('');
+$('topics').innerHTML=DATA.topics.map(t=>{const r=/^\d+$/.test(t.rank)?`<div class="rank n">${t.rank}</div>`:`<div class="rank">${t.rank}</div>`;return `<div class="topic">${r}<div class="body"><div class="t-name">${t.name}<span class="chip ${t.chip.t}">${t.chip.x}</span></div><div class="t-data">${t.data}</div><div class="t-voice">💬 ${t.voice}</div></div></div>`}).join('');
+const tn={official:'官方',rumor:'爆料',soon:'即将'};
+$('updates-grid').innerHTML=DATA.updates.map(c=>`<div class="card"><div class="c-head"><span class="cic">${c.icon}</span><span class="ctit">${c.title}</span></div><div class="c-body">${c.rows.map(r=>`<div class="row"><span class="k">${r.k}</span><span class="v">${r.v}<span class="tag ${r.tag}">${tn[r.tag]}</span></span></div>`).join('')}</div></div>`).join('');
+</script>
+</body>
+</html>
