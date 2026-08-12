@@ -6,6 +6,7 @@
 <meta name="color-scheme" content="light">
 <meta name="description" content="王者荣耀更新与舆情监控内部日报">
 <title>王者荣耀 · 更新与舆情监控</title>
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
@@ -105,19 +106,116 @@
   }
 
   .masthead-meta {
+    display: grid;
     flex: 0 0 auto;
+    justify-items: end;
+    gap: 5px;
     color: var(--muted);
     font-size: 13px;
-    line-height: 1.8;
+    line-height: 1.5;
     text-align: right;
   }
 
-  .masthead-meta strong {
-    display: block;
-    color: var(--text);
-    font-size: 15px;
-    font-variant-numeric: tabular-nums;
+  .date-filter-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
   }
+
+  .date-control-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .date-select {
+    min-width: 156px;
+    height: 36px;
+    padding: 0 32px 0 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 9px;
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    box-shadow: 0 5px 16px rgba(28, 53, 94, 0.05), inset 0 1px 0 #fff;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .date-select:hover { border-color: #aebdd3; }
+  .date-select:focus-visible {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(11, 91, 211, 0.13), 0 5px 16px rgba(28, 53, 94, 0.05);
+  }
+
+  .refresh-note { color: var(--muted); font-size: 11px; }
+
+  .compact-report-nav {
+    display: none;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border: 1px solid var(--line-strong);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--blue);
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  .compact-report-nav:focus-visible {
+    outline: 3px solid rgba(11, 91, 211, 0.16);
+    outline-offset: 1px;
+  }
+
+  .compact-report-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .report-nav {
+    position: fixed;
+    top: 50%;
+    z-index: 6;
+    display: grid;
+    width: 62px;
+    height: 82px;
+    place-items: center;
+    border: 1px solid rgba(156, 176, 207, 0.52);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--blue);
+    font-size: 40px;
+    opacity: 0.5;
+    cursor: pointer;
+    box-shadow: 0 12px 32px rgba(28, 53, 94, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transform: translateY(-50%);
+    backdrop-filter: blur(12px);
+    transition: opacity 0.18s ease, transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .report-nav i {
+    line-height: 1;
+    -webkit-text-stroke: 0.45px currentColor;
+  }
+
+  .report-nav:hover,
+  .report-nav:focus-visible {
+    opacity: 0.92;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 16px 40px rgba(28, 53, 94, 0.14), inset 0 1px 0 #fff;
+    transform: translateY(-50%) scale(1.04);
+  }
+
+  .report-nav:focus-visible { outline: 3px solid rgba(11, 91, 211, 0.16); outline-offset: 3px; }
+  .report-nav:disabled { opacity: 0.16; cursor: not-allowed; filter: grayscale(0.35); }
+  .report-nav:disabled:hover { background: rgba(255, 255, 255, 0.5); transform: translateY(-50%); box-shadow: 0 12px 32px rgba(28, 53, 94, 0.09); }
+  .report-nav--prev { left: max(18px, calc(50% - 700px)); }
+  .report-nav--next { right: max(18px, calc(50% - 700px)); }
 
   main { padding-top: 30px; }
 
@@ -233,6 +331,128 @@
     font-size: 12px;
     text-align: right;
   }
+
+  .brief-report {
+    display: grid;
+    gap: 14px;
+  }
+
+  [hidden] { display: none !important; }
+
+  .brief-section {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(28, 53, 94, 0.03);
+    overflow: hidden;
+  }
+
+  .brief-section .section-heading {
+    margin: 0;
+    padding: 19px 20px 15px;
+  }
+
+  .brief-section .section-heading h2 small {
+    margin-left: 7px;
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+  }
+
+  .brief-conclusion {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    margin: 0 20px 16px;
+    padding: 12px 14px;
+    border: 1px solid #dce6fa;
+    border-radius: 10px;
+    background: #f7f9ff;
+  }
+
+  .brief-conclusion-label {
+    flex: 0 0 auto;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #eaf0ff;
+    color: var(--blue);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  .brief-conclusion-copy {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .brief-conclusion-copy strong {
+    margin-right: 8px;
+    color: var(--ink);
+    font-size: 15px;
+  }
+
+  .brief-row-list { border-top: 1px solid var(--line); }
+
+  .brief-row {
+    display: grid;
+    grid-template-columns: 72px minmax(170px, 260px) minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+    min-height: 62px;
+    padding: 13px 20px;
+    background: #fff;
+  }
+
+  .brief-row + .brief-row { border-top: 1px solid var(--line); }
+  .brief-row:hover { background: #fbfcff; }
+
+  .brief-row-lead {
+    color: var(--blue);
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .brief-row-title {
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .brief-row-copy {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .brief-row-tag {
+    padding: 3px 8px;
+    border: 1px solid #c9dafa;
+    border-radius: 6px;
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .brief-row.starred { background: #fffdf5; }
+  .brief-row.starred:hover { background: #fffaf0; }
+
+  .brief-row.starred .brief-row-lead {
+    display: inline-flex;
+    gap: 7px;
+    align-items: center;
+    color: #aa6b00;
+  }
+
+  .brief-row.starred .brief-row-lead i { color: #f0ad19; font-size: 16px; }
+  .brief-row.starred .brief-row-title { color: #8d5700; }
+  .brief-row.starred .brief-row-tag { border-color: #dfbb61; color: #9b6500; }
 
   .focus-card {
     position: relative;
@@ -536,7 +756,8 @@
 
   .section-rail {
     position: fixed;
-    top: 50%;
+    top: auto;
+    bottom: calc(50% + 64px);
     left: calc(50% + 610px);
     z-index: 5;
     display: grid;
@@ -546,7 +767,6 @@
     border-radius: 12px;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(247, 250, 255, 0.95));
     box-shadow: 0 12px 35px rgba(28, 53, 94, 0.09);
-    transform: translateY(-50%);
     backdrop-filter: blur(12px);
   }
 
@@ -607,17 +827,27 @@
     .risk-status { grid-column: 1 / -1; }
   }
 
-  @media (max-width: 1399px) {
+  @media (max-width: 1499px) {
     .section-rail { display: none; }
+  }
+
+  @media (max-height: 560px) {
+    .section-rail { display: none; }
+  }
+
+  @media (max-width: 1419px) {
+    .report-nav { display: none; }
+    .compact-report-nav { display: grid; }
   }
 
   @media (max-width: 620px) {
     body { font-size: 14px; }
     .report { width: 100%; margin: 0; padding: 0 12px 16px; border: 0; border-radius: 0; box-shadow: none; }
-    .masthead { padding: 22px 2px 16px; }
+    .masthead { flex-direction: column; gap: 14px; padding: 22px 2px 16px; }
     .masthead h1 { font-size: 24px; }
-    .masthead-meta { font-size: 11px; }
-    .masthead-meta strong { font-size: 13px; }
+    .masthead-meta { width: 100%; justify-items: start; text-align: left; }
+    .date-control-row { width: 100%; }
+    .date-select { flex: 1; min-width: 0; }
     main { padding-top: 18px; }
     .metric { grid-template-columns: 40px 1fr; padding: 17px 16px; }
     .metric-mark { width: 38px; height: 38px; font-size: 18px; }
@@ -626,6 +856,24 @@
     .section-heading { align-items: flex-start; margin-bottom: 14px; }
     .section-heading h2 { font-size: 20px; }
     .section-note { max-width: 120px; }
+    .brief-section .section-heading { margin: 0; padding: 17px 14px 13px; }
+    .brief-conclusion {
+      gap: 10px;
+      margin: 0 14px 13px;
+      padding: 11px 12px;
+    }
+    .brief-conclusion-copy strong { display: block; margin: 0 0 2px; }
+    .brief-row {
+      grid-template-columns: 56px minmax(0, 1fr);
+      gap: 4px 12px;
+      align-items: start;
+      min-height: 0;
+      padding: 13px 14px;
+    }
+    .brief-row-title,
+    .brief-row-copy,
+    .brief-row-tag { grid-column: 2; }
+    .brief-row-tag { width: fit-content; margin-top: 3px; }
     .focus-card { gap: 18px; padding: 18px; }
     .focus-card h3 { font-size: 28px; }
     .focus-card p { font-size: 14px; }
@@ -646,25 +894,61 @@
     .topic-row { grid-template-columns: 54px minmax(0, 1fr); gap: 12px; padding: 14px; }
     .topic-signal { grid-column: 2; }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition-duration: 0.001ms !important; }
+  }
 </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">跳到主要内容</a>
-<nav class="section-rail" aria-label="页面章节">
-  <a href="#recommendation" aria-current="true"><b aria-hidden="true"><i class="bi bi-stars"></i></b><span>值得关注</span></a>
-  <a href="#sentiment"><b aria-hidden="true"><i class="bi bi-bar-chart-fill"></i></b><span>话题讨论度</span></a>
-  <a href="#updates-section"><b aria-hidden="true"><i class="bi bi-list-check"></i></b><span>更新内容</span></a>
-</nav>
+<button class="report-nav report-nav--prev" id="previous-report" type="button" aria-label="查看上一期报告">
+  <i class="bi bi-chevron-left" aria-hidden="true"></i>
+</button>
+<button class="report-nav report-nav--next" id="next-report" type="button" aria-label="查看下一期报告">
+  <i class="bi bi-chevron-right" aria-hidden="true"></i>
+</button>
+<nav class="section-rail" id="section-rail" aria-label="页面章节"></nav>
 <div class="report">
   <header class="masthead">
-    <h1>王者荣耀更新与舆情监控</h1>
+    <h1 id="report-title"></h1>
     <div class="masthead-meta">
-      <strong id="report-date"></strong>
-      <span>每天上午10:30更新</span>
+      <span class="date-filter-label"><i class="bi bi-calendar3" aria-hidden="true"></i>筛选日期</span>
+      <div class="date-control-row">
+        <button class="compact-report-nav" id="compact-previous-report" type="button" aria-label="查看上一期报告">
+          <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        </button>
+        <label class="sr-only" for="report-date-select">选择报告日期</label>
+        <select class="date-select" id="report-date-select"></select>
+        <button class="compact-report-nav" id="compact-next-report" type="button" aria-label="查看下一期报告">
+          <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+      <span class="refresh-note">每天上午10:30更新</span>
     </div>
   </header>
 
   <main id="main-content">
+    <div class="brief-report" id="brief-report" hidden>
+      <section class="brief-section" id="brief-updates" aria-labelledby="brief-updates-title">
+        <div class="section-heading">
+          <h2 id="brief-updates-title">更新公告监控<small>（公告更新了吗）</small></h2>
+        </div>
+        <div id="brief-update-conclusion"></div>
+        <div class="brief-row-list" id="brief-update-list"></div>
+      </section>
+
+      <section class="brief-section" id="brief-changes" aria-labelledby="brief-changes-title">
+        <div class="section-heading">
+          <h2 id="brief-changes-title">舆情监控<small>（舆情有变化吗）</small></h2>
+        </div>
+        <div id="brief-change-conclusion"></div>
+        <div class="brief-row-list" id="daily-change-list"></div>
+      </section>
+    </div>
+
+    <div id="full-report">
     <section class="metrics" aria-label="本期关键数据">
       <div class="metric">
         <span class="metric-mark" aria-hidden="true"><i class="bi bi-chat-square-dots-fill"></i></span>
@@ -684,7 +968,7 @@
         <span class="metric-mark" aria-hidden="true"><i class="bi bi-star"></i></span>
         <div>
           <span class="metric-label">最值得关注</span>
-          <strong class="metric-value">超极限狂潮</strong>
+          <strong class="metric-value" id="metric-highlight"></strong>
         </div>
       </div>
     </section>
@@ -700,16 +984,16 @@
           <div class="focus-title-row">
             <span class="focus-icon" aria-hidden="true"><i class="bi bi-trophy-fill"></i></span>
             <div>
-              <span class="eyebrow good">舆情较好</span>
-              <h3>超极限狂潮</h3>
+              <span class="eyebrow good" id="focus-eyebrow"></span>
+              <h3 id="focus-name"></h3>
             </div>
           </div>
-          <p>英雄技能冷却大幅缩短、体型随战斗夸张变化，玩法轻松爽快。玩家反馈娱乐性强，并催生大量趣味名场面（如关羽骑摩托、奥特曼乱入），社区呼吁转为常驻模式。</p>
+          <p id="focus-copy"></p>
         </div>
         <div class="focus-proof">
-          <span class="proof-label"><i class="bi bi-hand-thumbs-up-fill" aria-hidden="true"></i>外部表现</span>
-          <div class="proof-value">140 万点赞</div>
-          <div class="proof-note">本期监测到的相关视频最高点赞量</div>
+          <span class="proof-label"><i class="bi bi-hand-thumbs-up-fill" aria-hidden="true"></i><span id="proof-label"></span></span>
+          <div class="proof-value" id="proof-value"></div>
+          <div class="proof-note" id="proof-note"></div>
         </div>
       </article>
 
@@ -717,7 +1001,7 @@
         <div class="risk-label">
           <span class="risk-heading-icon" aria-hidden="true"><i class="bi bi-exclamation-lg"></i></span>
           <strong>舆情风险</strong>
-          <span>1项重点关注</span>
+          <span id="risk-count"></span>
         </div>
         <ul class="risk-list" id="risk-list"></ul>
       </div>
@@ -747,61 +1031,136 @@
       </div>
       <div id="updates"></div>
     </section>
+    </div>
   </main>
 
-  <footer>
-    评论总量按百条取整，跨平台点赞仅作外部表现参考；未核实爆料不进入正式更新列表。
-  </footer>
+  <footer id="report-footer"></footer>
 </div>
+<p class="sr-only" id="report-change-status" role="status" aria-live="polite"></p>
 
 <script>
-/* 每日数据入口：定时任务仅需更新 DATA。 */
-const DATA = {
-  date: "2026年8月11日",
-  totalComments: "92,500",
-  risks: [
-    {
-      name: "周瑜剧情争议",
-      copy: "争议集中于动画将周瑜塑造为诸葛亮的陪衬（“万年老二”），被玩家指为丑化角色；官方回应后仍需跟踪情绪回落。",
-      status: "仍需跟踪"
-    }
-  ],
-  updates: [
-    {
-      title: "玩法",
-      rows: [
-        { name: "超极限狂潮", copy: "限时玩法。英雄技能冷却大幅缩短，体型随战斗变化，强调高频技能与爽感对抗。", tag: "已上线" },
-        { name: "夏日农友节峡谷", copy: "主题玩法。峡谷加入身份牌与“种土豆”等互动，对局内完成目标可获得主题奖励。", tag: "已上线" },
-        { name: "血战华容 5v5v5", copy: "三阵营混战，通过击败英雄与占领据点积累积分，并为落后阵营提供追赶空间。", tag: "玩法预告" },
-        { name: "新英雄卢雅那", copy: "定位射手，核心玩法包含远程持续输出与致盲机制；英雄内容统一归入玩法。", tag: "已上线" }
-      ]
+/* 历史日报入口：新增日期时追加一份报告，旧日期继续保留。 */
+const BASE_UPDATES = [
+  {
+    title: "玩法",
+    rows: [
+      { name: "超极限狂潮", copy: "限时玩法。英雄技能冷却大幅缩短，体型随战斗变化，强调高频技能与爽感对抗。", tag: "已上线" },
+      { name: "夏日农友节峡谷", copy: "主题玩法。峡谷加入身份牌与“种土豆”等互动，对局内完成目标可获得主题奖励。", tag: "已上线" },
+      { name: "血战华容 5v5v5", copy: "三阵营混战，通过击败英雄与占领据点积累积分，并为落后阵营提供追赶空间。", tag: "玩法预告" },
+      { name: "新英雄卢雅那", copy: "定位射手，核心玩法包含远程持续输出与致盲机制；英雄内容统一归入玩法。", tag: "已上线" }
+    ]
+  },
+  {
+    title: "商业化",
+    rows: [
+      { name: "澜·雾影狼魂", copy: "无双限定，祈愿抽取；本期监测口径显示保底成本约400元。", tag: "价格关注" },
+      { name: "海月·真言先知", copy: "传说品质，8月8日上架，售价990点券。", tag: "皮肤" },
+      { name: "百里守约·暗夜巡卫", copy: "传说品质，8月13日上架，售价990点券。", tag: "皮肤" },
+      { name: "扁鹊·双面药师", copy: "史诗品质，通过活动免费获取。", tag: "福利" },
+      { name: "心魔六耳·未来纪元", copy: "勇者品质，首周售价60点券。", tag: "皮肤" }
+    ]
+  },
+  {
+    title: "运营活动",
+    rows: [
+      { name: "夏日农友节", copy: "主题玩法与登录福利联动，围绕对局参与和主题奖励展开。", tag: "主题活动" },
+      { name: "城市派对·青岛站", copy: "8月5日至8月9日开展线下城市活动。", tag: "线下" },
+      { name: "明星农友赛", copy: "8月7日开展明星参与的主题对抗活动。", tag: "社区活动" }
+    ]
+  }
+];
+
+const REPORTS = {
+  "2026-08-11": {
+    layout: "full",
+    title: "8.11 王者日报",
+    date: "2026年8月11日",
+    totalComments: "92,500",
+    metricHighlight: "超极限狂潮",
+    focus: {
+      eyebrow: "舆情较好",
+      tone: "good",
+      name: "超极限狂潮",
+      copy: "英雄技能冷却大幅缩短、体型随战斗夸张变化，玩法轻松爽快。玩家反馈娱乐性强，并催生大量趣味名场面（如关羽骑摩托、奥特曼乱入），社区呼吁转为常驻模式。",
+      proofLabel: "外部表现",
+      proofValue: "140 万点赞",
+      proofNote: "本期监测到的相关视频最高点赞量"
     },
-    {
-      title: "商业化",
-      rows: [
-        { name: "澜·雾影狼魂", copy: "无双限定，祈愿抽取；本期监测口径显示保底成本约400元。", tag: "价格关注" },
-        { name: "海月·真言先知", copy: "传说品质，8月8日上架，售价990点券。", tag: "皮肤" },
-        { name: "百里守约·暗夜巡卫", copy: "传说品质，8月13日上架，售价990点券。", tag: "皮肤" },
-        { name: "扁鹊·双面药师", copy: "史诗品质，通过活动免费获取。", tag: "福利" },
-        { name: "心魔六耳·未来纪元", copy: "勇者品质，首周售价60点券。", tag: "皮肤" }
-      ]
-    },
-    {
-      title: "运营活动",
-      rows: [
-        { name: "夏日农友节", copy: "主题玩法与登录福利联动，围绕对局参与和主题奖励展开。", tag: "主题活动" },
-        { name: "城市派对·青岛站", copy: "8月5日至8月9日开展线下城市活动。", tag: "线下" },
-        { name: "明星农友赛", copy: "8月7日开展明星参与的主题对抗活动。", tag: "社区活动" }
+    risks: [
+      {
+        name: "周瑜剧情争议",
+        copy: "争议集中于动画将周瑜塑造为诸葛亮的陪衬（“万年老二”），被玩家指为丑化角色；官方回应后仍需跟踪情绪回落。",
+        status: "仍需跟踪"
+      }
+    ],
+    updates: BASE_UPDATES,
+    topics: [
+      { name: "超极限狂潮", focus: "英雄体型被夸张放大，出现关羽骑着摩托车带着奥特曼这类被放大的搞笑名场面，玩家觉得非常有趣。", signal: "最高点赞视频 140 万" },
+      { name: "澜·雾影狼魂皮肤", focus: "玩家对闪光海报高度赞扬，认为造型非常帅气；另有部分玩家认为技能特效品质未匹配无双定价。", signal: "海报口碑突出" },
+      { name: "周瑜剧情争议", focus: "争议集中于动画将周瑜塑造为诸葛亮的陪衬（“万年老二”），被玩家指为丑化角色。", signal: "剧情争议持续" },
+      { name: "新英雄卢雅那", focus: "玩家围绕致盲机制的强度与平衡性展开讨论，是本期值得关注的英雄设计话题。", signal: "单条视频最高 24.5 万赞" },
+      { name: "夏日农友节峡谷", focus: "讨论集中在主题玩法、活动参与和福利内容。", signal: "玩法与福利讨论" }
+    ]
+  },
+  "2026-08-12": {
+    layout: "brief",
+    title: "8.12 王者日报",
+    date: "2026年8月12日",
+    brief: {
+      updateConclusion: {
+        title: "有，但不大。",
+        copy: "8月10日和11日各出了一次体验服更新："
+      },
+      updates: [
+        {
+          date: "8/10",
+          title: "体验服停机维护",
+          copy: "常规稳定性更新，无实质内容。",
+          tag: "体验服"
+        },
+        {
+          date: "8/11",
+          title: "体验服不停机更新",
+          copy: "含英雄调整（具体英雄因官网编码问题未能完整抓取，但NGA社区确认有平衡性改动）。",
+          tag: "体验服"
+        },
+        {
+          date: "持续中",
+          title: "真正的大更新是8月6日夏日农友节",
+          copy: "（8月8日澜无双·雾影狼魂上线、扁鹊史诗皮活动送、心魔六耳秒杀、妲己九尾返场、新英雄卢雅那等），都在3天窗口前已启动，目前仍在持续中（蔷薇之心今天截止）。",
+          tag: "正式服"
+        }
+      ],
+      changeConclusion: {
+        title: "有，变化显著。",
+        copy: "三个热点："
+      },
+      changes: [
+        {
+          name: "周瑜动画事件（8月9日爆发）",
+          state: "热点1",
+          copy: "《是王者啊》动画把周瑜欢迎会换成诸葛亮，激怒周瑜/小乔/曜等多群体，负面率~85%。制作组当日道歉承诺重做，8月10日起已降温。"
+        },
+        {
+          name: "英雄平衡争议升温",
+          state: "热点2",
+          copy: "六耳猕猴/影/卢雅那等被指超标，8月11日策划直播点名15位超标+16位补强英雄。【战斗强度平衡性】讨论占比3天从10%翻到23%，仍在爬升。"
+        },
+        {
+          name: "匹配机制争议",
+          state: "热点3",
+          copy: "策划直播宣布加入【负面信誉维度】优化排位算法，但玩家以质疑和讽刺为主（「策划承认连胜必连败了吗」）。",
+          tag: "值得关注",
+          starred: true
+        },
+        {
+          name: "新皮肤（澜无双等）",
+          state: "补充",
+          copy: "舆情中性偏正面，无明显翻车。"
+        }
       ]
     }
-  ],
-  topics: [
-    { name: "超极限狂潮", focus: "英雄体型被夸张放大，出现关羽骑着摩托车带着奥特曼这类被放大的搞笑名场面，玩家觉得非常有趣。", signal: "最高点赞视频 140 万" },
-    { name: "澜·雾影狼魂皮肤", focus: "玩家对闪光海报高度赞扬，认为造型非常帅气；另有部分玩家认为技能特效品质未匹配无双定价。", signal: "海报口碑突出" },
-    { name: "周瑜剧情争议", focus: "争议集中于动画将周瑜塑造为诸葛亮的陪衬（“万年老二”），被玩家指为丑化角色。", signal: "剧情争议持续" },
-    { name: "新英雄卢雅那", focus: "玩家围绕致盲机制的强度与平衡性展开讨论，是本期值得关注的英雄设计话题。", signal: "单条视频最高 24.5 万赞" },
-    { name: "夏日农友节峡谷", focus: "讨论集中在主题玩法、活动参与和福利内容。", signal: "玩法与福利讨论" }
-  ]
+  }
 };
 
 const escapeHTML = value => String(value)
@@ -811,67 +1170,241 @@ const escapeHTML = value => String(value)
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#039;");
 
-document.getElementById("report-date").textContent = DATA.date;
-document.getElementById("comment-total").textContent = DATA.totalComments;
-document.getElementById("sentiment-count").textContent = DATA.totalComments;
+const GROUP_ICONS = {
+  "公告动态": "bi-megaphone-fill",
+  "玩法": "bi-controller",
+  "商业化": "bi-tag-fill",
+  "运营活动": "bi-gift-fill"
+};
 
-document.getElementById("risk-list").innerHTML = DATA.risks.map(item => `
-  <li class="risk-item">
-    <span class="risk-item-icon" aria-hidden="true"><i class="bi bi-exclamation-lg"></i></span>
-    <span class="risk-name">${escapeHTML(item.name)}</span>
-    <span class="risk-copy">${escapeHTML(item.copy)}</span>
-    <span class="risk-status">${escapeHTML(item.status)}</span>
-  </li>
+const dateKeys = Object.keys(REPORTS).sort();
+const dateSelect = document.getElementById("report-date-select");
+const briefReport = document.getElementById("brief-report");
+const fullReport = document.getElementById("full-report");
+const reportTitle = document.getElementById("report-title");
+const reportFooter = document.getElementById("report-footer");
+const sectionRail = document.getElementById("section-rail");
+const previousButtons = [
+  document.getElementById("previous-report"),
+  document.getElementById("compact-previous-report")
+];
+const nextButtons = [
+  document.getElementById("next-report"),
+  document.getElementById("compact-next-report")
+];
+let currentReportIndex = 0;
+let railObserver = null;
+
+const RAIL_ITEMS = {
+  brief: [
+    { href: "#brief-updates", icon: "bi-megaphone-fill", label: "公告动态" },
+    { href: "#brief-changes", icon: "bi-star-fill", label: "今日变化" }
+  ],
+  full: [
+    { href: "#recommendation", icon: "bi-stars", label: "值得关注" },
+    { href: "#sentiment", icon: "bi-bar-chart-fill", label: "话题讨论度" },
+    { href: "#updates-section", icon: "bi-list-check", label: "更新内容" }
+  ]
+};
+
+dateSelect.innerHTML = [...dateKeys].reverse().map(key => `
+  <option value="${escapeHTML(key)}">${escapeHTML(REPORTS[key].title)}</option>
 `).join("");
 
-const GROUP_ICONS = ["bi-controller", "bi-tag-fill", "bi-gift-fill"];
+const configureRail = items => {
+  if (railObserver) railObserver.disconnect();
+  sectionRail.hidden = items.length === 0;
+  sectionRail.innerHTML = items.map((item, index) => `
+    <a href="${escapeHTML(item.href)}"${index === 0 ? ' aria-current="true"' : ""}>
+      <b aria-hidden="true"><i class="bi ${escapeHTML(item.icon)}"></i></b>
+      <span>${escapeHTML(item.label)}</span>
+    </a>
+  `).join("");
 
-document.getElementById("updates").innerHTML = DATA.updates.map((group, index) => `
-  <section class="update-group" aria-labelledby="update-group-${index}">
-    <h3 class="update-group-title" id="update-group-${index}">
-      <span class="group-index" aria-hidden="true"><i class="bi ${GROUP_ICONS[index] || "bi-list-check"}"></i></span>${escapeHTML(group.title)}
-    </h3>
-    <div class="update-table">
-      ${group.rows.map(row => `
-        <div class="update-row">
-          <span class="update-name">${escapeHTML(row.name)}</span>
-          <span class="update-copy">${escapeHTML(row.copy)}</span>
-          <span class="update-tag">${escapeHTML(row.tag)}</span>
-        </div>
-      `).join("")}
+  const railLinks = [...sectionRail.querySelectorAll("a")];
+  const railSections = railLinks
+    .map(link => document.querySelector(link.getAttribute("href")))
+    .filter(Boolean);
+
+  if (!railSections.length) return;
+  railObserver = new IntersectionObserver(entries => {
+    const visible = entries
+      .filter(entry => entry.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (!visible) return;
+    railLinks.forEach(link => {
+      const active = link.getAttribute("href") === `#${visible.target.id}`;
+      if (active) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
+    });
+  }, { rootMargin: "-25% 0px -55% 0px", threshold: [0.05, 0.25, 0.5] });
+
+  railSections.forEach(section => railObserver.observe(section));
+};
+
+const renderBriefReport = report => {
+  const brief = report.brief;
+  const renderConclusion = ({ title, copy }) => `
+    <div class="brief-conclusion" role="note">
+      <span class="brief-conclusion-label">结论</span>
+      <p class="brief-conclusion-copy"><strong>${escapeHTML(title)}</strong>${escapeHTML(copy)}</p>
     </div>
-  </section>
-`).join("");
+  `;
+  const renderRow = ({ lead, title, copy, tag = "", starred = false }) => `
+    <article class="brief-row${starred ? " starred" : ""}">
+      <span class="brief-row-lead">${starred ? '<i class="bi bi-star-fill" aria-hidden="true"></i>' : ""}${escapeHTML(lead)}</span>
+      <strong class="brief-row-title">${escapeHTML(title)}</strong>
+      <span class="brief-row-copy">${escapeHTML(copy)}</span>
+      ${tag ? `<span class="brief-row-tag">${escapeHTML(tag)}</span>` : ""}
+    </article>
+  `;
 
-document.getElementById("topic-ranking").innerHTML = DATA.topics.map((topic, index) => `
-  <li class="topic-row">
-    <span class="topic-rank"><small>第</small><strong>${index + 1}</strong></span>
-    <span class="topic-main">
-      <strong>${escapeHTML(topic.name)}</strong>
-      <span>${escapeHTML(topic.focus)}</span>
-    </span>
-    <span class="topic-signal">${escapeHTML(topic.signal)}</span>
-  </li>
-`).join("");
+  document.getElementById("brief-update-conclusion").innerHTML = renderConclusion(brief.updateConclusion);
+  document.getElementById("brief-change-conclusion").innerHTML = renderConclusion(brief.changeConclusion);
 
-const railLinks = [...document.querySelectorAll(".section-rail a")];
-const railSections = railLinks
-  .map(link => document.querySelector(link.getAttribute("href")))
-  .filter(Boolean);
+  document.getElementById("brief-update-list").innerHTML = [
+    ...brief.updates.map(item => renderRow({
+      lead: item.date,
+      title: item.title,
+      copy: item.copy,
+      tag: item.tag
+    }))
+  ].join("");
 
-const railObserver = new IntersectionObserver(entries => {
-  const visible = entries
-    .filter(entry => entry.isIntersecting)
-    .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-  if (!visible) return;
-  railLinks.forEach(link => {
-    const active = link.getAttribute("href") === `#${visible.target.id}`;
-    if (active) link.setAttribute("aria-current", "true");
-    else link.removeAttribute("aria-current");
+  document.getElementById("daily-change-list").innerHTML = brief.changes.map(item => renderRow({
+    lead: item.state,
+    title: item.name,
+    copy: item.copy,
+    tag: item.tag,
+    starred: item.starred
+  })).join("");
+};
+
+const renderFullReport = report => {
+  document.getElementById("comment-total").textContent = report.totalComments;
+  document.getElementById("sentiment-count").textContent = report.totalComments;
+  document.getElementById("metric-highlight").textContent = report.metricHighlight;
+  document.getElementById("focus-eyebrow").textContent = report.focus.eyebrow;
+  document.getElementById("focus-eyebrow").className = `eyebrow ${report.focus.tone || "good"}`;
+  document.getElementById("focus-name").textContent = report.focus.name;
+  document.getElementById("focus-copy").textContent = report.focus.copy;
+  document.getElementById("proof-label").textContent = report.focus.proofLabel;
+  document.getElementById("proof-value").textContent = report.focus.proofValue;
+  document.getElementById("proof-note").textContent = report.focus.proofNote;
+  document.getElementById("risk-count").textContent = `${report.risks.length}项重点关注`;
+
+  document.getElementById("risk-list").innerHTML = report.risks.map(item => `
+    <li class="risk-item">
+      <span class="risk-item-icon" aria-hidden="true"><i class="bi bi-exclamation-lg"></i></span>
+      <span class="risk-name">${escapeHTML(item.name)}</span>
+      <span class="risk-copy">${escapeHTML(item.copy)}</span>
+      <span class="risk-status">${escapeHTML(item.status)}</span>
+    </li>
+  `).join("");
+
+  document.getElementById("updates").innerHTML = report.updates.map((group, index) => `
+    <section class="update-group" aria-labelledby="update-group-${index}">
+      <h3 class="update-group-title" id="update-group-${index}">
+        <span class="group-index" aria-hidden="true"><i class="bi ${GROUP_ICONS[group.title] || "bi-list-check"}"></i></span>${escapeHTML(group.title)}
+      </h3>
+      <div class="update-table">
+        ${group.rows.map(row => `
+          <div class="update-row">
+            <span class="update-name">${escapeHTML(row.name)}</span>
+            <span class="update-copy">${escapeHTML(row.copy)}</span>
+            <span class="update-tag">${escapeHTML(row.tag)}</span>
+          </div>
+        `).join("")}
+      </div>
+    </section>
+  `).join("");
+
+  document.getElementById("topic-ranking").innerHTML = report.topics.map((topic, index) => `
+    <li class="topic-row">
+      <span class="topic-rank"><small>第</small><strong>${index + 1}</strong></span>
+      <span class="topic-main">
+        <strong>${escapeHTML(topic.name)}</strong>
+        <span>${escapeHTML(topic.focus)}</span>
+      </span>
+      <span class="topic-signal">${escapeHTML(topic.signal)}</span>
+    </li>
+  `).join("");
+};
+
+const renderReport = report => {
+  const isBrief = report.layout === "brief";
+  reportTitle.textContent = report.title;
+  briefReport.hidden = !isBrief;
+  fullReport.hidden = isBrief;
+
+  if (isBrief) {
+    renderBriefReport(report);
+    configureRail([]);
+    reportFooter.innerHTML = "数据来源：王者荣耀官方公告、策划直播及公开讨论整理。<br>说明：本页为每日变化简报，仅记录新增信息与值得关注内容。";
+    return;
+  }
+
+  renderFullReport(report);
+  configureRail(RAIL_ITEMS.full);
+  reportFooter.textContent = "评论总量按百条取整，跨平台点赞仅作外部表现参考；未核实爆料不进入正式更新列表。";
+};
+
+const updateReportNavigation = () => {
+  const previousKey = dateKeys[currentReportIndex - 1];
+  const nextKey = dateKeys[currentReportIndex + 1];
+
+  previousButtons.forEach(button => {
+    button.disabled = !previousKey;
+    button.setAttribute("aria-label", previousKey ? `查看上一期报告：${REPORTS[previousKey].title}` : "没有更早的报告");
+    button.title = previousKey ? `上一期 · ${REPORTS[previousKey].title}` : "已经是最早一期";
   });
-}, { rootMargin: "-25% 0px -55% 0px", threshold: [0.05, 0.25, 0.5] });
 
-railSections.forEach(section => railObserver.observe(section));
+  nextButtons.forEach(button => {
+    button.disabled = !nextKey;
+    button.setAttribute("aria-label", nextKey ? `查看下一期报告：${REPORTS[nextKey].title}` : "没有更新的报告");
+    button.title = nextKey ? `下一期 · ${REPORTS[nextKey].title}` : "已经是最新一期";
+  });
+};
+
+const showReport = (index, { announce = true, updateUrl = true, scroll = true } = {}) => {
+  if (index < 0 || index >= dateKeys.length) return;
+  currentReportIndex = index;
+  const key = dateKeys[index];
+  const report = REPORTS[key];
+
+  renderReport(report);
+  dateSelect.value = key;
+  document.title = `${report.title} · 王者荣耀`;
+  updateReportNavigation();
+
+  if (updateUrl) {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("date", key);
+      window.history.replaceState({}, "", url);
+    } catch (error) {
+      /* file:// 预览不支持改写地址时，不影响切换功能。 */
+    }
+  }
+
+  if (announce) document.getElementById("report-change-status").textContent = `已切换至${report.title}`;
+  if (scroll) window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+};
+
+previousButtons.forEach(button => button.addEventListener("click", () => showReport(currentReportIndex - 1)));
+nextButtons.forEach(button => button.addEventListener("click", () => showReport(currentReportIndex + 1)));
+dateSelect.addEventListener("change", event => showReport(dateKeys.indexOf(event.target.value)));
+
+document.addEventListener("keydown", event => {
+  if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+  if (document.activeElement?.closest("a, button, input, select, textarea, [contenteditable='true'], [role='button']")) return;
+  if (event.key === "ArrowLeft" && currentReportIndex > 0) showReport(currentReportIndex - 1);
+  if (event.key === "ArrowRight" && currentReportIndex < dateKeys.length - 1) showReport(currentReportIndex + 1);
+});
+
+const requestedDate = new URLSearchParams(window.location.search).get("date");
+const initialReportIndex = dateKeys.includes(requestedDate) ? dateKeys.indexOf(requestedDate) : dateKeys.length - 1;
+showReport(initialReportIndex, { announce: false, updateUrl: Boolean(requestedDate && !dateKeys.includes(requestedDate)), scroll: false });
 </script>
 </body>
 </html>
