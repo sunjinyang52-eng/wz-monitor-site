@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>重点竞品监控清单</title>
+<style>
+:root{
+  --bg:#f5f7fb;--card:#fff;--text:#1c2536;--muted:#788395;--line:#e6ebf2;
+  --blue:#3974f6;--blue-soft:#edf4ff;--green:#239f69;--green-soft:#eaf8f1;
+  --red:#e34d58;--red-soft:#fff0f2;--amber:#d99000;--amber-soft:#fff6df;
+  --purple:#7158c9;--purple-soft:#f2efff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;color:var(--text)}
+.page{max-width:1500px;margin:0 auto;padding:30px 36px 48px}
+.top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:20px}
+h1{font-size:28px;line-height:1.2;margin:0 0 8px;font-weight:800;letter-spacing:-.3px}
+.sub{font-size:14px;color:var(--muted)}
+.update{font-size:13px;color:#657083;background:white;border:1px solid var(--line);padding:9px 13px;border-radius:9px;white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px rgba(39,54,85,.05);overflow:hidden}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid var(--line)}
+.title{font-size:19px;font-weight:800}
+.meta{display:flex;align-items:center;gap:10px;color:#7b8596;font-size:13px}
+.select{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 11px;color:#5f6a7b;font-size:13px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:1260px}
+th{background:#fafbfd;color:#687386;font-size:13px;font-weight:700;text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{font-size:13px;padding:13px 16px;border-bottom:1px solid #edf1f6;vertical-align:middle;line-height:1.55}
+tbody tr:hover{background:#fbfdff}
+.game{font-size:14px;font-weight:750;color:#20283a;white-space:nowrap}
+.service{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;border-radius:6px;padding:3px 7px;font-weight:700;font-size:12px;background:var(--blue-soft);color:#3c70df}
+.tag.sim{background:#eaf8f1;color:#298a62}
+.tag.race{background:#fff2e5;color:#bd681c}
+.tag.general{background:var(--purple-soft);color:var(--purple)}
+.reason{color:#4f5b6e;max-width:460px}
+.focus{display:inline-flex;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:700;background:var(--green-soft);color:var(--green)}
+.level{display:inline-flex;justify-content:center;min-width:34px;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800}
+.S{background:var(--red-soft);color:var(--red)}
+.A{background:var(--blue-soft);color:var(--blue)}
+.Bp{background:var(--amber-soft);color:var(--amber)}
+.time{font-weight:650;color:#3f4858;white-space:nowrap}
+.pending{color:#9aa3b2;font-weight:500}
+.note{padding:13px 20px;background:#fcfdff;color:#8a94a4;font-size:12px}
+@media(max-width:900px){.page{padding:20px 14px}.top{flex-direction:column}.update{align-self:flex-start}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top">
+    <div>
+      <h1>重点竞品监控清单</h1>
+      <div class="sub">服务蛋仔派对 / 王牌竞速 / 模拟经营 / 非对称玩法的竞品观察</div>
+    </div>
+    <div class="update">数据更新时间：2026/09/04</div>
+  </div>
+
+  <section class="card">
+    <div class="card-head">
+      <div class="title">1. 上线竞品</div>
+      <div class="meta"><span>当前关注 18 款</span><button class="select">全部 ▾</button></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:16%">竞品名字</th>
+            <th style="width:18%">服务类型</th>
+            <th style="width:36%">关注原因</th>
+            <th style="width:10%">是否关注</th>
+            <th style="width:8%">关注等级</th>
+            <th style="width:12%">时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="game">王者万象棋</td><td><span class="service"><span class="tag">蛋仔</span> 自走棋</span></td><td class="reason">蛋仔已有对应自走棋玩法，可参考局内结构、养成节奏和随机事件。</td><td><span class="focus">关注</span></td><td><span class="level S">S</span></td><td class="time">9/10 正式上线</td></tr>
+          <tr><td class="game">星布谷地</td><td><span class="service"><span class="tag sim">模拟经营</span> 生活模拟 / 社交</span></td><td class="reason">米哈游生活模拟项目，重点观察种田、经营、社交和长期养成。</td><td><span class="focus">关注</span></td><td><span class="level S">S</span></td><td class="time">9/20 测试｜冬季公测</td></tr>
+          <tr><td class="game">无限大</td><td><span class="service"><span class="tag general">综合参考</span> 都市开放世界</span></td><td class="reason">网易都市开放世界项目，市场关注度高，关注开放世界内容组织与多人体验。</td><td><span class="focus">关注</span></td><td><span class="level S">S</span></td><td class="time">2027/1/15 全球上线</td></tr>
+          <tr><td class="game">粒粒的小人国</td><td><span class="service"><span class="tag sim">模拟经营</span> 建造 / 社交</span></td><td class="reason">腾讯模拟经营、建造和社交新品，重点观察泛休闲用户体验与多人社交设计。</td><td><span class="focus">关注</span></td><td><span class="level S">S</span></td><td class="time">9/22 测试</td></tr>
+          <tr><td class="game">伊莫</td><td><span class="service"><span class="tag">蛋仔</span> 抓宠 / 开放世界</span></td><td class="reason">开放世界+抓宠题材，重点观察探索、收集和宠物养成体验。</td><td><span class="focus">关注</span></td><td><span class="level S">S</span></td><td class="time">9/23 移动端上线</td></tr>
+          <tr><td class="game">蓝色星原：旅谣</td><td><span class="service"><span class="tag">蛋仔</span> 抓宠 / 养成</span></td><td class="reason">二次元开放世界+养成收集，重点观察大世界探索和长期养成体验。</td><td><span class="focus">关注</span></td><td><span class="level S">S</span></td><td class="time">9/17 测试</td></tr>
+          <tr><td class="game">望月</td><td><span class="service"><span class="tag">蛋仔</span> 抓宠 / 开放世界</span></td><td class="reason">都市开放世界+抓宠+建造，重点观察探索、宠物与自由玩法结构。</td><td><span class="focus">关注</span></td><td><span class="level S">S</span></td><td class="time">2026 Q4 PC测试</td></tr>
+          <tr><td class="game">崩坏：因缘精灵</td><td><span class="service"><span class="tag">蛋仔</span> 抓宠 / 自走棋</span></td><td class="reason">宠物养成与自走棋结合，可参考抓宠体系和局内策略结构。</td><td><span class="focus">关注</span></td><td><span class="level S">S</span></td><td class="time pending">下一节点未公布</td></tr>
+          <tr><td class="game">代号：梦核</td><td><span class="service"><span class="tag">蛋仔</span> 多人恐怖 / 撤离</span></td><td class="reason">内部已体验测试，当前重点关注多人恐怖、探索与撤离体验。</td><td><span class="focus">关注</span></td><td><span class="level S">S</span></td><td class="time pending">下一节点未公布</td></tr>
+          <tr><td class="game">Varsapura</td><td><span class="service"><span class="tag race">王牌竞速</span> 都市开放世界 / 载具</span></td><td class="reason">米哈游都市开放世界项目，重点观察城市空间、载具体验和开放世界内容组织。</td><td><span class="focus">关注</span></td><td><span class="level A">A</span></td><td class="time pending">下一节点未公布</td></tr>
+          <tr><td class="game">源初之结</td><td><span class="service"><span class="tag general">综合参考</span> 动作 / 冒险</span></td><td class="reason">米哈游新项目，关注后续产品方向、玩法信息和测试节点。</td><td><span class="focus">关注</span></td><td><span class="level A">A</span></td><td class="time pending">下一节点未公布</td></tr>
+          <tr><td class="game">雾海之下</td><td><span class="service"><span class="tag">蛋仔</span> 多人搜打撤</span></td><td class="reason">网易项目，多人搜打撤方向，首曝内容外部播放表现较高。</td><td><span class="focus">关注</span></td><td><span class="level A">A</span></td><td class="time pending">下一节点未公布</td></tr>
+          <tr><td class="game">闪耀吧！噜咪</td><td><span class="service"><span class="tag sim">模拟经营</span> 抓宠 / 经营</span></td><td class="reason">抓宠+模拟经营，重点观察宠物养成和轻量经营循环。</td><td><span class="focus">关注</span></td><td><span class="level A">A</span></td><td class="time">9/17 正式公测</td></tr>
+          <tr><td class="game">龙岛异兽起源</td><td><span class="service"><span class="tag">蛋仔</span> 开放世界 / 生存</span></td><td class="reason">恐龙+开放世界生存题材，重点观察角色形态、探索和多人生态。</td><td><span class="focus">关注</span></td><td><span class="level A">A</span></td><td class="time pending">下一节点未公布</td></tr>
+          <tr><td class="game">诡影藏锋</td><td><span class="service"><span class="tag">蛋仔</span> 中式题材 / 搜打撤</span></td><td class="reason">网易项目，中式题材+搜打撤，重点观察题材包装和局内循环。</td><td><span class="focus">关注</span></td><td><span class="level A">A</span></td><td class="time pending">下一节点未公布</td></tr>
+          <tr><td class="game">头号禁区</td><td><span class="service"><span class="tag">蛋仔</span> 搜打撤 / MOBA</span></td><td class="reason">搜打撤+MOBA组合相对少见，具备较强玩法研究价值。</td><td><span class="focus">关注</span></td><td><span class="level A">A</span></td><td class="time">2026 Q4 上线</td></tr>
+          <tr><td class="game">五星好市民</td><td><span class="service"><span class="tag general">综合参考</span> 多人开放世界</span></td><td class="reason">像素风多人开放世界，重点观察多人互动、探索和自由玩法结构。</td><td><span class="focus">关注</span></td><td><span class="level A">A</span></td><td class="time pending">下一节点未公布</td></tr>
+          <tr><td class="game">代号：Lovania</td><td><span class="service"><span class="tag sim">模拟经营</span> 种田 / 社交 / 多人</span></td><td class="reason">生活模拟+种田+社交方向与重点赛道相关，保留观察。</td><td><span class="focus">关注</span></td><td><span class="level Bp">B+</span></td><td class="time">10/2–10/6 线下参展</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">时间优先展示已公开的下一测试 / 上线 / 重点活动节点；未公布明确时间时显示“下一节点未公布”。</div>
+  </section>
+</div>
+</body>
+</html>
