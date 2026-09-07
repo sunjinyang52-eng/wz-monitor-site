@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="theme-color" content="#f6f7fb" />
 <title>阿阳 · 单词复习</title>
-<link rel="stylesheet" href="style.css?v=4" />
+<link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
 <div class="wrap">
@@ -13,7 +13,6 @@
     <div class="brand"><h1>阿阳 · 单词复习</h1><p>来自「不背单词」已学词表 · 离线可用</p></div>
     <div class="pill"><b id="totalCount">1248</b> 个已学单词</div>
   </div>
-
   <div class="tabs">
     <button class="tab active" data-view="random">随机抽样</button>
     <button class="tab" data-view="confuse">易混淆</button>
@@ -21,7 +20,6 @@
     <button class="tab" data-view="fav">⭐ 生词本</button>
     <button class="tab" data-view="all">全部词库</button>
   </div>
-
   <div class="grid">
     <section class="panel main">
       <div id="view-random">
@@ -32,7 +30,6 @@
         <div class="actions"><button class="btn good" data-grade="know">1 · 会</button><button class="btn warn" data-grade="vague">2 · 模糊</button><button class="btn bad" data-grade="forgot">3 · 忘了</button></div>
         <div class="row between" style="margin-top:16px"><button class="btn soft" id="randomPrev">← 上一个</button><button class="btn primary" id="randomNext">下一个 →</button></div>
       </div>
-
       <div id="view-confuse" class="hidden">
         <div class="row between"><div><div class="kicker">Confusable Words</div><div class="muted small"><span id="groupNo">1</span> / <span id="groupTotal"></span> 组</div></div><div class="row"><button class="btn soft" id="favoriteGroup">☆ 收藏整组</button><button class="btn soft" id="shuffleGroups">打乱</button></div></div>
         <div class="progress"><i id="groupProgress"></i></div>
@@ -41,23 +38,19 @@
         <div class="group-meanings" id="confuseMeanings" style="margin-top:14px"></div>
         <div class="row between" style="margin-top:18px"><button class="btn soft" id="groupPrev">← 上一组</button><button class="btn primary" id="groupNext">下一组 →</button></div>
       </div>
-
       <div id="view-weak" class="hidden">
         <div class="row between"><div><div class="kicker">Weak Words</div><div class="muted small">只抽你标记为「模糊 / 忘了」的词</div></div><button class="btn primary" id="startWeak">开始复习</button></div>
         <div id="weakArea"><div class="empty">目前还没有薄弱词。随机抽样时标记「模糊 / 忘了」后会自动出现在这里。</div></div>
       </div>
-
       <div id="view-fav" class="hidden">
         <div class="row between"><div><div class="kicker">Favorite Words</div><div class="muted small"><span id="favCount">0</span> 个收藏词 · <span id="favGroupCount">0</span> 个收藏易混组</div></div><button class="btn primary" id="startFav">随机复习</button></div>
         <div id="favArea"><div class="empty">还没有收藏。看到想反复复习的词，点 ☆ 就会放进这里。</div></div>
       </div>
-
       <div id="view-all" class="hidden">
         <div class="row between"><div><div class="kicker">All Words</div><div class="muted small">1248 个已学单词</div></div><div class="toolbar"><input id="allFilter" placeholder="搜索单词" /></div></div>
         <div class="sep"></div><div class="wordlist" id="wordList"></div>
       </div>
     </section>
-
     <aside class="panel side">
       <h3 class="section-title">复习记录</h3>
       <div class="statgrid"><div class="stat"><b id="statKnow">0</b><span>会</span></div><div class="stat"><b id="statVague">0</b><span>模糊</span></div><div class="stat"><b id="statForgot">0</b><span>忘了</span></div><div class="stat"><b id="statFav">0</b><span>收藏</span></div></div>
@@ -72,15 +65,16 @@
     </aside>
   </div>
 </div>
-<script src="data1.js?v=4"></script>
-<script src="data2.js?v=4"></script>
-<script src="data3.js?v=4"></script>
-<script src="data4.js?v=4"></script>
-<script src="data5.js?v=4"></script>
-<script src="data6.js?v=4"></script>
-<script src="data7.js?v=4"></script>
-<script src="data8.js?v=4"></script>
-<script src="data9.js?v=4"></script>
-<script src="groups.js?v=4"></script>
-<script src="app.js?v=4"></script>
+<script src="data1.js?v=5"></script>
+<script src="data2.js?v=5"></script>
+<script src="data3.js?v=5"></script>
+<script src="data4.js?v=5"></script>
+<script src="data5.js?v=5"></script>
+<script src="data6.js?v=5"></script>
+<script src="data7.js?v=5"></script>
+<script src="data8.js?v=5"></script>
+<script src="data9.js?v=5"></script>
+<script src="groups.js?v=5"></script>
+<script src="pako_inflate.min.js?v=5"></script>
+<script src="app.js?v=5"></script>
 </body></html>
