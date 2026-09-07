@@ -27,6 +27,7 @@ input,select,textarea{width:100%;min-width:0;border:1px solid #dfe5ec;border-rad
       <a class="active" href="#section-competitors"><span class="nav-dot"></span>上线竞品</a>
       <a href="#section-honor"><span class="nav-dot"></span>王者荣耀</a>
       <a href="#section-peace"><span class="nav-dot"></span>和平精英</a>
+      <a href="#section-yuanmeng"><span class="nav-dot"></span>元梦之星</a>
     </aside>
     <main class="content-main">
   <section class="card" id="section-competitors"><div class="card-head"><div class="title">1. 上线竞品</div><div class="meta"><span id="countText">当前关注 -- 款</span><button class="btn primary" id="addBtn">＋ 新增竞品</button></div></div><div class="table-wrap"><table><thead><tr><th>竞品名字</th><th>服务类型</th><th>关注原因</th><th>玩法链接</th><th>是否关注</th><th>关注等级</th><th>时间</th><th>备注</th><th>操作</th></tr></thead><tbody id="tbody"></tbody></table></div><div class="note-bar">按 S → A → B+ → B → C 自动排序；玩法链接可手动编辑，清空后保存即可删除；保存后所有人看到同一份数据。</div></section>
@@ -58,6 +59,18 @@ input,select,textarea{width:100%;min-width:0;border:1px solid #dfe5ec;border-rad
     </tbody></table></div>
     <div class="note-bar">重点联动：截至 2026/9/7 暂无已官宣且明确未来档期的大型 IP 联动；后续一旦定档再补入。</div>
   </section>
+
+  <section class="card node-card" id="section-yuanmeng">
+    <div class="card-head"><div class="node-head-copy"><div class="title">4. 元梦之星 · 大版本 / 重点联动节点</div><div class="node-sub">只收赛季级大版本、年度节点、重点联动及值得提前跟踪的联动预告。</div></div><div class="meta"><span>截至 2026/9/7</span></div></div>
+    <div class="table-wrap"><table class="node-table"><thead><tr><th>优先级</th><th>时间</th><th>节点类型</th><th>节点名称</th><th>核心内容 / 看点</th><th>当前状态</th><th>备注</th></tr></thead><tbody>
+      <tr><td><span class="priority high">高</span></td><td class="time">2026/9/4</td><td><span class="node-type collab">重点联动</span></td><td class="node-name">元梦之星 × 奶龙</td><td class="node-copy">近期明确的大 IP 联动，覆盖星宝农场等内容，重点关注联动包装、场景植入和长期玩法承接。</td><td><span class="node-status confirmed">已上线</span></td><td class="node-note">作为当前联动节点保留。</td></tr>
+      <tr><td><span class="priority high">高</span></td><td class="time">2026/9/11</td><td><span class="node-type version">大版本</span></td><td class="node-name">新赛季「妙笔生花」</td><td class="node-copy">赛季级版本更新，峡谷、谁是狼人、奇迹农场等多条玩法线同步更新，是9月最重要的版本观察节点。</td><td><span class="node-status confirmed">已官宣</span></td><td class="node-note">作为本轮主版本节点集中跟进。</td></tr>
+      <tr><td><span class="priority high">高</span></td><td class="time">预计 2026/11/6</td><td><span class="node-type version">大版本</span></td><td class="node-name">下一赛季</td><td class="node-copy">按近期约8周一赛季的稳定节奏推算，重点关注新赛季主题、玩法线调整和新系统。</td><td><span class="node-status predicted">周期预测</span></td><td class="node-note">按3/27→5/22→7/17→9/11约56天节奏推算。</td></tr>
+      <tr><td><span class="priority high">高</span></td><td class="time">预计 2026年12月中旬</td><td><span class="node-type annual">年度节点</span></td><td class="node-name">元梦之星三周年庆</td><td class="node-copy">年度级运营窗口，重点关注周年活动、福利、版本内容、联动与长期玩法更新。</td><td><span class="node-status predicted">待官宣</span></td><td class="node-note">根据历年周年节点预估，具体日期以后续官宣为准。</td></tr>
+      <tr><td><span class="priority mid">中</span></td><td class="time">2026/9/11 随赛季</td><td><span class="node-type collab">联动预告</span></td><td class="node-name">谁是狼人 · 神秘联动角色</td><td class="node-copy">官方版本信息已出现“神秘联动角色”预告，虽然IP尚未公开，但存在升级为重点联动的可能，值得提前跟踪。</td><td><span class="node-status pending">IP待公布</span></td><td class="node-note">待IP与具体内容公开后再更新节点名称和优先级。</td></tr>
+    </tbody></table></div>
+    <div class="note-bar">本模块不单列普通角色、暗星、常规玩法小更新；若后续升级为大版本或重点联动，再补入。</div>
+  </section>
     </main>
   </div>
 </div>
@@ -72,7 +85,7 @@ const levelOrder={S:0,A:1,'B+':2,B:3,C:4};
 const FIVE_STAR_LINK='https://www.bilibili.com/video/BV1C1HfzGEEk/?spm_id_from=333.337.search-card.all.click';
 const LINK_MARKER=/^\[\[玩法链接:(.*?)\]\]\n?/;
 let rows=[];let editingId=null;
-function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]))}
 function tagClass(g){return g==='模拟经营'?'sim':g==='王牌竞速'?'race':g==='综合参考'?'general':''}
 function levelClass(v){return v==='S'?'S':v==='A'?'A':v==='B+'?'Bp':'other'}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2100)}
