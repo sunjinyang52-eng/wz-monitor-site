@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#f6f7fb" />
+<title>阿阳 · 单词复习</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><h1>阿阳 · 单词复习</h1><p>来自「不背单词」已学词表 · 离线可用</p></div>
+    <div class="pill"><b id="totalCount">1248</b> 个已学单词</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-view="random">随机抽样</button>
+    <button class="tab" data-view="confuse">易混淆</button>
+    <button class="tab" data-view="weak">薄弱词</button>
+    <button class="tab" data-view="fav">⭐ 生词本</button>
+    <button class="tab" data-view="all">全部词库</button>
+  </div>
+
+  <div class="grid">
+    <section class="panel main">
+      <div id="view-random">
+        <div class="row between"><div><div class="kicker">Random Review</div><div class="muted small" id="sessionInfo">随机抽样</div></div><div class="toolbar"><select id="sampleSize"><option>10</option><option selected>20</option><option>30</option><option>50</option></select><button class="btn soft" id="newSession">重新抽样</button></div></div>
+        <div class="progress"><i id="randomProgress"></i></div>
+        <div class="word-head"><div class="word" id="randomWord">—</div><button class="favorite-btn" id="randomFavorite" aria-label="收藏当前单词" title="收藏当前单词">☆</button></div>
+        <div class="meaning cover" id="randomMeaning"><span>先回忆，点击显示意思</span></div>
+        <div class="actions"><button class="btn good" data-grade="know">1 · 会</button><button class="btn warn" data-grade="vague">2 · 模糊</button><button class="btn bad" data-grade="forgot">3 · 忘了</button></div>
+        <div class="row between" style="margin-top:16px"><button class="btn soft" id="randomPrev">← 上一个</button><button class="btn primary" id="randomNext">下一个 →</button></div>
+      </div>
+
+      <div id="view-confuse" class="hidden">
+        <div class="row between"><div><div class="kicker">Confusable Words</div><div class="muted small"><span id="groupNo">1</span> / <span id="groupTotal"></span> 组</div></div><div class="row"><button class="btn soft" id="favoriteGroup">☆ 收藏整组</button><button class="btn soft" id="shuffleGroups">打乱</button></div></div>
+        <div class="progress"><i id="groupProgress"></i></div>
+        <div class="group" id="confuseGroup"></div>
+        <div class="hint">先自己说意思，再点下方对应单词查看。这里优先放“长得像、特别容易串”的词。</div>
+        <div class="group-meanings" id="confuseMeanings" style="margin-top:14px"></div>
+        <div class="row between" style="margin-top:18px"><button class="btn soft" id="groupPrev">← 上一组</button><button class="btn primary" id="groupNext">下一组 →</button></div>
+      </div>
+
+      <div id="view-weak" class="hidden">
+        <div class="row between"><div><div class="kicker">Weak Words</div><div class="muted small">只抽你标记为「模糊 / 忘了」的词</div></div><button class="btn primary" id="startWeak">开始复习</button></div>
+        <div id="weakArea"><div class="empty">目前还没有薄弱词。随机抽样时标记「模糊 / 忘了」后会自动出现在这里。</div></div>
+      </div>
+
+
+      <div id="view-fav" class="hidden">
+        <div class="row between"><div><div class="kicker">Favorite Words</div><div class="muted small"><span id="favCount">0</span> 个收藏词 · <span id="favGroupCount">0</span> 个收藏易混组</div></div><button class="btn primary" id="startFav">随机复习</button></div>
+        <div id="favArea"><div class="empty">还没有收藏。看到想反复复习的词，点 ☆ 就会放进这里。</div></div>
+      </div>
+
+      <div id="view-all" class="hidden">
+        <div class="row between"><div><div class="kicker">All Words</div><div class="muted small">1248 个已学单词</div></div><div class="toolbar"><input id="allFilter" placeholder="搜索单词" /></div></div>
+        <div class="sep"></div><div class="wordlist" id="wordList"></div>
+      </div>
+    </section>
+
+    <aside class="panel side">
+      <h3 class="section-title">复习记录</h3>
+      <div class="statgrid"><div class="stat"><b id="statKnow">0</b><span>会</span></div><div class="stat"><b id="statVague">0</b><span>模糊</span></div><div class="stat"><b id="statForgot">0</b><span>忘了</span></div><div class="stat"><b id="statFav">0</b><span>收藏</span></div></div>
+      <div class="sep"></div>
+      <h3 class="section-title">查单词</h3>
+      <div class="search"><input id="searchInput" placeholder="输入英文" /><button class="btn soft" id="searchBtn">查</button></div><div class="result" id="searchResult"></div>
+      <div class="sep"></div>
+      <h3 class="section-title">进度备份</h3>
+      <button class="btn soft" id="exportBtn">导出复习进度</button><button class="btn soft" id="importBtn">导入复习进度</button><input type="file" id="importFile" accept="application/json" class="hidden" />
+      <div class="sep"></div>
+      <div class="hint">手机直接点按钮即可；电脑可用 <b>空格</b>显示意思，<b>1/2/3</b>标记会/模糊/忘了。</div>
+    </aside>
+  </div>
+</div>
+<script src="data1.js"></script>
+<script src="data2.js"></script>
+<script src="data3.js"></script>
+<script src="data4.js"></script>
+<script src="data5.js"></script>
+<script src="data6.js"></script>
+<script src="data7.js"></script>
+<script src="data8.js"></script>
+<script src="data9.js"></script>
+<script src="groups.js"></script>
+<script src="app.js"></script>
+</body></html>
