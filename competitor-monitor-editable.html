@@ -6,7 +6,7 @@
 <title>重点竞品监控清单 · 可编辑版</title>
 <style>
 :root{--bg:#f5f7fb;--card:#fff;--text:#1c2536;--muted:#788395;--line:#e6ebf2;--blue:#3974f6;--blue-soft:#edf4ff;--green:#239f69;--green-soft:#eaf8f1;--red:#e34d58;--red-soft:#fff0f2;--amber:#d99000;--amber-soft:#fff6df;--purple:#7158c9;--purple-soft:#f2efff}
-*{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;color:var(--text)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;color:var(--text)}
 .page{max-width:1680px;margin:0 auto;padding:30px 36px 48px}.top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:20px}.top-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 h1{font-size:28px;line-height:1.2;margin:0 0 8px;font-weight:800}.sub{font-size:14px;color:var(--muted)}.update,.status{font-size:13px;color:#657083;background:white;border:1px solid var(--line);padding:9px 13px;border-radius:9px;white-space:nowrap}.status.ok{color:var(--green);background:var(--green-soft)}.status.warn{color:#a56a00;background:#fff8e8}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px rgba(39,54,85,.05);overflow:hidden}.card-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid var(--line)}.title{font-size:19px;font-weight:800}.meta{display:flex;align-items:center;gap:10px;color:#7b8596;font-size:13px}.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 11px;color:#5f6a7b;font-size:13px;cursor:pointer}.btn:hover{background:#f8fafc}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.small{padding:5px 9px;font-size:12px}
@@ -23,72 +23,57 @@ input,select,textarea{width:100%;border:1px solid #dfe5ec;border-radius:7px;padd
   </div>
   <div id="setupHint" class="setup"></div>
   <section class="card">
-    <div class="card-head">
-      <div class="title">1. 上线竞品</div>
-      <div class="meta"><span id="countText">当前关注 18 款</span><button class="btn primary" id="addBtn">＋ 新增竞品</button></div>
-    </div>
-    <div class="table-wrap">
-      <table><thead><tr><th>竞品名字</th><th>服务类型</th><th>关注原因</th><th>是否关注</th><th>关注等级</th><th>时间</th><th>备注</th><th>操作</th></tr></thead><tbody id="tbody"></tbody></table>
-    </div>
-    <div class="note-bar">任何打开页面的人都可以编辑并保存；备注可填写“已测试，无需再看”“等待下一测试”等信息。保存后所有人看到同一份数据。</div>
+    <div class="card-head"><div class="title">1. 上线竞品</div><div class="meta"><span id="countText">当前关注 -- 款</span><button class="btn primary" id="addBtn">＋ 新增竞品</button></div></div>
+    <div class="table-wrap"><table><thead><tr><th>竞品名字</th><th>服务类型</th><th>关注原因</th><th>是否关注</th><th>关注等级</th><th>时间</th><th>备注</th><th>操作</th></tr></thead><tbody id="tbody"></tbody></table></div>
+    <div class="note-bar">保存后所有人看到同一份数据；列表会按 S → A → B+ → B → C 自动排序。</div>
   </section>
 </div>
-
 <div id="modalBackdrop" class="modal-backdrop"><div class="modal"><h2>新增竞品</h2><div class="grid">
   <div class="field"><label>竞品名字</label><input id="m_game_name"></div>
   <div class="field"><label>服务大类</label><select id="m_service_group"><option>蛋仔</option><option>模拟经营</option><option>王牌竞速</option><option>综合参考</option></select></div>
   <div class="field"><label>服务类型</label><input id="m_service_type" placeholder="如：多人恐怖 / 撤离"></div>
-  <div class="field"><label>关注等级</label><select id="m_level"><option>S</option><option selected>A</option><option>B+</option><option>B</option><option>C</option></select></div>
+  <div class="field"><label>关注等级</label><select id="m_level" translate="no"><option>S</option><option selected>A</option><option>B+</option><option>B</option><option>C</option></select></div>
   <div class="field full"><label>关注原因</label><textarea id="m_reason"></textarea></div>
   <div class="field"><label>是否关注</label><select id="m_focus"><option value="true">关注</option><option value="false">不关注</option></select></div>
   <div class="field"><label>时间</label><input id="m_event_time" value="下一节点未公布"></div>
   <div class="field full"><label>备注</label><textarea id="m_note" placeholder="可留空"></textarea></div>
 </div><div class="modal-actions"><button class="btn" id="cancelAdd">取消</button><button class="btn primary" id="saveAdd">保存新增</button></div></div></div>
 <div id="toast" class="toast"></div>
-
 <script>
-const SUPABASE_URL = 'https://fzkrcnrxwvpcuexrbptz.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_bBnwtvGMze6BxiHV2m_SZg_iyUS7W_F';
-const TABLE = 'competitors';
-const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type':'application/json' };
-let rows = [];
-let editingId = null;
-
-const fallbackRows = [
-{game_name:'王者万象棋',service_group:'蛋仔',service_type:'自走棋',reason:'蛋仔已有对应自走棋玩法，可参考局内结构、养成节奏和随机事件。',focus:true,level:'S',event_time:'9/10 正式上线',note:'',sort_order:1},
-{game_name:'星布谷地',service_group:'模拟经营',service_type:'生活模拟 / 社交',reason:'米哈游生活模拟项目，重点观察种田、经营、社交和长期养成。',focus:true,level:'S',event_time:'9/20 测试｜冬季公测',note:'',sort_order:2},
-{game_name:'无限大',service_group:'综合参考',service_type:'都市开放世界',reason:'网易都市开放世界项目，市场关注度高，关注开放世界内容组织与多人体验。',focus:true,level:'S',event_time:'2027/1/15 全球上线',note:'',sort_order:3},
-{game_name:'粒粒的小人国',service_group:'模拟经营',service_type:'建造 / 社交',reason:'腾讯模拟经营、建造和社交新品，重点观察泛休闲用户体验与多人社交设计。',focus:true,level:'S',event_time:'9/22 测试',note:'',sort_order:4},
-{game_name:'伊莫',service_group:'蛋仔',service_type:'抓宠 / 开放世界',reason:'开放世界+抓宠题材，重点观察探索、收集和宠物养成体验。',focus:true,level:'S',event_time:'9/23 移动端上线',note:'',sort_order:5},
-{game_name:'蓝色星原：旅谣',service_group:'蛋仔',service_type:'抓宠 / 养成',reason:'二次元开放世界+养成收集，重点观察大世界探索和长期养成体验。',focus:true,level:'S',event_time:'9/17 测试',note:'',sort_order:6},
-{game_name:'望月',service_group:'蛋仔',service_type:'抓宠 / 开放世界',reason:'都市开放世界+抓宠+建造，重点观察探索、宠物与自由玩法结构。',focus:true,level:'S',event_time:'2026 Q4 PC测试',note:'',sort_order:7},
-{game_name:'崩坏：因缘精灵',service_group:'蛋仔',service_type:'抓宠 / 自走棋',reason:'宠物养成与自走棋结合，可参考抓宠体系和局内策略结构。',focus:true,level:'S',event_time:'下一节点未公布',note:'',sort_order:8},
-{game_name:'代号：梦核',service_group:'蛋仔',service_type:'多人恐怖 / 撤离',reason:'内部已体验测试，当前重点关注多人恐怖、探索与撤离体验。',focus:true,level:'S',event_time:'下一节点未公布',note:'',sort_order:9},
-{game_name:'Varsapura',service_group:'王牌竞速',service_type:'都市开放世界 / 载具',reason:'米哈游都市开放世界项目，重点观察城市空间、载具体验和开放世界内容组织。',focus:true,level:'A',event_time:'下一节点未公布',note:'',sort_order:10},
-{game_name:'源初之结',service_group:'综合参考',service_type:'动作 / 冒险',reason:'米哈游新项目，关注后续产品方向、玩法信息和测试节点。',focus:true,level:'A',event_time:'下一节点未公布',note:'',sort_order:11},
-{game_name:'雾海之下',service_group:'蛋仔',service_type:'多人搜打撤',reason:'网易项目，多人搜打撤方向，首曝内容外部播放表现较高。',focus:true,level:'A',event_time:'下一节点未公布',note:'',sort_order:12},
-{game_name:'闪耀吧！噜咪',service_group:'模拟经营',service_type:'抓宠 / 经营',reason:'抓宠+模拟经营，重点观察宠物养成和轻量经营循环。',focus:true,level:'A',event_time:'9/17 正式公测',note:'',sort_order:13},
-{game_name:'龙岛异兽起源',service_group:'蛋仔',service_type:'开放世界 / 生存',reason:'恐龙+开放世界生存题材，重点观察角色形态、探索和多人生态。',focus:true,level:'A',event_time:'下一节点未公布',note:'',sort_order:14},
-{game_name:'诡影藏锋',service_group:'蛋仔',service_type:'中式题材 / 搜打撤',reason:'网易项目，中式题材+搜打撤，重点观察题材包装和局内循环。',focus:true,level:'A',event_time:'下一节点未公布',note:'',sort_order:15},
-{game_name:'头号禁区',service_group:'蛋仔',service_type:'搜打撤 / MOBA',reason:'搜打撤+MOBA组合相对少见，具备较强玩法研究价值。',focus:true,level:'A',event_time:'2026 Q4 上线',note:'',sort_order:16},
-{game_name:'五星好市民',service_group:'综合参考',service_type:'多人开放世界',reason:'像素风多人开放世界，重点观察多人互动、探索和自由玩法结构。',focus:true,level:'A',event_time:'下一节点未公布',note:'',sort_order:17},
-{game_name:'代号：Lovania',service_group:'模拟经营',service_type:'种田 / 社交 / 多人',reason:'生活模拟+种田+社交方向与重点赛道相关，保留观察。',focus:true,level:'B+',event_time:'10/2–10/6 线下参展',note:'',sort_order:18}
-];
+const SUPABASE_URL='https://fzkrcnrxwvpcuexrbptz.supabase.co';
+const SUPABASE_KEY='sb_publishable_bBnwtvGMze6BxiHV2m_SZg_iyUS7W_F';
+const TABLE='competitors';
+const headers={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'};
+const LEVEL_ORDER={'S':0,'A':1,'B+':2,'B':3,'C':4};
+const GTA6_NAME='Grand Theft Auto VI';
+let rows=[];let editingId=null;let gtaSeedChecked=false;
 function esc(v=''){return String(v).replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c]))}
 function tagClass(g){return g==='模拟经营'?'sim':g==='王牌竞速'?'race':g==='综合参考'?'general':''}
 function levelClass(v){return v==='S'?'S':v==='A'?'A':v==='B+'?'Bp':'other'}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
-async function load(){
-  try{const r=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=sort_order.asc,id.asc`,{headers});if(!r.ok)throw new Error(await r.text());rows=await r.json();document.getElementById('setupHint').style.display='none';document.getElementById('syncStatus').textContent='共享数据已连接';document.getElementById('syncStatus').className='status ok';const max=rows.map(x=>x.updated_at).filter(Boolean).sort().pop();document.getElementById('updateTime').textContent='数据更新时间：'+(max?new Date(max).toLocaleString('zh-CN',{hour12:false}):'--');render();}
-  catch(e){document.getElementById('syncStatus').textContent='等待数据库初始化';document.getElementById('syncStatus').className='status warn';document.getElementById('setupHint').style.display='block';document.getElementById('setupHint').textContent='Supabase 已连接，但 competitors 表还没有初始化。运行一次初始化 SQL 后即可共享编辑。';rows=fallbackRows.map((r,i)=>({...r,id:'local-'+i}));render();}
+function sortRows(list){return [...list].sort((a,b)=>((LEVEL_ORDER[a.level]??99)-(LEVEL_ORDER[b.level]??99))||((Number(a.sort_order)||0)-(Number(b.sort_order)||0))||((Number(a.id)||0)-(Number(b.id)||0)))}
+async function ensureGta6(){
+  if(gtaSeedChecked||rows.some(r=>r.game_name===GTA6_NAME))return false;
+  gtaSeedChecked=true;
+  const obj={game_name:GTA6_NAME,service_group:'综合参考',service_type:'都市开放世界 / 载具',reason:'全球头部开放世界IP，新作临近上线，重点关注城市开放世界、载具、内容密度与市场热度。',focus:true,level:'S',event_time:'11/19 PS5 / Xbox 上线',note:'',sort_order:Math.max(0,...rows.map(x=>Number(x.sort_order)||0))+1,updated_at:new Date().toISOString()};
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`,{method:'POST',headers:{...headers,'Prefer':'return=minimal'},body:JSON.stringify(obj)});
+  return res.ok;
 }
-function render(){const tb=document.getElementById('tbody');tb.innerHTML='';rows.forEach(r=>tb.appendChild(editingId===r.id?editRow(r):viewRow(r)));document.getElementById('countText').textContent=`当前关注 ${rows.filter(r=>r.focus).length} 款`;}
-function viewRow(r){const tr=document.createElement('tr');tr.innerHTML=`<td class="game">${esc(r.game_name)}</td><td><span class="service"><span class="tag ${tagClass(r.service_group)}">${esc(r.service_group)}</span> ${esc(r.service_type)}</span></td><td class="reason">${esc(r.reason)}</td><td><span class="focus ${r.focus?'':'off'}">${r.focus?'关注':'不关注'}</span></td><td><span class="level ${levelClass(r.level)}">${esc(r.level)}</span></td><td class="time ${r.event_time==='下一节点未公布'?'pending':''}">${esc(r.event_time)}</td><td class="note-cell">${r.note?esc(r.note):'<span class="note-empty">—</span>'}</td><td><div class="actions"><button class="btn small" data-edit>编辑</button></div></td>`;tr.querySelector('[data-edit]').onclick=()=>{if(String(r.id).startsWith('local-')){toast('先运行初始化 SQL');return}editingId=r.id;render()};return tr;}
-function editRow(r){const tr=document.createElement('tr');tr.className='edit-row';tr.innerHTML=`<td><input data-k="game_name" value="${esc(r.game_name)}"></td><td><div style="display:grid;grid-template-columns:100px 1fr;gap:6px"><select data-k="service_group">${['蛋仔','模拟经营','王牌竞速','综合参考'].map(x=>`<option ${x===r.service_group?'selected':''}>${x}</option>`).join('')}</select><input data-k="service_type" value="${esc(r.service_type)}"></div></td><td><textarea data-k="reason">${esc(r.reason)}</textarea></td><td><select data-k="focus"><option value="true" ${r.focus?'selected':''}>关注</option><option value="false" ${!r.focus?'selected':''}>不关注</option></select></td><td><select data-k="level">${['S','A','B+','B','C'].map(x=>`<option ${x===r.level?'selected':''}>${x}</option>`).join('')}</select></td><td><input data-k="event_time" value="${esc(r.event_time)}"></td><td><textarea data-k="note" placeholder="如：已测试，无需再看">${esc(r.note||'')}</textarea></td><td><div class="actions"><button class="btn small primary" data-save>保存</button><button class="btn small" data-cancel>取消</button></div></td>`;tr.querySelector('[data-cancel]').onclick=()=>{editingId=null;render()};tr.querySelector('[data-save]').onclick=()=>saveRow(r,tr);return tr;}
-async function saveRow(r,tr){const obj={};tr.querySelectorAll('[data-k]').forEach(el=>obj[el.dataset.k]=el.dataset.k==='focus'?el.value==='true':el.value.trim());obj.updated_at=new Date().toISOString();const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${encodeURIComponent(r.id)}`,{method:'PATCH',headers:{...headers,'Prefer':'return=representation'},body:JSON.stringify(obj)});if(!res.ok){toast('保存失败');return}editingId=null;toast('已保存，所有人都能看到');await load();}
+async function load(){
+  try{
+    let r=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=sort_order.asc,id.asc`,{headers});if(!r.ok)throw new Error(await r.text());rows=await r.json();
+    if(await ensureGta6()){r=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=sort_order.asc,id.asc`,{headers});if(r.ok)rows=await r.json();}
+    document.getElementById('setupHint').style.display='none';document.getElementById('syncStatus').textContent='共享数据已连接';document.getElementById('syncStatus').className='status ok';
+    const max=rows.map(x=>x.updated_at).filter(Boolean).sort().pop();document.getElementById('updateTime').textContent='数据更新时间：'+(max?new Date(max).toLocaleString('zh-CN',{hour12:false}):'--');render();
+  }catch(e){document.getElementById('syncStatus').textContent='连接失败';document.getElementById('syncStatus').className='status warn';document.getElementById('setupHint').style.display='block';document.getElementById('setupHint').textContent='共享数据库连接失败，请稍后刷新。';rows=[];render();}
+}
+function render(){const tb=document.getElementById('tbody');tb.innerHTML='';sortRows(rows).forEach(r=>tb.appendChild(editingId===r.id?editRow(r):viewRow(r)));document.getElementById('countText').textContent=`当前关注 ${rows.filter(r=>r.focus).length} 款`;}
+function viewRow(r){const tr=document.createElement('tr');tr.innerHTML=`<td class="game">${esc(r.game_name)}</td><td><span class="service"><span class="tag ${tagClass(r.service_group)}">${esc(r.service_group)}</span> ${esc(r.service_type)}</span></td><td class="reason">${esc(r.reason)}</td><td><span class="focus ${r.focus?'':'off'}">${r.focus?'关注':'不关注'}</span></td><td><span class="level ${levelClass(r.level)}" translate="no">${esc(r.level)}</span></td><td class="time ${r.event_time==='下一节点未公布'?'pending':''}">${esc(r.event_time)}</td><td class="note-cell">${r.note?esc(r.note):'<span class="note-empty">—</span>'}</td><td><div class="actions"><button class="btn small" data-edit>编辑</button></div></td>`;tr.querySelector('[data-edit]').onclick=()=>{editingId=r.id;render()};return tr;}
+function editRow(r){const tr=document.createElement('tr');tr.className='edit-row';tr.innerHTML=`<td><input data-k="game_name" value="${esc(r.game_name)}"></td><td><div style="display:grid;grid-template-columns:100px 1fr;gap:6px"><select data-k="service_group">${['蛋仔','模拟经营','王牌竞速','综合参考'].map(x=>`<option ${x===r.service_group?'selected':''}>${x}</option>`).join('')}</select><input data-k="service_type" value="${esc(r.service_type)}"></div></td><td><textarea data-k="reason">${esc(r.reason)}</textarea></td><td><select data-k="focus"><option value="true" ${r.focus?'selected':''}>关注</option><option value="false" ${!r.focus?'selected':''}>不关注</option></select></td><td><select data-k="level" translate="no">${['S','A','B+','B','C'].map(x=>`<option ${x===r.level?'selected':''}>${x}</option>`).join('')}</select></td><td><input data-k="event_time" value="${esc(r.event_time)}"></td><td><textarea data-k="note" placeholder="如：已测试，无需再看">${esc(r.note||'')}</textarea></td><td><div class="actions"><button class="btn small primary" data-save>保存</button><button class="btn small" data-cancel>取消</button></div></td>`;tr.querySelector('[data-cancel]').onclick=()=>{editingId=null;render()};tr.querySelector('[data-save]').onclick=()=>saveRow(r,tr);return tr;}
+async function saveRow(r,tr){const obj={};tr.querySelectorAll('[data-k]').forEach(el=>obj[el.dataset.k]=el.dataset.k==='focus'?el.value==='true':el.value.trim());obj.updated_at=new Date().toISOString();const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${encodeURIComponent(r.id)}`,{method:'PATCH',headers:{...headers,'Prefer':'return=representation'},body:JSON.stringify(obj)});if(!res.ok){toast('保存失败');return}editingId=null;toast('已保存，并按等级自动排序');await load();}
 document.getElementById('addBtn').onclick=()=>document.getElementById('modalBackdrop').style.display='flex';
 document.getElementById('cancelAdd').onclick=()=>document.getElementById('modalBackdrop').style.display='none';
-document.getElementById('saveAdd').onclick=async()=>{const obj={game_name:m_game_name.value.trim(),service_group:m_service_group.value,service_type:m_service_type.value.trim(),reason:m_reason.value.trim(),focus:m_focus.value==='true',level:m_level.value,event_time:m_event_time.value.trim()||'下一节点未公布',note:m_note.value.trim(),sort_order:(Math.max(0,...rows.map(x=>Number(x.sort_order)||0))+1),updated_at:new Date().toISOString()};if(!obj.game_name){toast('先填竞品名字');return}const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`,{method:'POST',headers:{...headers,'Prefer':'return=representation'},body:JSON.stringify(obj)});if(!res.ok){toast('新增失败');return}document.getElementById('modalBackdrop').style.display='none';['m_game_name','m_service_type','m_reason','m_note'].forEach(id=>document.getElementById(id).value='');m_event_time.value='下一节点未公布';toast('已新增');await load();};
+document.getElementById('saveAdd').onclick=async()=>{const obj={game_name:m_game_name.value.trim(),service_group:m_service_group.value,service_type:m_service_type.value.trim(),reason:m_reason.value.trim(),focus:m_focus.value==='true',level:m_level.value,event_time:m_event_time.value.trim()||'下一节点未公布',note:m_note.value.trim(),sort_order:Math.max(0,...rows.map(x=>Number(x.sort_order)||0))+1,updated_at:new Date().toISOString()};if(!obj.game_name){toast('先填竞品名字');return}const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`,{method:'POST',headers:{...headers,'Prefer':'return=representation'},body:JSON.stringify(obj)});if(!res.ok){toast('新增失败');return}document.getElementById('modalBackdrop').style.display='none';['m_game_name','m_service_type','m_reason','m_note'].forEach(id=>document.getElementById(id).value='');m_event_time.value='下一节点未公布';toast('已新增');await load();};
 load();setInterval(()=>{if(!editingId)load()},30000);
 </script>
 </body>
