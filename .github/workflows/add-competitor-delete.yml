@@ -24,40 +24,9 @@ jobs:
           if not m: raise SystemExit('addonB64 not found')
           addon=base64.b64decode(m.group(1)).decode('utf-8')
           marker='/* competitor-delete-v1 */'
+          patch=base64.b64decode('Ci8qIGNvbXBldGl0b3ItZGVsZXRlLXYxICovCmNvbnN0IGJhc2VDb21wZXRpdG9yRWRpdFJvdz1lZGl0Um93OwplZGl0Um93PWZ1bmN0aW9uKHIpewogIGNvbnN0IHRyPWJhc2VDb21wZXRpdG9yRWRpdFJvdyhyKTsKICBjb25zdCBhY3Rpb25zPXRyLnF1ZXJ5U2VsZWN0b3IoJy5hY3Rpb25zJyk7CiAgaWYoYWN0aW9ucyYmIWFjdGlvbnMucXVlcnlTZWxlY3RvcignLmNvbXBldGl0b3ItZGVsZXRlLWJ0bicpKXsKICAgIGFjdGlvbnMuY2xhc3NMaXN0LmFkZCgnY29tcGV0aXRvci1lZGl0LWFjdGlvbnMnKTsKICAgIGNvbnN0IGRlbD1kb2N1bWVudC5jcmVhdGVFbGVtZW50KCdidXR0b24nKTsKICAgIGRlbC5jbGFzc05hbWU9J2J0biBzbWFsbCBjb21wZXRpdG9yLWRlbGV0ZS1idG4nOwogICAgZGVsLnR5cGU9J2J1dHRvbic7CiAgICBkZWwudGV4dENvbnRlbnQ9J+WIoOmZpCc7CiAgICBkZWwub25jbGljaz0oKT0+ZGVsZXRlQ29tcGV0aXRvclJvdyhyKTsKICAgIGFjdGlvbnMuYXBwZW5kQ2hpbGQoZGVsKTsKICB9CiAgcmV0dXJuIHRyOwp9Owphc3luYyBmdW5jdGlvbiBkZWxldGVDb21wZXRpdG9yUm93KHIpewogIGlmKCFyfHxyLmlkPT1udWxsKXJldHVybjsKICBpZighY29uZmlybShg56Gu5a6a5Yig6Zmk44CMJHtyLmdhbWVfbmFtZX3jgI3lkJfvvJ/liKDpmaTlkI7miYDmnInkurrpg73nnIvkuI3liLDjgIJgKSlyZXR1cm47CiAgY29uc3QgcmVzPWF3YWl0IGZldGNoKGAke1NVUEFCQVNFX1VSTH0vcmVzdC92MS8ke1RBQkxFfT9pZD1lcS4ke2VuY29kZVVSSUNvbXBvbmVudChyLmlkKX1gLHsKICAgIG1ldGhvZDonREVMRVRFJywKICAgIGhlYWRlcnM6ey4uLmhlYWRlcnMsJ1ByZWZlcic6J3JldHVybj1taW5pbWFsJ30KICB9KTsKICBpZighcmVzLm9rKXt0b2FzdCgn5Yig6Zmk5aSx6LSlJyk7cmV0dXJufQogIGVkaXRpbmdJZD1udWxsOwogIHRvYXN0KCflt7LliKDpmaQnKTsKICBhd2FpdCBsb2FkKCk7Cn0KY29uc3QgY29tcGV0aXRvckRlbGV0ZVN0eWxlPWRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ3N0eWxlJyk7CmNvbXBldGl0b3JEZWxldGVTdHlsZS50ZXh0Q29udGVudD0nLmNvbXBldGl0b3ItZWRpdC1hY3Rpb25ze2Rpc3BsYXk6Z3JpZCFpbXBvcnRhbnQ7Z3JpZC10ZW1wbGF0ZS1jb2x1bW5zOmF1dG8gYXV0bztncmlkLXRlbXBsYXRlLWFyZWFzOiJzYXZlIGRlbCIgImNhbmNlbCBkZWwiO2dhcDo2cHg7YWxpZ24taXRlbXM6c3RyZXRjaH0uY29tcGV0aXRvci1lZGl0LWFjdGlvbnMgW2RhdGEtc2F2ZV17Z3JpZC1hcmVhOnNhdmV9LmNvbXBldGl0b3ItZWRpdC1hY3Rpb25zIFtkYXRhLWNhbmNlbF17Z3JpZC1hcmVhOmNhbmNlbH0uY29tcGV0aXRvci1kZWxldGUtYnRue2dyaWQtYXJlYTpkZWw7Ym9yZGVyLWNvbG9yOiNmMGM5Y2UhaW1wb3J0YW50O2NvbG9yOiNkOTRiNTchaW1wb3J0YW50O2JhY2tncm91bmQ6I2ZmZjdmOCFpbXBvcnRhbnQ7YWxpZ24tc2VsZjpzdHJldGNofS5jb21wZXRpdG9yLWRlbGV0ZS1idG46aG92ZXJ7YmFja2dyb3VuZDojZmZmMGYyIWltcG9ydGFudH0nOwpkb2N1bWVudC5oZWFkLmFwcGVuZENoaWxkKGNvbXBldGl0b3JEZWxldGVTdHlsZSk7Cg==').decode('utf-8')
           if marker not in addon:
-              addon += r'''
-/* competitor-delete-v1 */
-const baseCompetitorEditRow=editRow;
-editRow=function(r){
-  const tr=baseCompetitorEditRow(r);
-  const actions=tr.querySelector('.actions');
-  if(actions&&!actions.querySelector('.competitor-delete-btn')){
-    actions.classList.add('competitor-edit-actions');
-    const del=document.createElement('button');
-    del.className='btn small competitor-delete-btn';
-    del.type='button';
-    del.textContent='删除';
-    del.onclick=()=>deleteCompetitorRow(r);
-    actions.appendChild(del);
-  }
-  return tr;
-};
-async function deleteCompetitorRow(r){
-  if(!r||r.id==null)return;
-  if(!confirm(`确定删除「${r.game_name}」吗？删除后所有人都看不到。`))return;
-  const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${encodeURIComponent(r.id)}`,{
-    method:'DELETE',
-    headers:{...headers,'Prefer':'return=minimal'}
-  });
-  if(!res.ok){toast('删除失败');return}
-  editingId=null;
-  toast('已删除');
-  await load();
-}
-const competitorDeleteStyle=document.createElement('style');
-competitorDeleteStyle.textContent='.competitor-edit-actions{display:grid!important;grid-template-columns:auto auto;grid-template-areas:"save del" "cancel del";gap:6px;align-items:stretch}.competitor-edit-actions [data-save]{grid-area:save}.competitor-edit-actions [data-cancel]{grid-area:cancel}.competitor-delete-btn{grid-area:del;border-color:#f0c9ce!important;color:#d94b57!important;background:#fff7f8!important;align-self:stretch}.competitor-delete-btn:hover{background:#fff0f2!important}';
-document.head.appendChild(competitorDeleteStyle);
-'''
+              addon += patch
           b64=base64.b64encode(addon.encode('utf-8')).decode('ascii')
           s=s[:m.start(1)]+b64+s[m.end(1):]
           p.write_text(s,encoding='utf-8')
