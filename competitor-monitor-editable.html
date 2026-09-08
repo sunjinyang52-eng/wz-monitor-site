@@ -30,6 +30,7 @@ input,select,textarea{width:100%;min-width:0;border:1px solid #dfe5ec;border-rad
       <a href="#section-yuanmeng"><span class="nav-dot"></span>元梦之星</a>
       <a href="#section-supernatural"><span class="nav-dot"></span>超自然行动组</a>
       <a href="#section-identityv"><span class="nav-dot"></span>第五人格</a>
+      <a href="#section-roco"><span class="nav-dot"></span>洛克王国：世界</a>
     </aside>
     <main class="content-main">
   <section class="card" id="section-competitors"><div class="card-head"><div class="title">1. 上线竞品</div><div class="meta"><span id="countText">当前关注 -- 款</span><button class="btn primary" id="addBtn">＋ 新增竞品</button></div></div><div class="table-wrap"><table><thead><tr><th>竞品名字</th><th>服务类型</th><th>关注原因</th><th>玩法链接</th><th>是否关注</th><th>关注等级</th><th>时间</th><th>备注</th><th>操作</th></tr></thead><tbody id="tbody"></tbody></table></div><div class="note-bar">按 S → A → B+ → B → C 自动排序；玩法链接可手动编辑，清空后保存即可删除；保存后所有人看到同一份数据。</div></section>
@@ -89,10 +90,20 @@ input,select,textarea{width:100%;min-width:0;border:1px solid #dfe5ec;border-rad
       <tr><td class="time">时间未定</td><td class="node-name">第五人格 ×《大理寺日志》</td><td><span class="node-type collab">重点联动</span></td><td class="node-copy">官方已确认联动，但暂未公布具体上线时间，后续继续跟踪。</td><td><span class="node-status preview">官方预告</span></td></tr>
     </tbody></table></div>
   </section>
+
+  <section class="card node-card" id="section-roco">
+    <div class="card-head"><div class="node-head-copy"><div class="title">7. 洛克王国：世界 · 版本节点 / 重点联动</div><div class="node-sub">重点看后续赛季、大版本和大型联动；官方信息与第三方爆料分状态展示。</div></div><div class="meta"><span>截至 2026/9/8</span></div></div>
+    <div class="table-wrap"><table class="node-table"><thead><tr><th>时间</th><th>节点名称</th><th>类型</th><th>重点关注</th><th>信息状态</th></tr></thead><tbody>
+      <tr><td class="time">2026/9/10</td><td class="node-name">S4「月涌狂想」</td><td><span class="node-type version">版本节点</span></td><td class="node-copy">新赛季开启并开放全新「月面」区域，关注新精灵、赛季奇遇和首领化等内容。</td><td><span class="node-status confirmed">已官宣</span></td></tr>
+      <tr><td class="time">预计 2026/11/5</td><td class="node-name">S5「圣龙宝藏」</td><td><span class="node-type version">版本节点</span></td><td class="node-copy">第三方解包/社区信息指向龙系大版本及新地图，具体内容待官方确认。</td><td><span class="node-status rumor">未证实爆料</span></td></tr>
+      <tr><td class="time">时间未定</td><td class="node-name">洛克王国：世界 × 旺旺糕饼</td><td><span class="node-type collab">重点联动</span></td><td class="node-copy">官方已确认未来会推出联动游戏外观和联名产品，但暂未公布上线时间。</td><td><span class="node-status preview">官方预告</span></td></tr>
+      <tr><td class="time">预计 S5 期间</td><td class="node-name">S5 双 IP 联动（IP未公开）</td><td><span class="node-type collab">重点联动</span></td><td class="node-copy">第三方信息称 S5 将有两项经典童年 IP 联动，目前 IP 和时间均未获官方确认。</td><td><span class="node-status rumor">未证实爆料</span></td></tr>
+    </tbody></table></div>
+  </section>
     </main>
   </div>
 </div>
-<div id="modalBackdrop" class="modal-backdrop"><div class="modal"><h2>新增竞品</h2><div class="grid"><div class="field"><label>竞品名字</label><input id="m_game_name"></div><div class="field"><label>服务大类</label><select id="m_service_group"><option>蛋仔</option><option>模拟经营</option><option>王牌竞速</option><option>综合参考</option></select></div><div class="field"><label>服务类型</label><input id="m_service_type"></div><div class="field"><label>关注等级</label><select id="m_level" translate="no" class="notranslate"><option>S</option><option selected>A</option><option>B+</option><option>B</option><option>C</option></select></div><div class="field full"><label>关注原因</label><textarea id="m_reason"></textarea></div><div class="field full"><label>玩法链接</label><input id="m_gameplay_link" placeholder="可留空；也可粘贴 B站/官网/其他实机视频链接"></div><div class="field"><label>是否关注</label><select id="m_focus"><option value="true">关注</option><option value="false">不关注</option></select></div><div class="field"><label>时间</label><input id="m_event_time" value="下一节点未公布"></div><div class="field full"><label>备注</label><textarea id="m_note" placeholder="可留空"></textarea></div></div><div class="modal-actions"><button class="btn" id="cancelAdd">取消</button><button class="btn primary" id="saveAdd">保存新增</button></div></div></div>
+<div id="modalBackdrop" class="modal-backdrop"><div class="modal"><h2>新增竞品</h2><div class="grid"><div class="field"><label>竞品名字</label><input id="m_game_name"></div><div class="field"><label>服务大类</label><select id="m_service_group"><option>蛋仔</option><option>模拟经营</option><option>王牌竞速</option><option>综合参考</option></select></div><div class="field"><label>服务类型</label><input id="m_service_type"></div><div class="field"><label>关注等级</label><select id="m_level" translate="no" class="notranslate"><option>S</option><option selected>A</option><option>B+</option><option>B</option><option>C</option></select></div><div class="field full"><label>关注原因</label><textarea id="m_reason"></textarea></div><div class="field full"><label>玩法链接</label><input id="m_gameplay_link" placeholder="可留空；也可粘贴 B站/官网/其他实机视频链接"></div><div class="field"><label>是否关注</label><select id="m_focus"><option value="true">关注</option><option value="false">不关注</option></select></div><div class="field"><label>时间</label><input id="m_event_time" value="下一节点未公布"></div><div class="field full"><label>备注</label><textarea id="m_note" placeholder="如：已测试，无需再看"></textarea></div></div><div class="modal-actions"><button class="btn" id="cancelAdd">取消</button><button class="btn primary" id="saveAdd">保存新增</button></div></div></div>
 <div id="toast" class="toast"></div>
 <script>
 const SUPABASE_URL='https://fzkrcnrxwvpcuexrbptz.supabase.co';
