@@ -1,0 +1,72 @@
+name: Add competitor delete action
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/add-competitor-delete.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Patch page
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, base64
+          p=Path('competitor-monitor-editable.html')
+          s=p.read_text(encoding='utf-8')
+          m=re.search(r"const addonB64='([^']+)';", s)
+          if not m: raise SystemExit('addonB64 not found')
+          addon=base64.b64decode(m.group(1)).decode('utf-8')
+          marker='/* competitor-delete-v1 */'
+          if marker not in addon:
+              addon += r'''
+/* competitor-delete-v1 */
+const baseCompetitorEditRow=editRow;
+editRow=function(r){
+  const tr=baseCompetitorEditRow(r);
+  const actions=tr.querySelector('.actions');
+  if(actions&&!actions.querySelector('.competitor-delete-btn')){
+    actions.classList.add('competitor-edit-actions');
+    const del=document.createElement('button');
+    del.className='btn small competitor-delete-btn';
+    del.type='button';
+    del.textContent='删除';
+    del.onclick=()=>deleteCompetitorRow(r);
+    actions.appendChild(del);
+  }
+  return tr;
+};
+async function deleteCompetitorRow(r){
+  if(!r||r.id==null)return;
+  if(!confirm(`确定删除「${r.game_name}」吗？删除后所有人都看不到。`))return;
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${encodeURIComponent(r.id)}`,{
+    method:'DELETE',
+    headers:{...headers,'Prefer':'return=minimal'}
+  });
+  if(!res.ok){toast('删除失败');return}
+  editingId=null;
+  toast('已删除');
+  await load();
+}
+const competitorDeleteStyle=document.createElement('style');
+competitorDeleteStyle.textContent='.competitor-edit-actions{display:grid!important;grid-template-columns:auto auto;grid-template-areas:"save del" "cancel del";gap:6px;align-items:stretch}.competitor-edit-actions [data-save]{grid-area:save}.competitor-edit-actions [data-cancel]{grid-area:cancel}.competitor-delete-btn{grid-area:del;border-color:#f0c9ce!important;color:#d94b57!important;background:#fff7f8!important;align-self:stretch}.competitor-delete-btn:hover{background:#fff0f2!important}';
+document.head.appendChild(competitorDeleteStyle);
+'''
+          b64=base64.b64encode(addon.encode('utf-8')).decode('ascii')
+          s=s[:m.start(1)]+b64+s[m.end(1):]
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit result
+        run: |
+          rm .github/workflows/add-competitor-delete.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add competitor-monitor-editable.html .github/workflows/add-competitor-delete.yml
+          git commit -m "Add delete action to competitor edit row"
+          git push origin main
