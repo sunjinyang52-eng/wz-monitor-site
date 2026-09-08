@@ -1,0 +1,42 @@
+from pathlib import Path
+import re, base64
+p=Path('competitor-monitor-editable.html')
+s=p.read_text(encoding='utf-8')
+m=re.search(r"const addonB64='([^']+)';",s)
+if not m: raise SystemExit('addonB64 not found')
+addon=base64.b64decode(m.group(1)).decode('utf-8')
+
+addon,n=re.subn(
+    r"function unpackNodeRecord\(r\)\{.*?\}\nfunction packNodeRecord\(name,status\)\{.*?\}\n(?=function nodeStatusClass)",
+    "function unpackNodeRecord(r){let d={name:'',status:'官方预告',deleted:false};const raw=String(r.note||'');if(raw.startsWith('[[NODEJSON]]')){try{d={...d,...JSON.parse(raw.slice(12))}}catch(e){}}return{id:r.id,key:r.game_name,time:r.event_time||'',name:d.name||'',type:r.service_type||'版本节点',focus:r.reason||'',status:d.status||'官方预告',deleted:!!d.deleted,updated_at:r.updated_at||''}}\nfunction packNodeRecord(name,status,deleted=false){return '[[NODEJSON]]'+JSON.stringify({name,status,deleted})}\n",
+    addon,count=1,flags=re.S)
+if n!=1: raise SystemExit('node record helpers target not found')
+
+render_fn="""function renderEditableNodes(){initNodeBaseRows();document.querySelectorAll('.node-card').forEach(card=>{const body=card.querySelector('.node-table tbody');if(!body)return;body.querySelectorAll('tr[data-node-added=\"1\"]').forEach(x=>x.remove());[...body.querySelectorAll('tr')].forEach(tr=>{const ov=sharedNodeRows.filter(x=>x.key===tr.dataset.nodeKey).sort((a,b)=>String(b.updated_at).localeCompare(String(a.updated_at)))[0];if(ov&&ov.deleted){tr.style.display='none';return}tr.style.display='';const d=ov||{id:'',time:tr.dataset.baseTime,name:tr.dataset.baseName,type:tr.dataset.baseType,focus:tr.dataset.baseFocus,status:tr.dataset.baseStatus};applyNodeRow(tr,d)});sharedNodeRows.filter(x=>x.key.startsWith(NODE_PREFIX+card.id+':new:')&&!x.deleted).forEach(d=>{const tr=document.createElement('tr');tr.dataset.nodeKey=d.key;tr.dataset.nodeAdded='1';tr.innerHTML='<td></td><td class=\"node-name\"></td><td></td><td class=\"node-copy\"></td><td></td>';applyNodeRow(tr,d);body.appendChild(tr)});[...body.children].sort((a,b)=>{const ta=(a.children[2]?.textContent||'').trim()==='重点联动'?1:0;const tb=(b.children[2]?.textContent||'').trim()==='重点联动'?1:0;return ta-tb}).forEach(tr=>body.appendChild(tr));const meta=card.querySelector('.card-head .meta');if(meta&&!meta.querySelector('.node-add-btn')){const b=document.createElement('button');b.className='btn small node-add-btn';b.type='button';b.textContent='＋ 新增节点';b.onclick=()=>openNodeModal(card,null);meta.appendChild(b)}})}
+"""
+addon,n=re.subn(r"function renderEditableNodes\(\)\{.*?\}\n(?=const baseRender=render;)",render_fn,addon,count=1,flags=re.S)
+if n!=1: raise SystemExit('renderEditableNodes target not found')
+
+modal_fn="""function ensureNodeModal(){if(document.getElementById('nodeModalBackdrop'))return;const box=document.createElement('div');box.id='nodeModalBackdrop';box.className='modal-backdrop';box.innerHTML='<div class=\"modal\"><h2 id=\"nodeModalTitle\">编辑节点</h2><div class=\"grid\"><div class=\"field\"><label>时间</label><input id=\"n_time\"></div><div class=\"field\"><label>节点名称</label><input id=\"n_name\"></div><div class=\"field\"><label>类型</label><select id=\"n_type\"><option>版本节点</option><option>重点联动</option></select></div><div class=\"field\"><label>信息状态</label><select id=\"n_status\"><option>已上线</option><option>已官宣</option><option>官方预告</option><option>周期预测</option><option>未证实爆料</option></select></div><div class=\"field full\"><label>重点关注</label><textarea id=\"n_focus\"></textarea></div></div><div class=\"modal-actions\"><button class=\"btn\" id=\"nodeCancel\">取消</button><button class=\"btn primary\" id=\"nodeSave\">保存</button><button class=\"btn node-delete-btn\" id=\"nodeDelete\" type=\"button\">删除此条</button></div></div>';document.body.appendChild(box);document.getElementById('nodeCancel').onclick=closeNodeModal;document.getElementById('nodeSave').onclick=saveNodeModal;document.getElementById('nodeDelete').onclick=deleteNodeModal;box.addEventListener('click',e=>{if(e.target===box)closeNodeModal()})}
+"""
+addon,n=re.subn(r"function ensureNodeModal\(\)\{.*?\}\n(?=function cardGameName)",modal_fn,addon,count=1,flags=re.S)
+if n!=1: raise SystemExit('ensureNodeModal target not found')
+
+open_fn="""function openNodeModal(card,tr){ensureNodeModal();let d={time:'',name:'',type:'版本节点',focus:'',status:'已官宣'};let key=NODE_PREFIX+card.id+':new:'+Date.now();let id=null;if(tr){d=rowDataFromDom(tr);key=tr.dataset.nodeKey;id=tr.dataset.nodeRecordId||null}nodeEditState={cardId:card.id,key,id};document.getElementById('nodeModalTitle').textContent=(tr?'编辑':'新增')+' · '+cardGameName(card);document.getElementById('n_time').value=d.time;document.getElementById('n_name').value=d.name;document.getElementById('n_type').value=d.type;document.getElementById('n_status').value=d.status;document.getElementById('n_focus').value=d.focus;document.getElementById('nodeDelete').style.display=tr?'inline-flex':'none';document.getElementById('nodeModalBackdrop').style.display='flex'}
+"""
+addon,n=re.subn(r"function openNodeModal\(card,tr\)\{.*?\}\n(?=function closeNodeModal)",open_fn,addon,count=1,flags=re.S)
+if n!=1: raise SystemExit('openNodeModal target not found')
+
+delete_fn="""async function deleteNodeModal(){if(!nodeEditState)return;if(!confirm('确定删除这条节点吗？删除后所有人都看不到。'))return;const name=document.getElementById('n_name').value.trim()||'已删除节点';const time=document.getElementById('n_time').value.trim()||'时间未定';const type=document.getElementById('n_type').value;const status=document.getElementById('n_status').value;const payload={game_name:nodeEditState.key,service_group:'综合参考',service_type:type,reason:document.getElementById('n_focus').value.trim(),focus:false,level:'C',event_time:time,note:packNodeRecord(name,status,true),updated_at:new Date().toISOString()};let url=`${SUPABASE_URL}/rest/v1/${TABLE}`;let method='POST';if(nodeEditState.id){url+=`?id=eq.${encodeURIComponent(nodeEditState.id)}`;method='PATCH'}else payload.sort_order=20000+sharedNodeRows.length;const res=await fetch(url,{method,headers:{...headers,'Prefer':'return=representation'},body:JSON.stringify(payload)});if(!res.ok){toast('删除失败');return}closeNodeModal();toast('节点已删除');await load()}
+"""
+marker='async function saveNodeModal()'
+if marker not in addon: raise SystemExit('saveNodeModal marker not found')
+addon=addon.replace(marker,delete_fn+marker,1)
+style="""const nodeDeleteStyle=document.createElement('style');nodeDeleteStyle.textContent='.node-delete-btn{border-color:#f0c9ce!important;color:#d94b57!important;background:#fff7f8!important}.node-delete-btn:hover{background:#fff0f2!important}';document.head.appendChild(nodeDeleteStyle);
+"""
+end_marker='ensureNodeModal();renderEditableNodes();'
+if end_marker not in addon: raise SystemExit('addon end marker not found')
+addon=addon.replace(end_marker,style+end_marker,1)
+b64=base64.b64encode(addon.encode('utf-8')).decode('ascii')
+s=s[:m.start(1)]+b64+s[m.end(1):]
+p.write_text(s,encoding='utf-8')
