@@ -13,61 +13,40 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Patch monitor display and snapshot rules
+      - name: Patch monitor display
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           import re,base64
-
           p=Path('competitor-monitor-editable.html')
           s=p.read_text(encoding='utf-8')
           m=re.search(r"const addonB64='([^']+)';",s)
           if not m:
               raise SystemExit('addonB64 not found')
           addon=base64.b64decode(m.group(1)).decode('utf-8')
-
           if "9/16 PC端上线 9/23 移动端上线" not in addon:
               pat=r"normalizeAndSort=function\(list\)\{sharedNodeRows=list\.filter\(isSharedNodeRecord\)\.map\(unpackNodeRecord\);return baseNormalizeAndSort\(list\.filter\(r=>!isSharedNodeRecord\(r\)\)\)\}"
               repl="normalizeAndSort=function(list){sharedNodeRows=list.filter(isSharedNodeRecord).map(unpackNodeRecord);const out=baseNormalizeAndSort(list.filter(r=>!isSharedNodeRecord(r)));out.forEach(r=>{if(r.game_name==='伊莫'&&r.event_time==='9/17 PC端上线 9/23 移动端上线')r.event_time='9/16 PC端上线 9/23 移动端上线'});return out}"
               addon,n=re.subn(pat,repl,addon,count=1)
               if n!=1:
                   raise SystemExit('normalizeAndSort patch target not found')
-
           if "d.name==='「激战金秋」版本'" not in addon:
               old="function applyNodeRow(tr,d){const c=tr.children;"
               new="function applyNodeRow(tr,d){if(d&&d.name==='「激战金秋」版本')d={...d,name:'「金秋龙狮城」版本'};const c=tr.children;"
               if old not in addon:
                   raise SystemExit('applyNodeRow patch target not found')
               addon=addon.replace(old,new,1)
-
           enc=base64.b64encode(addon.encode('utf-8')).decode('ascii')
           s=s[:m.start(1)]+enc+s[m.end(1):]
           p.write_text(s,encoding='utf-8')
-
-          w=Path('.github/workflows/refresh-monitor-snapshot.yml')
-          ws=w.read_text(encoding='utf-8')
-          marker="          node_rows=[]\n"
-          fix="          for x in competitor_out:\n              if x.get('game_name')=='伊莫' and x.get('event_time')=='9/17 PC端上线 9/23 移动端上线':\n                  x['event_time']='9/16 PC端上线 9/23 移动端上线'\n\n"
-          if "x['event_time']='9/16 PC端上线 9/23 移动端上线'" not in ws:
-              if marker not in ws:
-                  raise SystemExit('snapshot competitor patch target not found')
-              ws=ws.replace(marker,fix+marker,1)
-
-          old_append="                  shown.append(d)\n"
-          new_append="                  if d.get('name')=='「激战金秋」版本':\n                      d['name']='「金秋龙狮城」版本'\n                  shown.append(d)\n"
-          if "d['name']='「金秋龙狮城」版本'" not in ws:
-              if old_append not in ws:
-                  raise SystemExit('snapshot node patch target not found')
-              ws=ws.replace(old_append,new_append,1)
-          w.write_text(ws,encoding='utf-8')
           PY
       - name: Commit approved fixes
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add competitor-monitor-editable.html .github/workflows/refresh-monitor-snapshot.yml
+          git add competitor-monitor-editable.html
           if git diff --cached --quiet; then
             echo 'No changes needed.'
             exit 0
