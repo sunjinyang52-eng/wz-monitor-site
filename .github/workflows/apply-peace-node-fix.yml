@@ -1,0 +1,58 @@
+name: Apply approved Peace Elite node fix
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-peace-node-fix.yml'
+permissions:
+  contents: read
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update shared node
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, urllib.request, urllib.parse, datetime, re
+          from pathlib import Path
+          loader=Path('competitor-monitor-editable.html').read_text(encoding='utf-8')
+          bm=re.search(r"const base='([^']+)'",loader)
+          base_html=urllib.request.urlopen(bm.group(1),timeout=30).read().decode('utf-8')
+          url=re.search(r"const SUPABASE_URL='([^']+)'",base_html).group(1)
+          key=re.search(r"const SUPABASE_KEY='([^']+)'",base_html).group(1)
+          table=re.search(r"const TABLE='([^']+)'",base_html).group(1)
+          base=url+'/rest/v1/'+table
+          headers={'apikey':key,'Authorization':'Bearer '+key,'Content-Type':'application/json','Prefer':'return=representation'}
+          def call(u,method='GET',body=None):
+              data=None if body is None else json.dumps(body,ensure_ascii=False).encode('utf-8')
+              req=urllib.request.Request(u,data=data,method=method,headers=headers)
+              with urllib.request.urlopen(req,timeout=30) as r:
+                  text=r.read().decode('utf-8')
+                  return json.loads(text) if text else None
+          rows=call(base+'?select=*')
+          original='「激战金秋」版本'
+          node_key='__NODE_EDIT__:section-peace:base:'+urllib.parse.quote(original,safe="-_.!~*'()")
+          payload={
+              'game_name':node_key,
+              'service_group':'综合参考',
+              'service_type':'版本节点',
+              'reason':'金秋龙狮城回归，地铁逃生、超体对抗及新枪械、新载具同步更新。',
+              'focus':False,
+              'level':'C',
+              'event_time':'2026/9/2',
+              'note':'[[NODEJSON]]'+json.dumps({'name':'「金秋龙狮城」版本','status':'已上线','deleted':False},ensure_ascii=False,separators=(',',':')),
+              'sort_order':9999,
+              'updated_at':datetime.datetime.now(datetime.timezone.utc).isoformat()
+          }
+          if any(r.get('game_name')==node_key for r in rows):
+              call(base+'?game_name=eq.'+urllib.parse.quote(node_key,safe=''),'PATCH',payload)
+          else:
+              call(base,'POST',payload)
+          after=call(base+'?select=*')
+          matches=[r for r in after if r.get('game_name')==node_key]
+          if not matches or '金秋龙狮城' not in str(max(matches,key=lambda r:str(r.get('updated_at') or '')).get('note') or ''):
+              raise SystemExit('verification failed')
+          print('OK')
+          PY
