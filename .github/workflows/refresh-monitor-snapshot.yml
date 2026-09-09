@@ -1,0 +1,157 @@
+name: Refresh monitor snapshot
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh-monitor-snapshot.yml'
+      - 'refresh-monitor-snapshot.txt'
+      - 'competitor-monitor-editable.html'
+permissions:
+  contents: write
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Build readable snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          SUPABASE_URL='https://fzkrcnrxwvpcuexrbptz.supabase.co'
+          SUPABASE_KEY='sb_publishable_bBnwtvGMze6BxiHV2m_SZg_iyUS7W_F'
+          curl -fsS "$SUPABASE_URL/rest/v1/competitors?select=*" \
+            -H "apikey: $SUPABASE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_KEY" \
+            -o /tmp/rows.json
+          python - <<'PY'
+          from pathlib import Path
+          import json,re,html,urllib.parse,urllib.request
+
+          page=Path('competitor-monitor-editable.html').read_text(encoding='utf-8')
+          m=re.search(r"const base='([^']+)'",page)
+          if not m:
+              raise SystemExit('base page url not found')
+          base_url=m.group(1)
+          base_html=urllib.request.urlopen(base_url,timeout=30).read().decode('utf-8')
+          rows=json.loads(Path('/tmp/rows.json').read_text(encoding='utf-8'))
+          NODE_PREFIX='__NODE_EDIT__:'
+
+          def text_of(x):
+              x=re.sub(r'<br\s*/?>','\n',x,flags=re.I)
+              x=re.sub(r'<[^>]+>','',x)
+              return html.unescape(x).strip()
+
+          def unpack_competitor_note(raw):
+              s=str(raw or '')
+              m=re.match(r'^\[\[玩法链接:(.*?)\]\](?:\n)?',s,re.S)
+              if not m:
+                  return '',s
+              return m.group(1).strip(),s[m.end():].strip()
+
+          def is_gta(n):
+              x=re.sub(r'\s+','',str(n or '').lower())
+              return x in {'gta6','gat6','grandtheftautovi'}
+
+          def gta_score(r):
+              t=str(r.get('event_time') or '')
+              n=str(r.get('game_name') or '')
+              s=0
+              if '2026/11/19' in t:s+=5
+              if '2016/11/19' not in t:s+=2
+              if n.strip().lower()=='gta6':s+=1
+              return s
+
+          competitors=[r for r in rows if not str(r.get('game_name') or '').startswith(NODE_PREFIX)]
+          gta=[r for r in competitors if is_gta(r.get('game_name'))]
+          competitors=[r for r in competitors if not is_gta(r.get('game_name'))]
+          if gta:
+              chosen=max(gta,key=gta_score).copy()
+              chosen['game_name']='GTA6'
+              chosen['service_group']='综合参考'
+              chosen['service_type']='都市开放世界 / 载具'
+              chosen['reason']=chosen.get('reason') or '全球头部开放世界IP，新作临近上线，重点关注城市开放世界、载具、内容密度与市场热度。'
+              chosen['event_time']='2026/11/19 PS5 / Xbox Series X|S 上线'
+              chosen['level']='S'
+              competitors.append(chosen)
+          order={'S':0,'A':1,'B+':2,'B':3,'C':4}
+          competitors.sort(key=lambda r:(order.get(r.get('level'),99),int(r.get('sort_order') or 9999),int(r.get('id') or 0)))
+          competitor_out=[]
+          for r in competitors:
+              link,note=unpack_competitor_note(r.get('note'))
+              competitor_out.append({
+                  'id':r.get('id'),'game_name':r.get('game_name'),'service_group':r.get('service_group'),
+                  'service_type':r.get('service_type'),'reason':r.get('reason'),'gameplay_link':link or (r.get('gameplay_link') or ''),
+                  'focus':bool(r.get('focus')),'level':r.get('level'),'event_time':r.get('event_time'),'note':note,
+                  'updated_at':r.get('updated_at'),'sort_order':r.get('sort_order')
+              })
+
+          node_rows=[]
+          for r in rows:
+              key=str(r.get('game_name') or '')
+              if not key.startswith(NODE_PREFIX):
+                  continue
+              d={'name':'','status':'官方预告','deleted':False}
+              raw=str(r.get('note') or '')
+              if raw.startswith('[[NODEJSON]]'):
+                  try:d.update(json.loads(raw[12:]))
+                  except Exception:pass
+              node_rows.append({
+                  'id':r.get('id'),'key':key,'time':r.get('event_time') or '', 'name':d.get('name') or '',
+                  'type':r.get('service_type') or '版本节点','focus':r.get('reason') or '',
+                  'status':d.get('status') or '官方预告','deleted':bool(d.get('deleted')),'updated_at':r.get('updated_at') or ''
+              })
+          latest={}
+          for r in node_rows:
+              if r['key'] not in latest or str(r['updated_at'])>str(latest[r['key']]['updated_at']):
+                  latest[r['key']]=r
+
+          sections=[]
+          for sm in re.finditer(r'<section class="card node-card" id="([^"]+)"[^>]*>(.*?)</section>',base_html,re.S):
+              sid,block=sm.group(1),sm.group(2)
+              tm=re.search(r'<div class="title">(.*?)</div>',block,re.S)
+              title=text_of(tm.group(1)) if tm else sid
+              game=re.sub(r'^\d+\.\s*','',title).split('·')[0].strip()
+              bm=re.search(r'<tbody>(.*?)</tbody>',block,re.S)
+              if not bm:continue
+              shown=[]
+              for rm in re.finditer(r'<tr[^>]*>(.*?)</tr>',bm.group(1),re.S):
+                  cells=re.findall(r'<td[^>]*>(.*?)</td>',rm.group(1),re.S)
+                  if len(cells)<5:continue
+                  d={'time':text_of(cells[0]),'name':text_of(cells[1]),'type':text_of(cells[2]),'focus':text_of(cells[3]),'status':text_of(cells[4])}
+                  key=NODE_PREFIX+sid+':base:'+urllib.parse.quote(d['name'],safe="-_.!~*'()")
+                  ov=latest.get(key)
+                  if ov:
+                      if ov['deleted']:continue
+                      d={k:ov[k] for k in ('time','name','type','focus','status')}
+                  shown.append(d)
+              prefix=NODE_PREFIX+sid+':new:'
+              for key,ov in sorted(latest.items(),key=lambda kv:str(kv[1]['updated_at'])):
+                  if key.startswith(prefix) and not ov['deleted']:
+                      shown.append({k:ov[k] for k in ('time','name','type','focus','status')})
+              shown=sorted(enumerate(shown),key=lambda x:(1 if x[1]['type']=='重点联动' else 0,x[0]))
+              shown=[x[1] for x in shown]
+              sections.append({'id':sid,'game_name':game,'nodes':shown})
+
+          max_updated=max([str(r.get('updated_at') or '') for r in rows] or [''])
+          out={
+              'source_max_updated_at':max_updated,
+              'competitors':competitor_out,
+              'node_sections':sections
+          }
+          Path('monitor-snapshot.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+      - name: Commit snapshot if changed
+        shell: bash
+        run: |
+          if git diff --quiet -- monitor-snapshot.json 2>/dev/null && git ls-files --error-unmatch monitor-snapshot.json >/dev/null 2>&1; then
+            echo 'Snapshot unchanged.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add monitor-snapshot.json
+          git commit -m 'Refresh monitor snapshot'
+          git push origin main
