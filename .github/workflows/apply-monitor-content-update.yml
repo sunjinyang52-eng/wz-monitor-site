@@ -1,0 +1,80 @@
+name: Apply approved monitor content updates
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-monitor-content-update.yml'
+permissions:
+  contents: read
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update shared monitor data
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, urllib.request, urllib.parse, datetime, re
+          from pathlib import Path
+
+          loader=Path('competitor-monitor-editable.html').read_text(encoding='utf-8')
+          bm=re.search(r"const base='([^']+)'",loader)
+          if not bm:
+              raise SystemExit('base page url not found')
+          base_html=urllib.request.urlopen(bm.group(1),timeout=30).read().decode('utf-8')
+          um=re.search(r"const SUPABASE_URL='([^']+)'",base_html)
+          km=re.search(r"const SUPABASE_KEY='([^']+)'",base_html)
+          tm=re.search(r"const TABLE='([^']+)'",base_html)
+          if not (um and km and tm):
+              raise SystemExit('shared data config not found')
+          BASE=um.group(1)+'/rest/v1/'+tm.group(1)
+          KEY=km.group(1)
+          HEAD={'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':'return=representation'}
+
+          def req(url, method='GET', body=None):
+              data=None if body is None else json.dumps(body,ensure_ascii=False).encode('utf-8')
+              r=urllib.request.Request(url,data=data,method=method,headers=HEAD)
+              with urllib.request.urlopen(r,timeout=30) as f:
+                  raw=f.read().decode('utf-8')
+                  return json.loads(raw) if raw else None
+
+          rows=req(BASE+'?select=*')
+          now=datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+          if not any(r.get('game_name')=='伊莫' for r in rows):
+              raise SystemExit('伊莫 row not found')
+          req(BASE+'?game_name=eq.'+urllib.parse.quote('伊莫',safe=''), 'PATCH', {
+              'event_time':'9/16 PC端上线 9/23 移动端上线',
+              'updated_at':now
+          })
+
+          original='「激战金秋」版本'
+          node_key='__NODE_EDIT__:section-peace:base:'+urllib.parse.quote(original,safe="-_.!~*'()")
+          node_payload={
+              'game_name':node_key,
+              'service_group':'综合参考',
+              'service_type':'版本节点',
+              'reason':'金秋龙狮城回归，地铁逃生、超体对抗及新枪械、新载具同步更新。',
+              'gameplay_link':'',
+              'focus':False,
+              'level':'C',
+              'event_time':'2026/9/2',
+              'note':'[[NODEJSON]]'+json.dumps({'name':'「金秋龙狮城」版本','status':'已上线','deleted':False},ensure_ascii=False,separators=(',',':')),
+              'sort_order':9999,
+              'updated_at':now
+          }
+          if any(r.get('game_name')==node_key for r in rows):
+              req(BASE+'?game_name=eq.'+urllib.parse.quote(node_key,safe=''), 'PATCH', node_payload)
+          else:
+              req(BASE,'POST',node_payload)
+
+          after=req(BASE+'?select=*')
+          imo=[r for r in after if r.get('game_name')=='伊莫']
+          if not imo or imo[0].get('event_time')!='9/16 PC端上线 9/23 移动端上线':
+              raise SystemExit('伊莫 verification failed')
+          node=[r for r in after if r.get('game_name')==node_key]
+          if not node or '金秋龙狮城' not in str(max(node,key=lambda r:str(r.get('updated_at') or '')).get('note') or ''):
+              raise SystemExit('和平精英 verification failed')
+          print('OK')
+          PY
