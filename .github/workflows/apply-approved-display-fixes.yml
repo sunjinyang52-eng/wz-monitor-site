@@ -1,4 +1,4 @@
-name: Apply approved display fixes
+name: Clean temporary display fallbacks
 on:
   push:
     branches: [main]
@@ -7,13 +7,13 @@ on:
 permissions:
   contents: write
 jobs:
-  patch:
+  clean:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Patch monitor display
+      - name: Remove temporary display fallbacks
         shell: bash
         run: |
           python - <<'PY'
@@ -25,31 +25,27 @@ jobs:
           if not m:
               raise SystemExit('addonB64 not found')
           addon=base64.b64decode(m.group(1)).decode('utf-8')
-          if "9/16 PC端上线 9/23 移动端上线" not in addon:
-              pat=r"normalizeAndSort=function\(list\)\{sharedNodeRows=list\.filter\(isSharedNodeRecord\)\.map\(unpackNodeRecord\);return baseNormalizeAndSort\(list\.filter\(r=>!isSharedNodeRecord\(r\)\)\)\}"
-              repl="normalizeAndSort=function(list){sharedNodeRows=list.filter(isSharedNodeRecord).map(unpackNodeRecord);const out=baseNormalizeAndSort(list.filter(r=>!isSharedNodeRecord(r)));out.forEach(r=>{if(r.game_name==='伊莫'&&r.event_time==='9/17 PC端上线 9/23 移动端上线')r.event_time='9/16 PC端上线 9/23 移动端上线'});return out}"
-              addon,n=re.subn(pat,repl,addon,count=1)
-              if n!=1:
-                  raise SystemExit('normalizeAndSort patch target not found')
-          if "d.name==='「激战金秋」版本'" not in addon:
-              old="function applyNodeRow(tr,d){const c=tr.children;"
-              new="function applyNodeRow(tr,d){if(d&&d.name==='「激战金秋」版本')d={...d,name:'「金秋龙狮城」版本'};const c=tr.children;"
-              if old not in addon:
-                  raise SystemExit('applyNodeRow patch target not found')
-              addon=addon.replace(old,new,1)
+          patched="normalizeAndSort=function(list){sharedNodeRows=list.filter(isSharedNodeRecord).map(unpackNodeRecord);const out=baseNormalizeAndSort(list.filter(r=>!isSharedNodeRecord(r)));out.forEach(r=>{if(r.game_name==='伊莫'&&r.event_time==='9/17 PC端上线 9/23 移动端上线')r.event_time='9/16 PC端上线 9/23 移动端上线'});return out}"
+          original="normalizeAndSort=function(list){sharedNodeRows=list.filter(isSharedNodeRecord).map(unpackNodeRecord);return baseNormalizeAndSort(list.filter(r=>!isSharedNodeRecord(r)))}"
+          if patched in addon:
+              addon=addon.replace(patched,original,1)
+          patched2="function applyNodeRow(tr,d){if(d&&d.name==='「激战金秋」版本')d={...d,name:'「金秋龙狮城」版本'};const c=tr.children;"
+          original2="function applyNodeRow(tr,d){const c=tr.children;"
+          if patched2 in addon:
+              addon=addon.replace(patched2,original2,1)
           enc=base64.b64encode(addon.encode('utf-8')).decode('ascii')
           s=s[:m.start(1)]+enc+s[m.end(1):]
           p.write_text(s,encoding='utf-8')
           PY
-      - name: Commit approved fixes
+      - name: Commit cleanup
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add competitor-monitor-editable.html
           if git diff --cached --quiet; then
-            echo 'No changes needed.'
+            echo 'Nothing to clean.'
             exit 0
           fi
-          git commit -m 'Update approved competitor monitor entries'
+          git commit -m 'Remove temporary display fallbacks'
           git push origin main
