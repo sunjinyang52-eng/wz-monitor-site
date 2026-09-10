@@ -1,0 +1,133 @@
+name: Apply three day watch summary
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-three-day-watch.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Add collapsible three day watch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re,base64
+          p=Path('competitor-monitor-editable.html')
+          s=p.read_text(encoding='utf-8')
+          m=re.search(r"const addonB64='([^']+)';",s)
+          if not m:
+              raise SystemExit('addonB64 not found')
+          addon=base64.b64decode(m.group(1)).decode('utf-8')
+          marker='/* three-day-watch-v1 */'
+          if marker not in addon:
+              addon += r'''
+
+/* three-day-watch-v1 */
+(function(){
+  const style=document.createElement('style');
+  style.textContent=`
+  .watch-card{margin:0 0 16px;background:#fff;border:1px solid #e6ebf2;border-radius:14px;box-shadow:0 8px 24px rgba(39,54,85,.05);overflow:hidden}
+  .watch-head{width:100%;border:0;background:linear-gradient(180deg,#fff,#fbfcff);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;text-align:left;color:#1c2536}
+  .watch-title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.watch-title{font-size:18px;font-weight:820}.watch-desc{font-size:12px;color:#8a94a4;margin-top:4px}
+  .watch-summary{display:flex;align-items:center;gap:10px;flex:0 0 auto}.watch-count{display:inline-flex;align-items:baseline;gap:3px;padding:6px 10px;border-radius:9px;background:#f4f7fb;color:#657083;font-size:12px;font-weight:700}.watch-count b{font-size:18px;color:#20283a}.watch-toggle{font-size:12px;color:#6f7b8f;font-weight:700;white-space:nowrap}
+  .watch-body{padding:0 14px 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.watch-card.collapsed .watch-body{display:none}
+  .watch-item{border:1px solid #edf1f6;border-radius:10px;padding:11px 12px;display:flex;align-items:flex-start;gap:10px;background:#fff;cursor:pointer;transition:.15s}.watch-item:hover{border-color:#dbe4f2;transform:translateY(-1px)}
+  .watch-item.today{background:#fff8f8;border-color:#f3d7da}.watch-item.upcoming{background:#fffdf6;border-color:#f1e3ba}
+  .watch-badge{flex:0 0 auto;min-width:42px;text-align:center;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800}.watch-item.today .watch-badge{background:#ffe7e9;color:#c93d49}.watch-item.upcoming .watch-badge{background:#fff1c9;color:#a66a00}
+  .watch-main{min-width:0}.watch-name{font-size:13px;font-weight:800;color:#263044;line-height:1.45}.watch-sub{font-size:11px;color:#7f8998;margin-top:3px;line-height:1.45}.watch-empty{grid-column:1/-1;padding:14px;border-radius:10px;background:#fafbfd;color:#9aa3b2;font-size:13px;text-align:center}
+  @media(max-width:900px){.watch-body{grid-template-columns:1fr}.watch-head{align-items:flex-start}.watch-summary{margin-top:1px}}
+  `;
+  document.head.appendChild(style);
+
+  const panel=document.createElement('section');
+  panel.id='threeDayWatch';
+  panel.className='watch-card';
+  panel.innerHTML=`<button class="watch-head" type="button" aria-expanded="true"><div><div class="watch-title-row"><div class="watch-title">近3天重点关注</div><div id="watchRange" class="watch-desc">今天 + 未来2天</div></div><div class="watch-desc">自动汇总清单里即将发生的竞品上线、赛季、版本和重点联动</div></div><div class="watch-summary"><span class="watch-count">共 <b id="watchCount">0</b> 项</span><span id="watchToggle" class="watch-toggle">收起 ▲</span></div></button><div id="watchBody" class="watch-body"></div>`;
+  const anchor=document.querySelector('.content-layout');
+  if(anchor) anchor.before(panel);
+
+  function dayStart(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
+  function parseWatchDate(text,now){
+    const s=String(text||'').trim();
+    if(!s || /^至\s*/.test(s)) return null;
+    let m=s.match(/(20\d{2})\s*[\/.-]\s*(\d{1,2})\s*[\/.-]\s*(\d{1,2})/);
+    if(m) return new Date(+m[1],+m[2]-1,+m[3]);
+    m=s.match(/(?:^|[^\d])(\d{1,2})\s*\/\s*(\d{1,2})(?:[^\d]|$)/);
+    if(m) return new Date(now.getFullYear(),+m[1]-1,+m[2]);
+    return null;
+  }
+  function deltaDays(d,now){return Math.round((dayStart(d)-dayStart(now))/86400000)}
+  function dayLabel(n){return n===0?'今天':n===1?'明天':'后天'}
+  function shortDate(d){return `${d.getMonth()+1}/${d.getDate()}`}
+  function renderThreeDayWatch(){
+    const now=new Date();
+    const items=[];
+    try{
+      (rows||[]).filter(r=>r&&r.focus).forEach(r=>{
+        const d=parseWatchDate(r.event_time,now);if(!d)return;
+        const delta=deltaDays(d,now);if(delta<0||delta>2)return;
+        items.push({delta,date:d,name:r.game_name,sub:`上线竞品 · ${r.event_time||''}`,target:'#section-competitors'});
+      });
+    }catch(e){}
+    document.querySelectorAll('.node-card').forEach(card=>{
+      const game=cardGameName(card);
+      card.querySelectorAll('.node-table tbody tr').forEach(tr=>{
+        if(tr.style.display==='none')return;
+        const c=tr.children;if(!c||c.length<5)return;
+        const time=(c[0].textContent||'').trim();
+        const d=parseWatchDate(time,now);if(!d)return;
+        const delta=deltaDays(d,now);if(delta<0||delta>2)return;
+        const name=(c[1].querySelector('.node-label')?.textContent||c[1].textContent||'').replace('编辑','').trim();
+        const type=(c[2].textContent||'').trim();
+        items.push({delta,date:d,name:`${game} · ${name}`,sub:`${type} · ${time}`,target:'#'+card.id});
+      });
+    });
+    items.sort((a,b)=>a.delta-b.delta||a.name.localeCompare(b.name,'zh-CN'));
+    const body=document.getElementById('watchBody');
+    const count=document.getElementById('watchCount');
+    if(!body||!count)return;
+    count.textContent=String(items.length);
+    body.innerHTML='';
+    if(!items.length){body.innerHTML='<div class="watch-empty">未来3天暂无需要特别关注的已记录节点</div>';return}
+    items.forEach(it=>{
+      const el=document.createElement('div');
+      el.className='watch-item '+(it.delta===0?'today':'upcoming');
+      el.innerHTML=`<span class="watch-badge">${dayLabel(it.delta)}</span><div class="watch-main"><div class="watch-name">${esc(it.name)}</div><div class="watch-sub">${shortDate(it.date)} · ${esc(it.sub)}</div></div>`;
+      el.onclick=()=>{const target=document.querySelector(it.target);if(target)target.scrollIntoView({behavior:'smooth',block:'start'})};
+      body.appendChild(el);
+    });
+  }
+  const head=panel.querySelector('.watch-head');
+  const toggle=document.getElementById('watchToggle');
+  const saved=localStorage.getItem('monitor-three-day-watch-collapsed')==='1';
+  if(saved){panel.classList.add('collapsed');head.setAttribute('aria-expanded','false');toggle.textContent='展开 ▼'}
+  head.onclick=()=>{const collapsed=panel.classList.toggle('collapsed');head.setAttribute('aria-expanded',collapsed?'false':'true');toggle.textContent=collapsed?'展开 ▼':'收起 ▲';localStorage.setItem('monitor-three-day-watch-collapsed',collapsed?'1':'0')};
+
+  const renderBeforeThreeDayWatch=render;
+  render=function(){renderBeforeThreeDayWatch();setTimeout(renderThreeDayWatch,0)};
+  setTimeout(renderThreeDayWatch,80);
+})();
+'''
+          enc=base64.b64encode(addon.encode('utf-8')).decode('ascii')
+          s=s[:m.start(1)]+enc+s[m.end(1):]
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit summary panel
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add competitor-monitor-editable.html
+          if git diff --cached --quiet; then
+            echo 'No changes needed.'
+            exit 0
+          fi
+          git commit -m 'Add collapsible three day watch summary'
+          git push origin main
