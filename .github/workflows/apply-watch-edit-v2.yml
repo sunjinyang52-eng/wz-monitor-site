@@ -1,0 +1,166 @@
+name: Apply watch edit v2
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-watch-edit-v2.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Patch monitor page and snapshot reader
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re,base64
+
+          p=Path('competitor-monitor-editable.html')
+          s=p.read_text(encoding='utf-8')
+          m=re.search(r"const addonB64='([^']+)';",s)
+          if not m:
+              raise SystemExit('addonB64 not found')
+          addon=base64.b64decode(m.group(1)).decode('utf-8')
+          marker='/* watch-edit-v2 */'
+          if marker not in addon:
+              old="let sharedNodeRows=[];\nlet nodeEditState=null;"
+              new="""let sharedNodeRows=[];
+let sharedWatchRows=[];
+const WATCH_PREFIX='__WATCH_EDIT__:';
+let nodeEditState=null;
+function isSharedWatchRecord(r){return String(r.game_name||'').startsWith(WATCH_PREFIX)}
+function unpackWatchRecord(r){let mode='auto';const raw=String(r.note||'');if(raw.startsWith('[[WATCHJSON]]')){try{mode=JSON.parse(raw.slice(13)).mode||'auto'}catch(e){}}let key=String(r.game_name||'').slice(WATCH_PREFIX.length);try{key=decodeURIComponent(key)}catch(e){}return{id:r.id,key,mode,updated_at:r.updated_at||''}}
+function watchOverrideFor(key){return sharedWatchRows.filter(x=>x.key===key).sort((a,b)=>String(b.updated_at).localeCompare(String(a.updated_at)))[0]||null}
+"""
+              if old not in addon: raise SystemExit('watch vars anchor not found')
+              addon=addon.replace(old,new,1)
+
+              old="normalizeAndSort=function(list){sharedNodeRows=list.filter(isSharedNodeRecord).map(unpackNodeRecord);return baseNormalizeAndSort(list.filter(r=>!isSharedNodeRecord(r)))};"
+              new="normalizeAndSort=function(list){sharedNodeRows=list.filter(isSharedNodeRecord).map(unpackNodeRecord);sharedWatchRows=list.filter(isSharedWatchRecord).map(unpackWatchRecord);return baseNormalizeAndSort(list.filter(r=>!isSharedNodeRecord(r)&&!isSharedWatchRecord(r)))};"
+              if old not in addon: raise SystemExit('normalize anchor not found')
+              addon=addon.replace(old,new,1)
+
+              old="  .watch-item.today .watch-badge{background:#ffe7e9;color:#c93d49}.watch-item.upcoming .watch-badge{background:#fff1c9;color:#a66a00}\n"
+              new=old+"  .watch-edit-btn{margin-left:auto;flex:0 0 auto;border:1px solid #dfe5ec;background:#fff;color:#6b7688;border-radius:7px;padding:4px 8px;font-size:11px;cursor:pointer}.watch-edit-btn:hover{background:#f7f9fc}.watch-restore{font-size:11px;color:#3974f6;font-weight:700;cursor:pointer;white-space:nowrap}\n"
+              if old not in addon: raise SystemExit('css anchor not found')
+              addon=addon.replace(old,new,1)
+
+              old='<span id="watchToggle" class="watch-toggle">收起 ▲</span>'
+              new='<span id="watchRestoreHidden" class="watch-restore" style="display:none">恢复隐藏</span><span id="watchToggle" class="watch-toggle">收起 ▲</span>'
+              if old not in addon: raise SystemExit('header anchor not found')
+              addon=addon.replace(old,new,1)
+
+              old="  function renderThreeDayWatch(){\n"
+              helper=r'''  let currentWatchItems=[];
+  let watchEditItem=null;
+  function watchMode(key){const ov=watchOverrideFor(key);return ov?ov.mode:'auto'}
+  async function upsertWatchMode(key,mode,quiet=false){
+    const ov=watchOverrideFor(key);
+    const payload={game_name:WATCH_PREFIX+encodeURIComponent(key),service_group:'综合参考',service_type:'关注标记',reason:'',focus:false,level:'C',event_time:'',note:'[[WATCHJSON]]'+JSON.stringify({mode}),sort_order:30000,updated_at:new Date().toISOString()};
+    let url=`${SUPABASE_URL}/rest/v1/${TABLE}`,method='POST';
+    if(ov&&ov.id){url+=`?id=eq.${encodeURIComponent(ov.id)}`;method='PATCH'}
+    const res=await fetch(url,{method,headers:{...headers,'Prefer':'return=representation'},body:JSON.stringify(payload)});
+    if(!res.ok){if(!quiet)toast('标记保存失败');return false}
+    return true;
+  }
+  function ensureWatchEditModal(){
+    if(document.getElementById('watchEditBackdrop'))return;
+    const box=document.createElement('div');box.id='watchEditBackdrop';box.className='modal-backdrop';
+    box.innerHTML='<div class="modal" style="width:min(520px,100%)"><h2>编辑顶部关注</h2><div class="field"><label>项目</label><div id="watchEditName" style="font-size:14px;font-weight:750;color:#263044;padding:4px 0 12px"></div></div><div class="field"><label>顶部标记</label><select id="watchEditMode"><option value="auto">自动（按日期）</option><option value="red">红色重点</option><option value="yellow">黄色关注</option><option value="hidden">从顶部隐藏</option></select></div><div class="modal-actions"><button class="btn" id="watchEditCancel">取消</button><button class="btn primary" id="watchEditSave">保存</button></div></div>';
+    document.body.appendChild(box);
+    document.getElementById('watchEditCancel').onclick=()=>box.style.display='none';
+    box.addEventListener('click',e=>{if(e.target===box)box.style.display='none'});
+    document.getElementById('watchEditSave').onclick=async()=>{if(!watchEditItem)return;const mode=document.getElementById('watchEditMode').value;const ok=await upsertWatchMode(watchEditItem.watchKey,mode);if(!ok)return;box.style.display='none';toast(mode==='hidden'?'已从顶部隐藏':'顶部标记已保存');await load()};
+  }
+  function openWatchEdit(item){ensureWatchEditModal();watchEditItem=item;document.getElementById('watchEditName').textContent=item.name;document.getElementById('watchEditMode').value=item.mode||'auto';document.getElementById('watchEditBackdrop').style.display='flex'}
+  async function restoreHiddenWatch(){const hidden=currentWatchItems.filter(x=>x.mode==='hidden');if(!hidden.length)return;for(const it of hidden)await upsertWatchMode(it.watchKey,'auto',true);toast('已恢复隐藏项');await load()}
+
+  function renderThreeDayWatch(){
+'''
+              if old not in addon: raise SystemExit('render function anchor not found')
+              addon=addon.replace(old,helper,1)
+
+              old="items.push({delta,date:d,name:r.game_name,sub:`上线竞品 · ${r.event_time||''}`,target:'#section-competitors'});"
+              new="items.push({delta,date:d,name:r.game_name,sub:`上线竞品 · ${r.event_time||''}`,target:'#section-competitors',watchKey:'comp:'+r.id});"
+              if old not in addon: raise SystemExit('competitor push anchor not found')
+              addon=addon.replace(old,new,1)
+
+              old="items.push({delta,date:d,name:`${game} · ${name}`,sub:`${type} · ${time}`,target:'#'+card.id});"
+              new="items.push({delta,date:d,name:`${game} · ${name}`,sub:`${type} · ${time}`,target:'#'+card.id,watchKey:'node:'+(tr.dataset.nodeKey||card.id+':'+name)});"
+              if old not in addon: raise SystemExit('node push anchor not found')
+              addon=addon.replace(old,new,1)
+
+              old="    items.sort((a,b)=>a.delta-b.delta||a.name.localeCompare(b.name,'zh-CN'));\n    const body=document.getElementById('watchBody');"
+              new="    items.sort((a,b)=>a.delta-b.delta||a.name.localeCompare(b.name,'zh-CN'));\n    items.forEach(it=>it.mode=watchMode(it.watchKey));\n    currentWatchItems=items.slice();\n    const shown=items.filter(it=>it.mode!=='hidden');\n    const hiddenCount=items.length-shown.length;\n    const restore=document.getElementById('watchRestoreHidden');if(restore){restore.style.display=hiddenCount?'inline':'none';restore.textContent=hiddenCount?`恢复隐藏(${hiddenCount})`:'恢复隐藏'}\n    const body=document.getElementById('watchBody');"
+              if old not in addon: raise SystemExit('sort anchor not found')
+              addon=addon.replace(old,new,1)
+
+              addon=addon.replace("count.textContent=String(items.length);","count.textContent=String(shown.length);",1)
+              addon=addon.replace("if(!items.length){body.innerHTML='<div class=\"watch-empty\">未来3天暂无需要特别关注的已记录节点</div>';return}","if(!shown.length){body.innerHTML='<div class=\"watch-empty\">未来3天暂无需要特别关注的已记录节点</div>';return}",1)
+              addon=addon.replace("items.forEach(it=>{\n      const el=document.createElement('div');","shown.forEach(it=>{\n      const el=document.createElement('div');",1)
+              addon=addon.replace("el.className='watch-item '+(it.delta===0?'today':'upcoming');","el.className='watch-item '+(it.mode==='red'?'today':it.mode==='yellow'?'upcoming':(it.delta===0?'today':'upcoming'));",1)
+
+              old="el.innerHTML=`<span class=\"watch-badge\">${dayLabel(it.delta)}</span><div class=\"watch-main\"><div class=\"watch-name\">${esc(it.name)}</div><div class=\"watch-sub\">${shortDate(it.date)} · ${esc(it.sub)}</div></div>`;"
+              new="el.innerHTML=`<span class=\"watch-badge\">${shortDate(it.date)}</span><div class=\"watch-main\"><div class=\"watch-name\">${esc(it.name)}</div><div class=\"watch-sub\">${esc(it.sub)}</div></div><button class=\"watch-edit-btn\" type=\"button\">编辑</button>`;"
+              if old not in addon: raise SystemExit('item html anchor not found')
+              addon=addon.replace(old,new,1)
+
+              old="el.onclick=()=>{const target=document.querySelector(it.target);if(target)target.scrollIntoView({behavior:'smooth',block:'start'})};"
+              new="const eb=el.querySelector('.watch-edit-btn');if(eb)eb.onclick=(e)=>{e.stopPropagation();openWatchEdit(it)};el.onclick=()=>{const target=document.querySelector(it.target);if(target)target.scrollIntoView({behavior:'smooth',block:'start'})};"
+              if old not in addon: raise SystemExit('item click anchor not found')
+              addon=addon.replace(old,new,1)
+
+              old="  const toggle=document.getElementById('watchToggle');\n"
+              new="  const toggle=document.getElementById('watchToggle');\n  const restoreHidden=document.getElementById('watchRestoreHidden');if(restoreHidden)restoreHidden.onclick=(e)=>{e.stopPropagation();restoreHiddenWatch()};\n"
+              if old not in addon: raise SystemExit('toggle anchor not found')
+              addon=addon.replace(old,new,1)
+
+              addon += "\n/* watch-edit-v2 */\n"
+              enc=base64.b64encode(addon.encode('utf-8')).decode('ascii')
+              s=s[:m.start(1)]+enc+s[m.end(1):]
+              p.write_text(s,encoding='utf-8')
+
+          wf=Path('.github/workflows/refresh-monitor-snapshot.yml')
+          w=wf.read_text(encoding='utf-8')
+          if "WATCH_PREFIX='__WATCH_EDIT__:'" not in w:
+              w=w.replace("          NODE_PREFIX='__NODE_EDIT__:'\n","          NODE_PREFIX='__NODE_EDIT__:'\n          WATCH_PREFIX='__WATCH_EDIT__:'\n",1)
+              w=w.replace("competitors=[r for r in rows if not str(r.get('game_name') or '').startswith(NODE_PREFIX)]","competitors=[r for r in rows if not str(r.get('game_name') or '').startswith(NODE_PREFIX) and not str(r.get('game_name') or '').startswith(WATCH_PREFIX)]",1)
+              anchor="          max_updated=max([str(r.get('updated_at') or '') for r in rows] or [''])\n"
+              insert="""          watch_latest={}
+          for r in rows:
+              key=str(r.get('game_name') or '')
+              if not key.startswith(WATCH_PREFIX):
+                  continue
+              mode='auto'
+              raw=str(r.get('note') or '')
+              if raw.startswith('[[WATCHJSON]]'):
+                  try: mode=json.loads(raw[13:]).get('mode') or 'auto'
+                  except Exception: pass
+              item={'id':r.get('id'),'key':urllib.parse.unquote(key[len(WATCH_PREFIX):]),'mode':mode,'updated_at':r.get('updated_at') or ''}
+              if item['key'] not in watch_latest or str(item['updated_at'])>str(watch_latest[item['key']]['updated_at']):
+                  watch_latest[item['key']]=item
+
+          max_updated=max([str(r.get('updated_at') or '') for r in rows] or [''])
+"""
+              if anchor not in w: raise SystemExit('snapshot max_updated anchor not found')
+              w=w.replace(anchor,insert,1)
+              w=w.replace("              'node_sections':sections\n","              'node_sections':sections,\n              'watch_overrides':list(watch_latest.values())\n",1)
+              wf.write_text(w,encoding='utf-8')
+          PY
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add competitor-monitor-editable.html .github/workflows/refresh-monitor-snapshot.yml
+          if git diff --cached --quiet; then
+            echo 'No changes needed.'
+            exit 0
+          fi
+          git commit -m 'Add shared editable watch highlights'
+          git push origin main
