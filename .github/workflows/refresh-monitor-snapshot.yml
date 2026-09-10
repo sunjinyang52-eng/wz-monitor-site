@@ -38,6 +38,7 @@ jobs:
           base_html=urllib.request.urlopen(base_url,timeout=30).read().decode('utf-8')
           rows=json.loads(Path('/tmp/rows.json').read_text(encoding='utf-8'))
           NODE_PREFIX='__NODE_EDIT__:'
+          WATCH_PREFIX='__WATCH_EDIT__:'
 
           def text_of(x):
               x=re.sub(r'<br\s*/?>','\n',x,flags=re.I)
@@ -64,7 +65,7 @@ jobs:
               if n.strip().lower()=='gta6':s+=1
               return s
 
-          competitors=[r for r in rows if not str(r.get('game_name') or '').startswith(NODE_PREFIX)]
+          competitors=[r for r in rows if not str(r.get('game_name') or '').startswith(NODE_PREFIX) and not str(r.get('game_name') or '').startswith(WATCH_PREFIX)]
           gta=[r for r in competitors if is_gta(r.get('game_name'))]
           competitors=[r for r in competitors if not is_gta(r.get('game_name'))]
           if gta:
@@ -135,11 +136,26 @@ jobs:
               shown=[x[1] for x in shown]
               sections.append({'id':sid,'game_name':game,'nodes':shown})
 
+          watch_latest={}
+          for r in rows:
+              key=str(r.get('game_name') or '')
+              if not key.startswith(WATCH_PREFIX):
+                  continue
+              mode='auto'
+              raw=str(r.get('note') or '')
+              if raw.startswith('[[WATCHJSON]]'):
+                  try:mode=json.loads(raw[13:]).get('mode') or 'auto'
+                  except Exception:pass
+              item={'id':r.get('id'),'key':urllib.parse.unquote(key[len(WATCH_PREFIX):]),'mode':mode,'updated_at':r.get('updated_at') or ''}
+              if item['key'] not in watch_latest or str(item['updated_at'])>str(watch_latest[item['key']]['updated_at']):
+                  watch_latest[item['key']]=item
+
           max_updated=max([str(r.get('updated_at') or '') for r in rows] or [''])
           out={
               'source_max_updated_at':max_updated,
               'competitors':competitor_out,
-              'node_sections':sections
+              'node_sections':sections,
+              'watch_overrides':list(watch_latest.values())
           }
           Path('monitor-snapshot.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           PY
