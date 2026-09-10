@@ -1,5 +1,5 @@
 {
-  "source_max_updated_at": "2026-09-09T03:16:54.674687+00:00",
+  "source_max_updated_at": "2026-09-10T02:12:06.025+00:00",
   "competitors": [
     {
       "id": 1,
@@ -7,12 +7,12 @@
       "service_group": "蛋仔",
       "service_type": "自走棋",
       "reason": "蛋仔已有对应自走棋玩法，可参考局内结构、养成节奏和随机事件。",
-      "gameplay_link": "",
+      "gameplay_link": "https://search.bilibili.com/all?keyword=%E7%8E%8B%E8%80%85%E4%B8%87%E8%B1%A1%E6%A3%8B%20%E5%AE%9E%E6%9C%BA%20%E7%8E%A9%E6%B3%95",
       "focus": true,
       "level": "S",
-      "event_time": "9/10 正式上线",
-      "note": "",
-      "updated_at": "2026-09-07T03:17:04.754+00:00",
+      "event_time": "2026/9/10 正式上线",
+      "note": "已上线",
+      "updated_at": "2026-09-10T02:12:06.025+00:00",
       "sort_order": 1
     },
     {
@@ -590,5 +590,6 @@
         }
       ]
     }
-  ]
+  ],
+  "watch_overrides": []
 }
