@@ -1,0 +1,42 @@
+name: Fix watch competitor jump
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-watch-competitor-jump.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Patch competitor watch jump
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re,base64
+          p=Path('competitor-monitor-editable.html')
+          s=p.read_text(encoding='utf-8')
+          m=re.search(r"const addonB64='([^']+)';",s)
+          if not m: raise SystemExit('addonB64 not found')
+          addon=base64.b64decode(m.group(1)).decode('utf-8')
+          old="el.onclick=()=>{const target=document.querySelector(it.target);if(target)target.scrollIntoView({behavior:'smooth',block:'start'})};"
+          new="el.onclick=()=>{let target=null;if(it.watchKey&&it.watchKey.startsWith('comp:')){target=[...document.querySelectorAll('#section-competitors tbody tr')].find(tr=>tr.textContent.includes(it.name))||null}if(!target)target=document.querySelector(it.target);if(target){target.scrollIntoView({behavior:'smooth',block:'center'});if(target.tagName==='TR'&&target.animate)target.animate([{backgroundColor:'#fff3b8'},{backgroundColor:''}],{duration:1400,easing:'ease-out'})}};"
+          if old not in addon: raise SystemExit('click handler anchor not found')
+          addon=addon.replace(old,new,1)
+          enc=base64.b64encode(addon.encode()).decode()
+          s=s[:m.start(1)]+enc+s[m.end(1):]
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit page
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add competitor-monitor-editable.html
+          git commit -m 'Fix watch summary competitor row jump'
+          git push origin main
