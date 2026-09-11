@@ -1,0 +1,63 @@
+name: Apply monitor updates 2026-09-11
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-monitor-updates-20260911.yml'
+permissions:
+  contents: read
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply shared monitor updates
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, urllib.request, urllib.parse, re
+          from pathlib import Path
+
+          wf=Path('.github/workflows/refresh-monitor-snapshot.yml').read_text(encoding='utf-8')
+          base_url=re.search(r"SUPABASE_URL='([^']+)'",wf).group(1)+'/rest/v1/competitors'
+          key=re.search(r"SUPABASE_KEY='([^']+)'",wf).group(1)
+          H={'apikey':key,'Authorization':'Bearer '+key,'Content-Type':'application/json','Prefer':'return=representation'}
+
+          def req(method,url,payload=None):
+              data=None if payload is None else json.dumps(payload,ensure_ascii=False).encode('utf-8')
+              r=urllib.request.Request(url,data=data,headers=H,method=method)
+              with urllib.request.urlopen(r,timeout=30) as resp:
+                  raw=resp.read().decode('utf-8')
+                  return json.loads(raw) if raw else None
+
+          def upsert_by_game_name(payload):
+              name=payload['game_name']
+              q=base_url+'?select=id,game_name&game_name=eq.'+urllib.parse.quote(name,safe='')
+              rows=req('GET',q) or []
+              if rows:
+                  req('PATCH',base_url+'?id=eq.'+str(rows[0]['id']),payload)
+              else:
+                  req('POST',base_url,payload)
+
+          upsert_by_game_name({
+              'game_name':'未眠野','service_group':'综合参考','service_type':'开放世界 / 多人合作',
+              'reason':'物理×化学双引擎与高交互开放世界，重点观察环境交互、多人协作和探索体验。',
+              'focus':True,'level':'A','event_time':'9/10–9/19 测试招募｜测试时间待公布',
+              'note':'技术保密测试招募中','sort_order':19
+          })
+
+          node_updates=[
+              ('__NODE_EDIT__:section-yuanmeng:base:%E6%96%B0%E8%B5%9B%E5%AD%A3%E3%80%8C%E5%A6%99%E7%AC%94%E7%94%9F%E8%8A%B1%E3%80%8D','2026/9/11','新赛季「妙笔生花」','版本节点','奇迹农场耕种、垂钓、建造焕新，并上线繁花奇育、元宝雨等内容，重点观察模拟经营与长期留存玩法强化。','已上线'),
+              ('__NODE_EDIT__:section-identityv:base:%E7%AC%AC%E5%9B%9B%E5%8D%81%E4%BA%94%E8%B5%9B%E5%AD%A3%E5%BC%80%E5%90%AF','2026/9/10','第四十五赛季开启','版本节点','新赛季正式切换，推理之径、排位珍宝等赛季内容同步更新。','已上线'),
+              ('__NODE_EDIT__:section-roco:base:S4%E3%80%8C%E6%9C%88%E6%B6%8C%E7%8B%82%E6%83%B3%E3%80%8D','2026/9/10','S4「月涌狂想」','版本节点','新赛季开启并开放全新「月面」区域，关注新精灵、赛季奇遇和首领化等内容。','已上线'),
+              ('__NODE_EDIT__:section-delta:base:%E7%A5%9E%E7%A7%98%E9%A2%84%E5%91%8A%E3%80%8C%E5%90%84%E4%BD%8D_____%EF%BC%8C%E5%A5%BD%E4%B9%85%E4%B8%8D%E8%A7%81%EF%BC%81%E3%80%8D','2026/9/10 起','吴彦祖联动回归｜「飞虎-彦祖」返场','重点联动','吴彦祖联动回归，「飞虎-彦祖」联动外观返场，动作、语音、头像、军牌、喷漆等内容同步回归。','已上线')
+          ]
+          for game_name,event_time,name,typ,reason,status in node_updates:
+              upsert_by_game_name({
+                  'game_name':game_name,'service_group':'综合参考','service_type':typ,'reason':reason,
+                  'focus':False,'level':'C','event_time':event_time,
+                  'note':'[[NODEJSON]]'+json.dumps({'name':name,'status':status,'deleted':False},ensure_ascii=False),
+                  'sort_order':30000
+              })
+          print('done')
+          PY
