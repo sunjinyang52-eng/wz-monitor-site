@@ -1,0 +1,85 @@
+name: Apply weekly watch summary
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-week-watch.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Change top watch from three days to this week
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re,base64
+          p=Path('competitor-monitor-editable.html')
+          s=p.read_text(encoding='utf-8')
+          m=re.search(r"const addonB64='([^']+)';",s)
+          if not m:
+              raise SystemExit('addonB64 not found')
+          addon=base64.b64decode(m.group(1)).decode('utf-8')
+
+          reps=[
+            ('近3天重点关注','本周重点关注'),
+            ('<div id="watchRange" class="watch-desc">今天 + 未来2天</div>','<div id="watchRange" class="watch-desc">本周一至周日</div>'),
+            ('自动汇总清单里即将发生的竞品上线、赛季、版本和重点联动','自动汇总本周已发生和即将发生的竞品上线、赛季、版本和重点联动'),
+            ('未来3天暂无需要特别关注的已记录节点','本周暂无需要特别关注的已记录节点')
+          ]
+          for old,new in reps:
+              if old in addon:
+                  addon=addon.replace(old,new)
+
+          old="  function dayStart(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())}\n"
+          new=old+"  function weekStartMonday(now){const d=dayStart(now);const w=d.getDay();d.setDate(d.getDate()+(w===0?-6:1-w));return d}\n"
+          if 'function weekStartMonday' not in addon:
+              if old not in addon: raise SystemExit('dayStart anchor not found')
+              addon=addon.replace(old,new,1)
+
+          old="    const now=new Date();\n    const items=[];"
+          new="    const now=new Date();\n    const weekStart=weekStartMonday(now);\n    const weekEnd=new Date(weekStart);weekEnd.setDate(weekStart.getDate()+6);\n    const rangeEl=document.getElementById('watchRange');if(rangeEl)rangeEl.textContent=`${shortDate(weekStart)}–${shortDate(weekEnd)} · 周一至周日`;\n    const items=[];"
+          if old not in addon: raise SystemExit('render now anchor not found')
+          addon=addon.replace(old,new,1)
+
+          old="const delta=deltaDays(d,now);if(delta<0||delta>2)return;"
+          new="const delta=deltaDays(d,now);if(dayStart(d)<weekStart||dayStart(d)>weekEnd)return;"
+          n=addon.count(old)
+          if n<2: raise SystemExit(f'week filter anchors found {n}')
+          addon=addon.replace(old,new)
+
+          old="el.className='watch-item '+(it.mode==='red'?'today':it.mode==='yellow'?'upcoming':(it.delta===0?'today':'upcoming'));"
+          new="el.className='watch-item '+(it.mode==='red'?'today':it.mode==='yellow'?'upcoming':(it.delta<0?'past':it.delta===0?'today':'upcoming'));"
+          if old not in addon: raise SystemExit('class anchor not found')
+          addon=addon.replace(old,new,1)
+
+          css_anchor="  .watch-item.today{background:#fff8f8;border-color:#f3d7da}.watch-item.upcoming{background:#fffdf6;border-color:#f1e3ba}\n"
+          css_add=css_anchor+"  .watch-item.past{background:#fafbfc;border-color:#e9edf2}.watch-item.past .watch-badge{background:#eef1f5;color:#7b8492}\n"
+          if '.watch-item.past{' not in addon:
+              if css_anchor not in addon: raise SystemExit('css anchor not found')
+              addon=addon.replace(css_anchor,css_add,1)
+
+          if '/* weekly-watch-v1 */' not in addon:
+              addon += '\n/* weekly-watch-v1 */\n'
+
+          enc=base64.b64encode(addon.encode('utf-8')).decode('ascii')
+          s=s[:m.start(1)]+enc+s[m.end(1):]
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit page
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add competitor-monitor-editable.html
+          if git diff --cached --quiet; then
+            echo 'No changes needed.'
+            exit 0
+          fi
+          git commit -m 'Use weekly focus window in monitor summary'
+          git push origin main
