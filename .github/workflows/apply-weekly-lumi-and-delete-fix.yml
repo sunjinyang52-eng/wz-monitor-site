@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/apply-weekly-lumi-and-delete-fix.yml'
+      - 'tools/apply_weekly_lumi_fix.py'
 permissions:
   contents: write
 jobs:
@@ -11,103 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Apply shared data and page patch
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-          import base64, json, re, urllib.parse, urllib.request
-
-          # 1) Patch page addon: weekly card shows competitor note; force delete button visible.
-          p=Path('competitor-monitor-editable.html')
-          html=p.read_text(encoding='utf-8')
-          m=re.search(r"const addonB64='([^']+)';",html)
-          if not m:
-              raise SystemExit('addonB64 not found')
-          addon=base64.b64decode(m.group(1)).decode('utf-8')
-
-          old="items.push({delta,date:d,name:r.game_name,sub:`上线竞品 · ${r.event_time||''}`,target:'#section-competitors',watchKey:'comp:'+r.id});"
-          new="const weeklyNote=visibleNote(r);items.push({delta,date:d,name:r.game_name,sub:`上线竞品 · ${r.event_time||''}${weeklyNote?' · '+weeklyNote:''}`,target:'#section-competitors',watchKey:'comp:'+r.id});"
-          if 'weekly-competitor-note-v1' not in addon:
-              if old not in addon:
-                  raise SystemExit('weekly competitor push pattern not found')
-              addon=addon.replace(old,new,1)
-              addon+='\n/* weekly-competitor-note-v1 */\n'
-
-          if 'competitor-delete-layout-v2' not in addon:
-              addon += r'''
-/* competitor-delete-layout-v2 */
-const competitorDeleteFixStyle=document.createElement('style');
-competitorDeleteFixStyle.textContent=`
-#section-competitors td:last-child{min-width:118px!important}
-.competitor-edit-actions{display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-areas:"save del" "cancel del"!important;gap:6px!important;width:100%!important;min-width:106px!important;align-items:stretch!important;overflow:visible!important}
-.competitor-edit-actions [data-save]{grid-area:save!important}
-.competitor-edit-actions [data-cancel]{grid-area:cancel!important}
-.competitor-edit-actions .competitor-delete-btn{grid-area:del!important;display:inline-flex!important;visibility:visible!important;opacity:1!important;position:static!important;align-items:center!important;justify-content:center!important;min-width:44px!important;height:auto!important;border-color:#f0c9ce!important;color:#d94b57!important;background:#fff7f8!important}
-`;
-document.head.appendChild(competitorDeleteFixStyle);
-const editRowBeforeDeleteLayoutV2=editRow;
-editRow=function(r){
-  const tr=editRowBeforeDeleteLayoutV2(r);
-  const actions=tr.querySelector('.actions');
-  if(actions){
-    actions.classList.add('competitor-edit-actions');
-    let del=actions.querySelector('.competitor-delete-btn');
-    if(!del){
-      del=document.createElement('button');
-      del.className='btn small competitor-delete-btn';
-      del.type='button';
-      del.textContent='删除';
-      del.onclick=()=>deleteCompetitorRow(r);
-      actions.appendChild(del);
-    }
-  }
-  return tr;
-};
-'''
-
-          encoded=base64.b64encode(addon.encode('utf-8')).decode('ascii')
-          html=html[:m.start(1)]+encoded+html[m.end(1):]
-          p.write_text(html,encoding='utf-8')
-
-          # 2) Update shared competitor note and pin it red in this week's watch.
-          cfg=Path('.github/workflows/refresh-monitor-snapshot.yml').read_text(encoding='utf-8')
-          supa=re.search(r"SUPABASE_URL='([^']+)'",cfg).group(1)
-          key=re.search(r"SUPABASE_KEY='([^']+)'",cfg).group(1)
-          base=supa+'/rest/v1/competitors'
-          headers={'apikey':key,'Authorization':'Bearer '+key,'Content-Type':'application/json','Prefer':'return=representation'}
-
-          def request(url, method='GET', data=None):
-              req=urllib.request.Request(url,data=(json.dumps(data,ensure_ascii=False).encode('utf-8') if data is not None else None),headers=headers,method=method)
-              with urllib.request.urlopen(req,timeout=30) as r:
-                  raw=r.read().decode('utf-8')
-                  return json.loads(raw) if raw else None
-
-          arr=request(base+'?'+urllib.parse.urlencode({'select':'*','id':'eq.13','limit':'1'}))
-          if not arr:
-              raise SystemExit('Lumi competitor id=13 not found')
-          row=arr[0]
-          summary='新官宣六大IP联动：蜜桃猫公测后上线，安妮莫S1，暹罗厘普S2，小狗蛇/鲨猫S2–S3，蔬菜精灵后续赛季。'
-          raw=str(row.get('note') or '')
-          prefix=''
-          mm=re.match(r'^(\[\[玩法链接:.*?\]\](?:\n)?)',raw,re.S)
-          if mm:
-              prefix=mm.group(1).rstrip('\n')+'\n'
-          request(base+'?'+urllib.parse.urlencode({'id':'eq.13'}),'PATCH',{'note':prefix+summary})
-
-          watch_name='__WATCH_EDIT__:'+urllib.parse.quote('comp:13',safe='')
-          warr=request(base+'?'+urllib.parse.urlencode({'select':'*','game_name':'eq.'+watch_name,'order':'updated_at.desc','limit':'1'}))
-          payload={'game_name':watch_name,'service_group':'综合参考','service_type':'关注标记','reason':'','focus':False,'level':'C','event_time':'','note':'[[WATCHJSON]]'+json.dumps({'mode':'red'},ensure_ascii=False),'sort_order':30000}
-          if warr:
-              request(base+'?'+urllib.parse.urlencode({'id':'eq.'+str(warr[0]['id'])}),'PATCH',payload)
-          else:
-              request(base,'POST',payload)
-          PY
+      - name: Apply patch
+        run: python tools/apply_weekly_lumi_fix.py
       - name: Commit page patch and refresh snapshot
         shell: bash
         run: |
-          printf 'Refresh marker for monitor snapshot. Update this file when an on-demand snapshot refresh is needed.\nLast requested refresh: 2026-09-15 10:45 CST\n' > refresh-monitor-snapshot.txt
+          printf 'Refresh marker for monitor snapshot. Update this file when an on-demand snapshot refresh is needed.\nLast requested refresh: 2026-09-15 10:50 CST\n' > refresh-monitor-snapshot.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add competitor-monitor-editable.html refresh-monitor-snapshot.txt
