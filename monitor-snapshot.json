@@ -1,5 +1,5 @@
 {
-  "source_max_updated_at": "2026-09-15T02:27:14.73906+00:00",
+  "source_max_updated_at": "2026-09-15T02:43:26.220546+00:00",
   "competitors": [
     {
       "id": 1,
@@ -193,7 +193,7 @@
       "focus": true,
       "level": "A",
       "event_time": "9/17 正式公测",
-      "note": "",
+      "note": "新官宣六大IP联动：蜜桃猫公测后上线，安妮莫S1，暹罗厘普S2，小狗蛇/鲨猫S2–S3，蔬菜精灵后续赛季。",
       "updated_at": "2026-09-07T03:06:56.241965+00:00",
       "sort_order": 13
     },
@@ -617,6 +617,12 @@
       "key": "node:__NODE_EDIT__:section-yuanmeng:base:%E6%96%B0%E8%B5%9B%E5%AD%A3%E3%80%8C%E5%A6%99%E7%AC%94%E7%94%9F%E8%8A%B1%E3%80%8D",
       "mode": "yellow",
       "updated_at": "2026-09-11T03:47:26.421+00:00"
+    },
+    {
+      "id": 32,
+      "key": "comp:13",
+      "mode": "red",
+      "updated_at": "2026-09-15T02:43:26.220546+00:00"
     }
   ]
 }
