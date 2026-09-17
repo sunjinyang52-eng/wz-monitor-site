@@ -33,6 +33,32 @@ const patch=String.raw`
   }
   if(typeof renderEditableNodes==='function') renderEditableNodes();
 })();
+
+/* yanyun-node-card-v1 */
+(function(){
+  if(document.getElementById('section-yanyun')) return;
+  const main=document.querySelector('.content-main');
+  if(!main) return;
+  const card=document.createElement('section');
+  card.className='card node-card';
+  card.id='section-yanyun';
+  card.innerHTML=
+    '<div class="card-head"><div class="node-head-copy"><div class="title">11. 燕云十六声 · 版本节点 / 重点联动</div><div class="node-sub">重点跟踪未来大版本与高体量联动；普通活动、外观和小更新不单独列节点。</div></div><div class="meta"><span>截至 2026/9/17</span></div></div>'+
+    '<div class="table-wrap"><table class="node-table"><thead><tr><th>时间</th><th>节点名称</th><th>类型</th><th>重点关注</th><th>信息状态</th></tr></thead><tbody>'+
+    '<tr><td class="time">2026/9/24</td><td class="node-name">杭州后续重磅更新</td><td><span class="node-type version">版本节点</span></td><td class="node-copy">官方预告将于 9/24 推出一系列杭州后续重磅更新，已公布全新主章剧情、平澜书院等内容；完整版本公告仍待发布，后续重点跟踪新增区域、剧情、玩法与系统调整。</td><td><span class="node-status preview">官方预告</span></td></tr>'+
+    '</tbody></table></div><div class="node-legend">当前仅保留已明确的未来大版本节点；暂不因普通品牌联动或小型活动单独新增节点。</div>';
+  main.appendChild(card);
+
+  const nav=document.querySelector('.side-nav');
+  if(nav && !nav.querySelector('a[href="#section-yanyun"]')){
+    const a=document.createElement('a');
+    a.href='#section-yanyun';
+    a.innerHTML='<span class="nav-dot"></span>燕云十六声';
+    a.addEventListener('click',()=>{nav.querySelectorAll('a').forEach(x=>x.classList.remove('active'));a.classList.add('active')});
+    nav.appendChild(a);
+  }
+  if(typeof renderEditableNodes==='function') renderEditableNodes();
+})();
 `;
 try{
   const res=await fetch(frozen,{cache:'no-store'});
