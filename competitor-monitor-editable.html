@@ -6,7 +6,7 @@
 (async()=>{
 const frozen='https://raw.githubusercontent.com/sunjinyang52-eng/wz-monitor-site/1516f9f0514e92454402abcc9f43a8d1dfcb991e/competitor-monitor-editable.html';
 const patch=String.raw`
-/* season-cycle-audit-v1 */
+/* season-cycle-audit-v2 */
 (function(){
   function findRow(sectionId,namePart){
     const sec=document.getElementById(sectionId); if(!sec) return null;
@@ -14,29 +14,41 @@ const patch=String.raw`
       const n=tr.querySelector('.node-name'); return n && n.textContent.indexOf(namePart)!==-1;
     })||null;
   }
+  function statusClass(s){return s==='已上线'||s==='已官宣'?'confirmed':s==='官方预告'?'preview':s==='周期预测'?'predicted':'rumor'}
   function patchRow(cfg){
-    const tr=findRow(cfg.section,cfg.name); if(!tr) return;
+    const tr=findRow(cfg.section,cfg.find); if(!tr) return;
     const c=tr.children; if(!c||c.length<5) return;
-    const oldTime=(c[0].textContent||'').trim();
-    const oldFocus=(c[3].textContent||'').trim();
-    if(cfg.timeFrom && cfg.timeFrom.indexOf(oldTime)!==-1){ c[0].textContent=cfg.timeTo; tr.dataset.baseTime=cfg.timeTo; }
-    if(cfg.focusFrom && cfg.focusFrom.indexOf(oldFocus)!==-1){ c[3].textContent=cfg.focusTo; tr.dataset.baseFocus=cfg.focusTo; }
+    if(cfg.time!=null){c[0].textContent=cfg.time;tr.dataset.baseTime=cfg.time}
+    if(cfg.name!=null){c[1].innerHTML='<span class="node-label">'+cfg.name+'</span>';tr.dataset.baseName=cfg.name}
+    if(cfg.focus!=null){c[3].textContent=cfg.focus;tr.dataset.baseFocus=cfg.focus}
+    if(cfg.status!=null){c[4].innerHTML='<div class="node-status-actions"><span class="node-status '+statusClass(cfg.status)+'">'+cfg.status+'</span><button class="btn small node-edit-btn" type="button">编辑</button></div>';tr.dataset.baseStatus=cfg.status;const b=c[4].querySelector('.node-edit-btn');if(b&&typeof openNodeModal==='function')b.onclick=()=>openNodeModal(tr.closest('.node-card'),tr)}
   }
-  function applySeasonAudit(){
-    patchRow({section:'section-honor',name:'S46 新赛季',focusFrom:['关注下一赛季主题、新英雄、系统调整和玩法改动。'],focusTo:'近10个完整赛季平均约90天、中位数约90.5天，整体约3个月一轮；若S45于9/24开启，则S46预测落在12/23前后，具体日期以官宣为准。'});
-    patchRow({section:'section-peace',name:'下一轮赛季切换',focusFrom:['关注新赛季主题、玩法内容及长期系统变化。'],focusTo:'近14个完整赛季平均约60.8天、中位数63天，整体约2个月一轮；若9/19完成本轮切换，则下一轮预测约11/21，具体以官宣为准。'});
-    patchRow({section:'section-supernatural',name:'下一赛季',focusFrom:['按现有赛季周期推算，关注新赛季主题、玩法和联动安排。'],focusTo:'历史波动较大：S1约246天、S2约112天、S3约168天。S1为开服首赛季、明显偏长；仅参考最近S2/S3平均约140天，则S4自7/3起下一赛季预测约11/20。该预测置信度低于其他游戏，需持续等官方预告。'});
-    patchRow({section:'section-identityv',name:'第四十六赛季',focusFrom:['按近期约70天一赛季的节奏推算，关注下一赛季主题和核心规则调整。'],focusTo:'近13个完整赛季平均约69.6天、中位数70天，整体约10周一轮；第四十五赛季已于9/10开启，据此第四十六赛季预测约11/19，具体以官宣为准。'});
-    patchRow({section:'section-delta',name:'S12 下一赛季',timeFrom:['预计 2026/11/5'],timeTo:'预计 2026/11/14',focusFrom:['按 S11 公开周期推算，下一赛季预计11月初切换，主题与具体内容尚未公布。'],focusTo:'近10个完整赛季平均约70.8天、中位数约73.5天，整体约2～2.5个月一轮；S11于9/4开启，据此S12预测约11月中旬，暂以11/14作为周期参考点，具体以官宣为准。'});
-    patchRow({section:'section-golden',name:'下一赛季',timeFrom:['预计 2026/11/5'],timeTo:'预计 2026/11月中旬–12月初',focusFrom:['第三方根据端游补丁排期推测「自然之力」约11月初结束，下一赛季主题尚未官宣。'],focusTo:'已撤销原11/5预测：该日期缺乏金铲铲手游自身周期支持。S18于8/20开启，结合金铲铲手游历史主赛季周期与TFT Set 19排期，下一赛季更稳妥地预计在11月中旬至12月初之间，具体日期待官方确认。'});
+  function removeRow(sectionId,namePart){const tr=findRow(sectionId,namePart);if(tr)tr.remove()}
+  function ensureRow(sectionId,d){
+    const sec=document.getElementById(sectionId);if(!sec||findRow(sectionId,d.name))return;
+    const body=sec.querySelector('.node-table tbody');if(!body)return;
+    const tr=document.createElement('tr');tr.dataset.auditAdded='1';
+    tr.innerHTML='<td class="time">'+d.time+'</td><td class="node-name"><span class="node-label">'+d.name+'</span></td><td><span class="node-type version">版本节点</span></td><td class="node-copy">'+d.focus+'</td><td><div class="node-status-actions"><span class="node-status '+statusClass(d.status)+'">'+d.status+'</span><button class="btn small node-edit-btn" type="button">编辑</button></div></td>';
+    body.appendChild(tr);const b=tr.querySelector('.node-edit-btn');if(b&&typeof openNodeModal==='function')b.onclick=()=>openNodeModal(sec,tr);
   }
-  applySeasonAudit();
-  setTimeout(applySeasonAudit,300);
-  setTimeout(applySeasonAudit,1200);
-  if(typeof renderEditableNodes==='function'){
-    const prev=renderEditableNodes;
-    renderEditableNodes=function(){ prev(); setTimeout(applySeasonAudit,0); };
+  function applyAudit(){
+    patchRow({section:'section-honor',find:'S45 新赛季',time:'预计 2026/9/24',name:'S45 新赛季「月照长安」',focus:'官方已公开「月照长安」赛季主题及王维、雾行千山等内容；9/24仍按历史周期作为预计切换日，具体日期以官宣为准。',status:'官方预告'});
+    patchRow({section:'section-honor',find:'S46 新赛季',focus:'近10个完整赛季平均约90天、中位数约90.5天，整体约3个月一轮；若S45于9/24开启，则S46预测落在12/23前后，具体日期以官宣为准。'});
+    patchRow({section:'section-peace',find:'下一赛季切换',time:'2026/9/19',focus:'官方已明确新赛季9/19开启，关注段位重置、赛季任务、赛季奖励和玩法调整。',status:'已官宣'});
+    patchRow({section:'section-peace',find:'下一轮赛季切换',focus:'近14个完整赛季平均约60.8天、中位数63天，整体约2个月一轮；若9/19完成本轮切换，则下一轮预测约11/21，具体以官宣为准。'});
+    patchRow({section:'section-supernatural',find:'下一赛季',time:'预计 2026/11 下旬',focus:'历史波动较大：S1约246天、S2约112天、S3约168天。仅参考最近S2/S3平均约140天，S4自7/3起推算约落在11月下旬；该预测置信度较低，需持续等待官方预告。',status:'周期预测'});
+    patchRow({section:'section-identityv',find:'第四十五赛季',time:'2026/9/10',status:'已上线'});
+    patchRow({section:'section-identityv',find:'第四十六赛季',focus:'近13个完整赛季平均约69.6天、中位数70天，整体约10周一轮；第四十五赛季已于9/10开启，据此第四十六赛季预测约11/19，具体以官宣为准。'});
+    patchRow({section:'section-roco',find:'圣龙宝藏',time:'预计 2026/11/5',name:'S5 下一赛季（爆料名「圣龙宝藏」）',focus:'S4官方周期至11/5结束，因此下一赛季窗口预计在11/5前后；「圣龙宝藏」名称、龙系大版本及新地图仍来自第三方解包/社区信息，尚未获官方确认。',status:'未证实爆料'});
+    patchRow({section:'section-golden',find:'下一赛季',time:'预计 2026/12 上旬',focus:'S18于8/20开启；结合金铲铲手游自身历史主赛季周期与TFT Set 19排期，下一主赛季更稳妥地预计在12月上旬，具体日期待官方确认。',status:'周期预测'});
+    patchRow({section:'section-delta',find:'S12 下一赛季',time:'预计 2026/11/14',focus:'近10个完整赛季平均约70.8天、中位数约73.5天，整体约2～2.5个月一轮；S11于9/4开启，据此S12预测约11月中旬，11/14仅作为周期参考点，具体以官宣为准。',status:'周期预测'});
+    removeRow('section-delta','二洲年庆');
+    patchRow({section:'section-yanyun',find:'杭州后续重磅更新',time:'2026/9/24',name:'新版本「平澜起风波」',focus:'9/24正式版本节点，包含杭州后续主章剧情、平澜书院等内容；后续继续关注新增区域、剧情、玩法与系统调整。',status:'已官宣'});
+    ensureRow('section-yimeng',{time:'时间未定',name:'经典服势力战',focus:'官方已透露经典服势力战开启预研，具体上线时间与规则尚未公布；重点关注势力对抗规则、阵营生态及是否形成长期赛季化玩法。',status:'官方预告'});
+    ensureRow('section-yimeng',{time:'2026年下半年',name:'全新「江湖邪修」体系',focus:'官方下半年规划已确认推进全新「江湖邪修」体系，具体上线时间与完整规则待后续公布；重点关注身份成长、长期养成和PVE/PVP承接。',status:'官方预告'});
   }
+  applyAudit();setTimeout(applyAudit,300);setTimeout(applyAudit,1200);
+  if(typeof renderEditableNodes==='function'){const prev=renderEditableNodes;renderEditableNodes=function(){prev();setTimeout(applyAudit,0)}}
 })();
 `;
 try{
