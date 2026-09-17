@@ -4,52 +4,48 @@
 <body style="margin:0;background:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;color:#657083"><div id="loading" style="padding:48px;text-align:center">正在加载竞品监控清单…</div>
 <script>
 (async()=>{
-const frozen='https://raw.githubusercontent.com/sunjinyang52-eng/wz-monitor-site/c755f41c15f6223ee7ecd292f044acbe0e138ed1/competitor-monitor-editable.html';
+const frozen='https://raw.githubusercontent.com/sunjinyang52-eng/wz-monitor-site/1516f9f0514e92454402abcc9f43a8d1dfcb991e/competitor-monitor-editable.html';
 const patch=String.raw`
-/* yimengjianghu-node-card-v2 */
+/* season-cycle-audit-v1 */
 (function(){
-  if(document.getElementById('section-yimeng')) return;
-  const main=document.querySelector('.content-main');
-  if(!main) return;
-  const card=document.createElement('section');
-  card.className='card node-card';
-  card.id='section-yimeng';
-  card.innerHTML=
-    '<div class="card-head"><div class="node-head-copy"><div class="title">12. 一梦江湖 · 版本节点 / 重点联动</div><div class="node-sub">重点跟踪未来大版本、系统级玩法与高体量联动；普通活动、外观和小更新不单独列节点。</div></div><div class="meta"><span>截至 2026/9/17</span></div></div>'+
-    '<div class="table-wrap"><table class="node-table"><thead><tr><th>时间</th><th>节点名称</th><th>类型</th><th>重点关注</th><th>信息状态</th></tr></thead><tbody>'+
-    '<tr><td class="time">2026/9/24</td><td class="node-name">经典服秋季特典版本「闻风觅踪」</td><td><span class="node-type version">版本节点</span></td><td class="node-copy">经典服秋季版本：全新主线、经典副本「铁衣堡」焕新、公平开荒五人模式、定剑止戈赛事及帮派系统焕新等，重点看经典服内容与多人玩法的阶段性更新。</td><td><span class="node-status confirmed">已官宣</span></td></tr>'+
-    '<tr><td class="time">2026/10/9</td><td class="node-name">平行服二周年版本「长风筵」</td><td><span class="node-type version">版本节点</span></td><td class="node-copy">平行服二周年大版本：89级永久等级上限、成长与数值体系精简；新增平行逸闻、全服海上推理事件、3V3「金戈鸣沙」、高难玩法「凌渊」及帮派玩法「悍客临门」等。</td><td><span class="node-status confirmed">已官宣</span></td></tr>'+
-    '<tr><td class="time">2026/10/9</td><td class="node-name">一梦江湖 × 丝绸之路大型文化联动</td><td><span class="node-type collab">重点联动</span></td><td class="node-copy">与中国文物交流中心合作，经典服与平行服同步，包含主题剧情、联动玩法与主题时装等内容；重点关注文化IP如何与剧情、玩法和商业化结合。</td><td><span class="node-status confirmed">已官宣</span></td></tr>'+
-    '</tbody></table></div><div class="node-legend">只保留明确的未来大版本、系统级玩法与重点联动；普通活动、外观和小更新不单独列节点。</div>';
-  main.appendChild(card);
-
-  const nav=document.querySelector('.side-nav');
-  if(nav && !nav.querySelector('a[href="#section-yimeng"]')){
-    const a=document.createElement('a');
-    a.href='#section-yimeng';
-    a.innerHTML='<span class="nav-dot"></span>一梦江湖';
-    a.addEventListener('click',()=>{nav.querySelectorAll('a').forEach(x=>x.classList.remove('active'));a.classList.add('active')});
-    nav.appendChild(a);
+  function findRow(sectionId,namePart){
+    const sec=document.getElementById(sectionId); if(!sec) return null;
+    return Array.from(sec.querySelectorAll('.node-table tbody tr')).find(function(tr){
+      const n=tr.querySelector('.node-name'); return n && n.textContent.indexOf(namePart)!==-1;
+    })||null;
   }
-  if(typeof renderEditableNodes==='function') renderEditableNodes();
+  function patchRow(cfg){
+    const tr=findRow(cfg.section,cfg.name); if(!tr) return;
+    const c=tr.children; if(!c||c.length<5) return;
+    const oldTime=(c[0].textContent||'').trim();
+    const oldFocus=(c[3].textContent||'').trim();
+    if(cfg.timeFrom && cfg.timeFrom.indexOf(oldTime)!==-1){ c[0].textContent=cfg.timeTo; tr.dataset.baseTime=cfg.timeTo; }
+    if(cfg.focusFrom && cfg.focusFrom.indexOf(oldFocus)!==-1){ c[3].textContent=cfg.focusTo; tr.dataset.baseFocus=cfg.focusTo; }
+  }
+  function applySeasonAudit(){
+    patchRow({section:'section-honor',name:'S46 新赛季',focusFrom:['关注下一赛季主题、新英雄、系统调整和玩法改动。'],focusTo:'近10个完整赛季平均约90天、中位数约90.5天，整体约3个月一轮；若S45于9/24开启，则S46预测落在12/23前后，具体日期以官宣为准。'});
+    patchRow({section:'section-peace',name:'下一轮赛季切换',focusFrom:['关注新赛季主题、玩法内容及长期系统变化。'],focusTo:'近14个完整赛季平均约60.8天、中位数63天，整体约2个月一轮；若9/19完成本轮切换，则下一轮预测约11/21，具体以官宣为准。'});
+    patchRow({section:'section-supernatural',name:'下一赛季',focusFrom:['按现有赛季周期推算，关注新赛季主题、玩法和联动安排。'],focusTo:'历史波动较大：S1约246天、S2约112天、S3约168天。S1为开服首赛季、明显偏长；仅参考最近S2/S3平均约140天，则S4自7/3起下一赛季预测约11/20。该预测置信度低于其他游戏，需持续等官方预告。'});
+    patchRow({section:'section-identityv',name:'第四十六赛季',focusFrom:['按近期约70天一赛季的节奏推算，关注下一赛季主题和核心规则调整。'],focusTo:'近13个完整赛季平均约69.6天、中位数70天，整体约10周一轮；第四十五赛季已于9/10开启，据此第四十六赛季预测约11/19，具体以官宣为准。'});
+    patchRow({section:'section-delta',name:'S12 下一赛季',timeFrom:['预计 2026/11/5'],timeTo:'预计 2026/11/14',focusFrom:['按 S11 公开周期推算，下一赛季预计11月初切换，主题与具体内容尚未公布。'],focusTo:'近10个完整赛季平均约70.8天、中位数约73.5天，整体约2～2.5个月一轮；S11于9/4开启，据此S12预测约11月中旬，暂以11/14作为周期参考点，具体以官宣为准。'});
+    patchRow({section:'section-golden',name:'下一赛季',timeFrom:['预计 2026/11/5'],timeTo:'预计 2026/12 上旬',focusFrom:['第三方根据端游补丁排期推测「自然之力」约11月初结束，下一赛季主题尚未官宣。'],focusTo:'已撤销原11/5预测：该日期缺乏金铲铲手游自身周期支持。S18于8/20开启，结合手游主赛季约4个月的历史节奏及TFT Set 19窗口，暂估12月上旬；官方尚未定档。'});
+  }
+  applySeasonAudit();
+  setTimeout(applySeasonAudit,300);
+  setTimeout(applySeasonAudit,1200);
+  if(typeof renderEditableNodes==='function'){
+    const prev=renderEditableNodes;
+    renderEditableNodes=function(){ prev(); setTimeout(applySeasonAudit,0); };
+  }
 })();
 `;
 try{
   const res=await fetch(frozen,{cache:'no-store'});
   if(!res.ok) throw new Error('基础页面加载失败 '+res.status);
   let html=await res.text();
-  const m=html.match(/const addonB64='([^']+)';/);
-  if(!m) throw new Error('未找到页面扩展模块');
-  const bin=atob(m[1]);
-  const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));
-  let addon=new TextDecoder().decode(bytes);
-  addon+='\n'+patch+'\n';
-  const outBytes=new TextEncoder().encode(addon);
-  let outBin='';
-  const chunk=0x8000;
-  for(let i=0;i<outBytes.length;i+=chunk) outBin+=String.fromCharCode(...outBytes.subarray(i,i+chunk));
-  const nextB64=btoa(outBin);
-  html=html.replace(m[0],"const addonB64='"+nextB64+"';");
+  const marker='\n`;\ntry{';
+  if(!html.includes(marker)) throw new Error('未找到扩展插入点');
+  html=html.replace(marker,'\n'+patch+marker);
   document.open();document.write(html);document.close();
 }catch(e){document.getElementById('loading').textContent='页面加载失败：'+e.message;}
 })();
