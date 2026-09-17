@@ -4,56 +4,76 @@
 <body style="margin:0;background:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;color:#657083"><div id="loading" style="padding:48px;text-align:center">正在加载竞品监控清单…</div>
 <script>
 (async()=>{
-const frozen='https://raw.githubusercontent.com/sunjinyang52-eng/wz-monitor-site/1516f9f0514e92454402abcc9f43a8d1dfcb991e/competitor-monitor-editable.html';
+const frozen='https://raw.githubusercontent.com/sunjinyang52-eng/wz-monitor-site/7aa12be73d2e32fd0cfef0a61a3d301782cb9d60/competitor-monitor-editable.html';
 const patch=String.raw`
-/* audited-node-patch-v2 */
+/* flat-node-cards-and-audit-v1 */
 (function(){
-  function findRow(sectionId,namePart){
+  function statusClass(s){return s==='已上线'||s==='已官宣'?'confirmed':s==='官方预告'?'preview':s==='周期预测'?'predicted':'rumor'}
+  function addNav(id,label){
+    const nav=document.querySelector('.side-nav');
+    if(!nav||nav.querySelector('a[href="#'+id+'"]')) return;
+    const a=document.createElement('a'); a.href='#'+id; a.innerHTML='<span class="nav-dot"></span>'+label;
+    a.addEventListener('click',()=>{nav.querySelectorAll('a').forEach(x=>x.classList.remove('active'));a.classList.add('active')}); nav.appendChild(a);
+  }
+  function addCard(id,title,sub,rows,legend){
+    if(document.getElementById(id)) return;
+    const main=document.querySelector('.content-main'); if(!main) return;
+    const card=document.createElement('section'); card.className='card node-card'; card.id=id;
+    const body=rows.map(r=>'<tr><td class="time">'+r[0]+'</td><td class="node-name">'+r[1]+'</td><td><span class="node-type '+(r[2]==='重点联动'?'collab':'version')+'">'+r[2]+'</span></td><td class="node-copy">'+r[3]+'</td><td><span class="node-status '+statusClass(r[4])+'">'+r[4]+'</span></td></tr>').join('');
+    card.innerHTML='<div class="card-head"><div class="node-head-copy"><div class="title">'+title+'</div><div class="node-sub">'+sub+'</div></div><div class="meta"><span>截至 2026/9/17</span></div></div><div class="table-wrap"><table class="node-table"><thead><tr><th>时间</th><th>节点名称</th><th>类型</th><th>重点关注</th><th>信息状态</th></tr></thead><tbody>'+body+'</tbody></table></div><div class="node-legend">'+legend+'</div>';
+    main.appendChild(card);
+  }
+  addCard('section-nishuihan','10. 逆水寒 · 版本节点 / 重点联动','重点跟踪未来大版本、大赛季与高体量联动；历史节点仅用于判断版本周期。',[
+    ['2026/9/24','4.1.4 黄金周双节版本','版本节点','黄金周大版本集中上线：《盗墓笔记》联动冒险、双节休闲玩法焕新（你画我猜 / 行云小栈 / 萌宠对决）、承影武学更新及节庆福利。','已官宣'],
+    ['2026/9/24','逆水寒 ×《盗墓笔记》','重点联动','重磅 IP 联动随 4.1.4 开启，重点关注 IP 剧情、角色包装、玩法结合方式及联动商业化内容。','已官宣'],
+    ['预计 2026/10 下旬','4.2 新大赛季','版本节点','近两年 x.2.1 均落在10月下旬（2.2.1：2024/10/25；3.2.1：2025/10/31），据此预测4.2仍在10月下旬开启。','周期预测']
+  ],'只保留主版本/大赛季、内容量明显的次级大版本与重点联动；普通活动、外观和小更新不单独列节点。');
+  addNav('section-nishuihan','逆水寒');
+
+  addCard('section-yanyun','11. 燕云十六声 · 版本节点 / 重点联动','重点跟踪未来大版本与高体量联动；普通活动、外观和小更新不单独列节点。',[
+    ['2026/9/24','新版本「平澜起风波」','版本节点','官方已公布9/24新版本「平澜起风波」，重点关注杭州后续主章剧情、平澜书院及新增玩法与系统调整。','已官宣']
+  ],'当前仅保留已明确的未来大版本节点；普通品牌联动或小型活动不单独新增节点。');
+  addNav('section-yanyun','燕云十六声');
+
+  addCard('section-yimeng','12. 一梦江湖 · 版本节点 / 重点联动','重点跟踪未来大版本、系统级玩法与高体量联动；重要的官方预研内容也提前保留。',[
+    ['2026/9/24','经典服秋季特典版本「闻风觅踪」','版本节点','经典服秋季版本：全新主线、经典副本「铁衣堡」焕新、公平开荒五人模式、定剑止戈赛事及帮派系统焕新等。','已官宣'],
+    ['2026/10/9','平行服二周年版本「长风筵」','版本节点','89级永久等级上限、成长与数值体系精简；新增平行逸闻、全服海上推理事件、3V3「金戈鸣沙」、高难玩法「凌渊」及帮派玩法「悍客临门」等。','已官宣'],
+    ['2026/10/9','一梦江湖 × 丝绸之路大型文化联动','重点联动','与中国文物交流中心合作，经典服与平行服同步，包含主题剧情、联动玩法与主题时装等内容。','已官宣'],
+    ['时间未定','经典服势力战','版本节点','官方已透露经典服势力战开启预研，具体上线时间与规则尚未公布；重点关注势力对抗规则与长期阵营生态。','官方预告'],
+    ['2026年下半年','全新「江湖邪修」体系','版本节点','官方下半年规划已公开该体系，具体上线日期与完整规则待后续公布。','官方预告']
+  ],'已定档内容标已官宣；官方已透露但日期或细节未完整公布的重大内容标官方预告；普通活动、外观和小更新不单独列节点。');
+  addNav('section-yimeng','一梦江湖');
+
+  function findRow(sectionId,matcher){
     const sec=document.getElementById(sectionId); if(!sec) return null;
-    return Array.from(sec.querySelectorAll('.node-table tbody tr')).find(function(tr){
-      const n=tr.querySelector('.node-name'); return n && n.textContent.indexOf(namePart)!==-1;
-    })||null;
+    return Array.from(sec.querySelectorAll('.node-table tbody tr')).find(tr=>{const n=tr.querySelector('.node-name,.node-label');return n&&matcher((n.textContent||'').trim())})||null;
   }
-  function statusClass(s){ return s==='已上线'||s==='已官宣'?'confirmed':s==='官方预告'?'preview':s==='周期预测'?'predicted':'rumor'; }
-  function setStatus(td,s){ td.innerHTML='<span class="node-status '+statusClass(s)+'">'+s+'</span>'; }
-  function updateRow(section,namePart,cfg){
-    const tr=findRow(section,namePart); if(!tr) return null;
-    const c=tr.children; if(c.length<5) return tr;
-    if(cfg.time!==undefined){ c[0].textContent=cfg.time; tr.dataset.baseTime=cfg.time; }
-    if(cfg.name!==undefined){ c[1].innerHTML='<span class="node-label">'+cfg.name+'</span>'; tr.dataset.baseName=cfg.name; }
-    if(cfg.focus!==undefined){ c[3].textContent=cfg.focus; tr.dataset.baseFocus=cfg.focus; }
-    if(cfg.status!==undefined){ setStatus(c[4],cfg.status); tr.dataset.baseStatus=cfg.status; }
-    return tr;
+  function setRow(sectionId,matcher,d){
+    const tr=findRow(sectionId,matcher); if(!tr) return; const c=tr.children; if(!c||c.length<5) return;
+    if(d.time!==undefined){c[0].textContent=d.time;tr.dataset.baseTime=d.time}
+    if(d.name!==undefined){c[1].innerHTML='<span class="node-label">'+d.name+'</span>';tr.dataset.baseName=d.name}
+    if(d.focus!==undefined){c[3].textContent=d.focus;tr.dataset.baseFocus=d.focus}
+    if(d.status!==undefined){c[4].innerHTML='<span class="node-status '+statusClass(d.status)+'">'+d.status+'</span>';tr.dataset.baseStatus=d.status}
   }
-  function removeRow(section,namePart){ const tr=findRow(section,namePart); if(tr) tr.remove(); }
-  function addRow(section,cfg){
-    const sec=document.getElementById(section); if(!sec || findRow(section,cfg.name)) return;
-    const body=sec.querySelector('.node-table tbody'); if(!body) return;
-    const tr=document.createElement('tr'); tr.dataset.nodeAdded='1';
-    const typeClass=cfg.type==='重点联动'?'collab':'version';
-    tr.innerHTML='<td class="time">'+cfg.time+'</td><td class="node-name"><span class="node-label">'+cfg.name+'</span></td><td><span class="node-type '+typeClass+'">'+cfg.type+'</span></td><td class="node-copy">'+cfg.focus+'</td><td></td>';
-    setStatus(tr.children[4],cfg.status); body.appendChild(tr);
+  function applyAudit(){
+    setRow('section-honor',n=>n.indexOf('S45')!==-1,{time:'预计 2026/9/24',name:'S45 新赛季「月照长安」',focus:'官方已公开「月照长安」赛季主题及王维、雾行千山等内容；9/24仍按历史周期作为预计切换日，具体日期以官宣为准。',status:'官方预告'});
+    setRow('section-honor',n=>n.indexOf('S46')!==-1,{focus:'近10个完整赛季平均约90天、中位数约90.5天，整体约3个月一轮；若S45于9/24开启，则S46预测落在12/23前后，具体日期以官宣为准。'});
+    setRow('section-peace',n=>n==='下一赛季切换',{time:'2026/9/19',focus:'官方已明确新赛季9/19开启，关注段位重置、赛季任务、赛季奖励和玩法调整。',status:'已官宣'});
+    setRow('section-peace',n=>n==='下一轮赛季切换',{focus:'近14个完整赛季平均约60.8天、中位数63天，整体约2个月一轮；若9/19完成本轮切换，则下一轮预测约11/21，具体以官宣为准。'});
+    setRow('section-supernatural',n=>n==='下一赛季',{time:'预计 2026/11月下旬',focus:'历史波动较大：S1约246天、S2约112天、S3约168天。剔除明显偏长的首赛季后，仅参考S2/S3平均约140天，S4自7/3起下一赛季大致落在11月下旬；该预测置信度较低。',status:'周期预测'});
+    setRow('section-identityv',n=>n.indexOf('第四十五赛季')!==-1,{status:'已上线'});
+    setRow('section-identityv',n=>n.indexOf('第四十六赛季')!==-1,{focus:'近13个完整赛季平均约69.6天、中位数70天，整体约10周一轮；第四十五赛季9/10开启，据此第四十六赛季预测约11/19，具体以官宣为准。'});
+    setRow('section-roco',n=>n.indexOf('圣龙宝藏')!==-1||n.indexOf('S5 下一赛季')!==-1,{time:'预计 2026/11/5',name:'S5 下一赛季（爆料名「圣龙宝藏」）',focus:'11/5来自S4官方赛季结束时间；「圣龙宝藏」、龙系大版本及新地图仍为第三方解包/社区爆料，S5正式名称与内容待官方确认。',status:'未证实爆料'});
+    setRow('section-golden',n=>n==='下一赛季',{time:'预计 2026/12月上旬',focus:'S18于8/20开启；结合金铲铲手游历史主赛季约4个月节奏及TFT Set 19赛事窗口，下一赛季暂预计12月上旬，具体日期待官方确认。',status:'周期预测'});
+    setRow('section-delta',n=>n.indexOf('S12')!==-1,{time:'预计 2026/11/14',focus:'近10个完整赛季平均约70.8天、中位数约73.5天，整体约2～2.5个月一轮；S11于9/4开启，据此S12预测约11月中旬，暂以11/14作为周期参考点。',status:'周期预测'});
+    const ann=findRow('section-delta',n=>n.indexOf('二洲年庆')!==-1); if(ann) ann.remove();
   }
-  function apply(){
-    updateRow('section-honor','S45 新赛季',{time:'预计 2026/9/24',name:'S45 新赛季「月照长安」',focus:'官方已公开「月照长安」赛季主题及王维、雾行千山等内容；9/24仍按历史周期作为预计切换日，具体日期以官宣为准。',status:'官方预告'});
-    updateRow('section-honor','S46 新赛季',{focus:'近10个完整赛季平均约90天、中位数约90.5天，整体约3个月一轮；若S45于9/24开启，则S46预测落在12/23前后，具体日期以官宣为准。'});
-    updateRow('section-peace','下一赛季切换',{time:'2026/9/19',focus:'官方已明确新赛季9/19开启，关注段位重置、赛季任务、赛季奖励和玩法调整。',status:'已官宣'});
-    updateRow('section-peace','下一轮赛季切换',{focus:'近14个完整赛季平均约60.8天、中位数63天，整体约2个月一轮；若9/19完成本轮切换，则下一轮预测约11/21，具体以官宣为准。'});
-    updateRow('section-supernatural','下一赛季',{time:'预计 2026/11月下旬',focus:'历史波动较大：S1约246天、S2约112天、S3约168天。S1首赛季明显偏长；仅参考S2/S3平均约140天，则S4自7/3起下一赛季大致落在11月下旬。该预测置信度低，具体以官方预告为准。',status:'周期预测'});
-    updateRow('section-identityv','第四十五赛季',{status:'已上线'});
-    updateRow('section-identityv','第四十六赛季',{focus:'近13个完整赛季平均约69.6天、中位数70天，整体约10周一轮；第四十五赛季已于9/10开启，据此第四十六赛季预测约11/19，具体以官宣为准。'});
-    updateRow('section-roco','圣龙宝藏',{time:'预计 2026/11/5',name:'S5 下一赛季（爆料名「圣龙宝藏」）',focus:'S4官方周期至11/5，因此下一赛季窗口预计在11/5前后；「圣龙宝藏」名称、龙系大版本及新地图均来自第三方解包/社区信息，尚未获官方确认。',status:'未证实爆料'});
-    updateRow('section-golden','下一赛季',{time:'预计 2026/12月上旬',focus:'S18于8/20开启；结合金铲铲手游历史主赛季约4个月的节奏，以及TFT Set 19在12月赛事前上线的官方窗口，下一赛季暂估12月上旬，具体日期待金铲铲官方确认。',status:'周期预测'});
-    updateRow('section-delta','S12 下一赛季',{time:'预计 2026/11/14',focus:'近10个完整赛季平均约70.8天、中位数约73.5天，整体约2～2.5个月一轮；S11于9/4开启，据此S12预测约11月中旬，11/14仅作为周期参考点，具体以官宣为准。'});
-    removeRow('section-delta','二洲年庆');
-    updateRow('section-yanyun','杭州后续重磅更新',{time:'2026/9/24',name:'新版本「平澜起风波」',focus:'9/24新版本已官宣，重点关注杭州后续主章剧情、平澜书院等新内容，以及新增区域、玩法与系统调整。',status:'已官宣'});
-    addRow('section-yimeng',{time:'时间未定',name:'经典服势力战',type:'版本节点',focus:'官方已透露经典服势力战进入预研，具体上线时间与规则待定；重点关注势力对抗规则、阵营生态及是否形成长期赛季化玩法。',status:'官方预告'});
-    addRow('section-yimeng',{time:'2026年下半年',name:'全新「江湖邪修」体系',type:'版本节点',focus:'官方下半年规划已公开该体系，具体上线版本与完整规则待后续公布；重点关注新身份/成长体系及对长期生态的影响。',status:'官方预告'});
-  }
-  apply(); setTimeout(apply,300); setTimeout(apply,1200); setTimeout(apply,3000);
-  if(typeof renderEditableNodes==='function'){
+  applyAudit();
+  setTimeout(applyAudit,300); setTimeout(applyAudit,1200);
+  if(typeof renderEditableNodes==='function'&&!renderEditableNodes.__auditWrapped){
     const prev=renderEditableNodes;
-    renderEditableNodes=function(){ prev(); setTimeout(apply,0); };
+    const wrapped=function(){prev();setTimeout(applyAudit,0)}; wrapped.__auditWrapped=true; renderEditableNodes=wrapped;
+    renderEditableNodes();
   }
 })();
 `;
@@ -61,9 +81,23 @@ try{
   const res=await fetch(frozen,{cache:'no-store'});
   if(!res.ok) throw new Error('基础页面加载失败 '+res.status);
   let html=await res.text();
-  const marker='\n`;\ntry{';
-  if(!html.includes(marker)) throw new Error('未找到扩展插入点');
-  html=html.replace(marker,'\n'+patch+marker);
+  const token="const addonB64='";
+  const start=html.indexOf(token);
+  if(start<0) throw new Error('未找到基础扩展模块');
+  const b64Start=start+token.length;
+  const b64End=html.indexOf("';",b64Start);
+  if(b64End<0) throw new Error('基础扩展模块格式异常');
+  const b64=html.slice(b64Start,b64End);
+  if(!/^[A-Za-z0-9+/]*={0,2}$/.test(b64)||b64.length%4!==0) throw new Error('基础扩展模块编码异常');
+  const bin=atob(b64);
+  const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));
+  let addon=new TextDecoder().decode(bytes);
+  addon+='\n'+patch+'\n';
+  const outBytes=new TextEncoder().encode(addon);
+  let outBin=''; const chunk=0x8000;
+  for(let i=0;i<outBytes.length;i+=chunk) outBin+=String.fromCharCode(...outBytes.subarray(i,i+chunk));
+  const nextB64=btoa(outBin);
+  html=html.slice(0,b64Start)+nextB64+html.slice(b64End);
   document.open();document.write(html);document.close();
 }catch(e){document.getElementById('loading').textContent='页面加载失败：'+e.message;}
 })();
