@@ -4,56 +4,30 @@
 <body style="margin:0;background:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;color:#657083"><div id="loading" style="padding:48px;text-align:center">正在加载竞品监控清单…</div>
 <script>
 (async()=>{
-const frozen='https://raw.githubusercontent.com/sunjinyang52-eng/wz-monitor-site/7aa12be73d2e32fd0cfef0a61a3d301782cb9d60/competitor-monitor-editable.html';
+const frozen='https://raw.githubusercontent.com/sunjinyang52-eng/wz-monitor-site/c755f41c15f6223ee7ecd292f044acbe0e138ed1/competitor-monitor-editable.html';
 const patch=String.raw`
-/* nishuihan-node-card-v1 */
+/* yimengjianghu-node-card-v1 */
 (function(){
-  if(document.getElementById('section-nishuihan')) return;
+  if(document.getElementById('section-yimeng')) return;
   const main=document.querySelector('.content-main');
   if(!main) return;
   const card=document.createElement('section');
   card.className='card node-card';
-  card.id='section-nishuihan';
+  card.id='section-yimeng';
   card.innerHTML=
-    '<div class="card-head"><div class="node-head-copy"><div class="title">10. 逆水寒 · 版本节点 / 重点联动</div><div class="node-sub">重点跟踪未来大版本、大赛季与高体量联动；历史节点仅用于判断版本周期。</div></div><div class="meta"><span>截至 2026/9/17</span></div></div>'+
+    '<div class="card-head"><div class="node-head-copy"><div class="title">12. 一梦江湖 · 版本节点 / 重点联动</div><div class="node-sub">重点跟踪未来大版本、系统级玩法与高体量联动；官方预研中的重大玩法也保留观察。</div></div><div class="meta"><span>截至 2026/9/17</span></div></div>'+
     '<div class="table-wrap"><table class="node-table"><thead><tr><th>时间</th><th>节点名称</th><th>类型</th><th>重点关注</th><th>信息状态</th></tr></thead><tbody>'+
-    '<tr><td class="time">2026/9/24</td><td class="node-name">4.1.4 黄金周双节版本</td><td><span class="node-type version">版本节点</span></td><td class="node-copy">黄金周大版本集中上线：《盗墓笔记》联动冒险、双节休闲玩法焕新（你画我猜 / 行云小栈 / 萌宠对决）、承影武学更新及节庆福利。重点看节庆版本如何集中承载联动与玩法更新。</td><td><span class="node-status confirmed">已官宣</span></td></tr>'+
-    '<tr><td class="time">2026/9/24</td><td class="node-name">逆水寒 ×《盗墓笔记》</td><td><span class="node-type collab">重点联动</span></td><td class="node-copy">重磅 IP 联动随 4.1.4 开启，官方明确包含联动冒险内容；重点关注 IP 剧情/角色包装、玩法结合方式及联动商业化内容。</td><td><span class="node-status confirmed">已官宣</span></td></tr>'+
-    '<tr><td class="time">预计 2026/10 下旬</td><td class="node-name">4.2 新大赛季</td><td><span class="node-type version">版本节点</span></td><td class="node-copy">近两年 x.2.1 均落在 10 月下旬（2.2.1：2024/10/25；3.2.1：2025/10/31），据此预测 4.2 仍在 10 月下旬开启。重点关注新地图/主线、核心玩法和系统级调整。</td><td><span class="node-status predicted">周期预测</span></td></tr>'+
-    '</tbody></table></div><div class="node-legend">只保留主版本/大赛季、内容量明显的次级大版本与重点联动；普通活动、外观和小更新不单独列节点。</div>';
+    '<tr><td class="time">2026/10/9</td><td class="node-name">平行服二周年版本「长风筵」</td><td><span class="node-type version">版本节点</span></td><td class="node-copy">平行服二周年大版本：89级永久等级上限、成长与数值体系精简；新增平行逸闻、全服海上推理事件、3V3「金戈鸣沙」、高难玩法「凌渊」及帮派玩法「悍客临门」等。</td><td><span class="node-status confirmed">已官宣</span></td></tr>'+
+    '<tr><td class="time">2026/10/9</td><td class="node-name">一梦江湖 × 丝绸之路大型文化联动</td><td><span class="node-type collab">重点联动</span></td><td class="node-copy">与中国文物交流中心合作，包含主题剧情、联动玩法与时装等内容；重点关注文化IP如何与剧情、玩法和商业化内容结合。</td><td><span class="node-status confirmed">已官宣</span></td></tr>'+
+    '<tr><td class="time">时间未定</td><td class="node-name">经典服势力战</td><td><span class="node-type version">版本节点</span></td><td class="node-copy">官方已透露经典服势力战开启预研，具体上线时间与规则尚未公布。重点关注势力对抗规则、阵营生态及是否形成长期赛季化玩法。</td><td><span class="node-status preview">官方预告</span></td></tr>'+
+    '</tbody></table></div><div class="node-legend">未来重大信息可提前收录：已定档内容标已官宣；官方已透露但日期/细节未完整公布的内容标官方预告；仅社区或爆料线索则标未证实爆料。</div>';
   main.appendChild(card);
 
   const nav=document.querySelector('.side-nav');
-  if(nav && !nav.querySelector('a[href="#section-nishuihan"]')){
+  if(nav && !nav.querySelector('a[href="#section-yimeng"]')){
     const a=document.createElement('a');
-    a.href='#section-nishuihan';
-    a.innerHTML='<span class="nav-dot"></span>逆水寒';
-    a.addEventListener('click',()=>{nav.querySelectorAll('a').forEach(x=>x.classList.remove('active'));a.classList.add('active')});
-    nav.appendChild(a);
-  }
-  if(typeof renderEditableNodes==='function') renderEditableNodes();
-})();
-
-/* yanyun-node-card-v1 */
-(function(){
-  if(document.getElementById('section-yanyun')) return;
-  const main=document.querySelector('.content-main');
-  if(!main) return;
-  const card=document.createElement('section');
-  card.className='card node-card';
-  card.id='section-yanyun';
-  card.innerHTML=
-    '<div class="card-head"><div class="node-head-copy"><div class="title">11. 燕云十六声 · 版本节点 / 重点联动</div><div class="node-sub">重点跟踪未来大版本与高体量联动；普通活动、外观和小更新不单独列节点。</div></div><div class="meta"><span>截至 2026/9/17</span></div></div>'+
-    '<div class="table-wrap"><table class="node-table"><thead><tr><th>时间</th><th>节点名称</th><th>类型</th><th>重点关注</th><th>信息状态</th></tr></thead><tbody>'+
-    '<tr><td class="time">2026/9/24</td><td class="node-name">杭州后续重磅更新</td><td><span class="node-type version">版本节点</span></td><td class="node-copy">官方预告将于 9/24 推出一系列杭州后续重磅更新，已公布全新主章剧情、平澜书院等内容；完整版本公告仍待发布，后续重点跟踪新增区域、剧情、玩法与系统调整。</td><td><span class="node-status preview">官方预告</span></td></tr>'+
-    '</tbody></table></div><div class="node-legend">当前仅保留已明确的未来大版本节点；暂不因普通品牌联动或小型活动单独新增节点。</div>';
-  main.appendChild(card);
-
-  const nav=document.querySelector('.side-nav');
-  if(nav && !nav.querySelector('a[href="#section-yanyun"]')){
-    const a=document.createElement('a');
-    a.href='#section-yanyun';
-    a.innerHTML='<span class="nav-dot"></span>燕云十六声';
+    a.href='#section-yimeng';
+    a.innerHTML='<span class="nav-dot"></span>一梦江湖';
     a.addEventListener('click',()=>{nav.querySelectorAll('a').forEach(x=>x.classList.remove('active'));a.classList.add('active')});
     nav.appendChild(a);
   }
