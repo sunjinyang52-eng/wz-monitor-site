@@ -55,17 +55,32 @@ const patch=String.raw`
     if(d.focus!==undefined){c[3].textContent=d.focus;tr.dataset.baseFocus=d.focus}
     if(d.status!==undefined){c[4].innerHTML='<span class="node-status '+statusClass(d.status)+'">'+d.status+'</span>';tr.dataset.baseStatus=d.status}
   }
+  function ensureNodeRow(sectionId,d){
+    const sec=document.getElementById(sectionId); if(!sec) return;
+    let tr=findRow(sectionId,n=>n===d.name);
+    if(!tr){
+      const tbody=sec.querySelector('.node-table tbody'); if(!tbody) return;
+      tr=document.createElement('tr');
+      tr.innerHTML='<td class="time">'+d.time+'</td><td class="node-name"><span class="node-label">'+d.name+'</span></td><td><span class="node-type '+(d.type==='重点联动'?'collab':'version')+'">'+d.type+'</span></td><td class="node-copy">'+d.focus+'</td><td><span class="node-status '+statusClass(d.status)+'">'+d.status+'</span></td>';
+      tr.dataset.baseTime=d.time; tr.dataset.baseName=d.name; tr.dataset.baseFocus=d.focus; tr.dataset.baseStatus=d.status;
+      tbody.appendChild(tr);
+    } else {
+      setRow(sectionId,n=>n===d.name,{time:d.time,name:d.name,focus:d.focus,status:d.status});
+    }
+  }
   function applyAudit(){
-    setRow('section-honor',n=>n.indexOf('S45')!==-1,{time:'预计 2026/9/24',name:'S45 新赛季「月照长安」',focus:'官方已公开「月照长安」赛季主题及王维、雾行千山等内容；9/24仍按历史周期作为预计切换日，具体日期以官宣为准。',status:'官方预告'});
-    setRow('section-honor',n=>n.indexOf('S46')!==-1,{focus:'近10个完整赛季平均约90天、中位数约90.5天，整体约3个月一轮；若S45于9/24开启，则S46预测落在12/23前后，具体日期以官宣为准。'});
+    setRow('section-honor',n=>n.indexOf('S45')!==-1,{time:'2026/9/23',name:'S45 新赛季「月照长安」',focus:'官方已明确 S45「月照长安」于 9/23 开启，关注赛季主题、英雄/玩法调整及新内容落地。',status:'已官宣'});
+    setRow('section-honor',n=>n.indexOf('S46')!==-1,{focus:'近10个完整赛季平均约90天、中位数约90.5天，整体约3个月一轮；S45已官宣9/23开启，据此S46暂预计12/22前后，具体日期以官宣为准。'});
     setRow('section-peace',n=>n==='下一赛季切换',{time:'2026/9/19',focus:'官方已明确新赛季9/19开启，关注段位重置、赛季任务、赛季奖励和玩法调整。',status:'已官宣'});
     setRow('section-peace',n=>n==='下一轮赛季切换',{focus:'近14个完整赛季平均约60.8天、中位数63天，整体约2个月一轮；若9/19完成本轮切换，则下一轮预测约11/21，具体以官宣为准。'});
     setRow('section-supernatural',n=>n==='下一赛季',{time:'预计 2026/11月下旬',focus:'历史波动较大：S1约246天、S2约112天、S3约168天。剔除明显偏长的首赛季后，仅参考S2/S3平均约140天，S4自7/3起下一赛季大致落在11月下旬；该预测置信度较低。',status:'周期预测'});
     setRow('section-identityv',n=>n.indexOf('第四十五赛季')!==-1,{status:'已上线'});
     setRow('section-identityv',n=>n.indexOf('第四十六赛季')!==-1,{focus:'近13个完整赛季平均约69.6天、中位数70天，整体约10周一轮；第四十五赛季9/10开启，据此第四十六赛季预测约11/19，具体以官宣为准。'});
+    setRow('section-identityv',n=>n.indexOf('大理寺日志')!==-1,{time:'2026/9/30',focus:'第一弹 9/30 上线，已公开斗牛士-李饼等联动内容；关注角色映射、双形态表现、活动玩法及后续第二弹信息。',status:'已官宣'});
     setRow('section-roco',n=>n.indexOf('圣龙宝藏')!==-1||n.indexOf('S5 下一赛季')!==-1,{time:'预计 2026/11/5',name:'S5 下一赛季（爆料名「圣龙宝藏」）',focus:'11/5来自S4官方赛季结束时间；「圣龙宝藏」、龙系大版本及新地图仍为第三方解包/社区爆料，S5正式名称与内容待官方确认。',status:'未证实爆料'});
     setRow('section-golden',n=>n==='下一赛季',{time:'预计 2026/12月上旬',focus:'S18于8/20开启；结合金铲铲手游历史主赛季约4个月节奏及TFT Set 19赛事窗口，下一赛季暂预计12月上旬，具体日期待官方确认。',status:'周期预测'});
     setRow('section-delta',n=>n.indexOf('S12')!==-1,{time:'预计 2026/11/14',focus:'近10个完整赛季平均约70.8天、中位数约73.5天，整体约2～2.5个月一轮；S11于9/4开启，据此S12预测约11月中旬，暂以11/14作为周期参考点。',status:'周期预测'});
+    ensureNodeRow('section-peace',{time:'2026/9/25',name:'和平精英 × 张雪机车',type:'重点联动',focus:'联动上线 820RR、820X、500F 三款机车内容，并配套联动套装/动作；关注载具联动包装与商业化表现。',status:'已官宣'});
     const ann=findRow('section-delta',n=>n.indexOf('二洲年庆')!==-1); if(ann) ann.remove();
   }
   function applyCompetitorAudit(){
@@ -74,6 +89,11 @@ const patch=String.raw`
       if(r){
         r.event_time='9/17 第三期测试招募开启｜测试时间待公布';
         r.note='「位面探索计划」第三期测试招募已开启；具体测试时间待官方通知。';
+      }
+      const w=(rows||[]).find(x=>x&&x.game_name==='未眠野');
+      if(w){
+        w.event_time='测试招募已结束｜测试时间待公布';
+        w.note='技术保密测试招募已于 9/19 结束；具体测试时间仍待官方公布。';
       }
     }catch(e){}
   }
