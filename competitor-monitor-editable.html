@@ -68,6 +68,23 @@ const patch=String.raw`
     setRow('section-delta',n=>n.indexOf('S12')!==-1,{time:'预计 2026/11/14',focus:'近10个完整赛季平均约70.8天、中位数约73.5天，整体约2～2.5个月一轮；S11于9/4开启，据此S12预测约11月中旬，暂以11/14作为周期参考点。',status:'周期预测'});
     const ann=findRow('section-delta',n=>n.indexOf('二洲年庆')!==-1); if(ann) ann.remove();
   }
+  function applyCompetitorAudit(){
+    try{
+      const r=(rows||[]).find(x=>x&&x.game_name==='崩坏：因缘精灵');
+      if(r){
+        r.event_time='9/17 第三期测试招募开启｜测试时间待公布';
+        r.note='「位面探索计划」第三期测试招募已开启；具体测试时间待官方通知。';
+      }
+    }catch(e){}
+  }
+  if(typeof render==='function'&&!render.__competitorAuditWrapped){
+    const prevRender=render;
+    const wrappedRender=function(){applyCompetitorAudit();prevRender()};
+    wrappedRender.__competitorAuditWrapped=true;
+    render=wrappedRender;
+  }
+  applyCompetitorAudit();
+  if(typeof render==='function') render();
   applyAudit();
   setTimeout(applyAudit,300); setTimeout(applyAudit,1200);
   if(typeof renderEditableNodes==='function'&&!renderEditableNodes.__auditWrapped){
