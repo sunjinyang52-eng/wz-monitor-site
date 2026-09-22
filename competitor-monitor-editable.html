@@ -71,7 +71,8 @@ const patch=String.raw`
   function applyAudit(){
     setRow('section-honor',n=>n.indexOf('S45')!==-1,{time:'2026/9/23',name:'S45 新赛季「月照长安」',focus:'官方已明确 S45「月照长安」于 9/23 开启，关注赛季主题、英雄/玩法调整及新内容落地。',status:'已官宣'});
     setRow('section-honor',n=>n.indexOf('S46')!==-1,{focus:'近10个完整赛季平均约90天、中位数约90.5天，整体约3个月一轮；S45已官宣9/23开启，据此S46暂预计12/22前后，具体日期以官宣为准。'});
-    setRow('section-peace',n=>n==='下一赛季切换',{time:'2026/9/19',focus:'官方已明确新赛季9/19开启，关注段位重置、赛季任务、赛季奖励和玩法调整。',status:'已官宣'});
+    setRow('section-peace',n=>n==='下一赛季切换'||n==='SS41 新赛季',{time:'2026/9/19',name:'SS41 新赛季',focus:'SS41 已于 9/19 正式开启，段位重置、赛季任务、赛季奖励及相关玩法内容同步更新。',status:'已上线'});
+    setRow('section-peace',n=>n.indexOf('CH.14')!==-1,{time:'2026/9/19',focus:'地铁逃生 CH.14 已于 9/19 正式开启，新赛季加入传世武装、装甲及收藏馆、黑市等系统优化。',status:'已上线'});
     setRow('section-peace',n=>n==='下一轮赛季切换',{focus:'近14个完整赛季平均约60.8天、中位数63天，整体约2个月一轮；若9/19完成本轮切换，则下一轮预测约11/21，具体以官宣为准。'});
     setRow('section-supernatural',n=>n==='下一赛季',{time:'预计 2026/11月下旬',focus:'历史波动较大：S1约246天、S2约112天、S3约168天。剔除明显偏长的首赛季后，仅参考S2/S3平均约140天，S4自7/3起下一赛季大致落在11月下旬；该预测置信度较低。',status:'周期预测'});
     setRow('section-identityv',n=>n.indexOf('第四十五赛季')!==-1,{status:'已上线'});
@@ -81,7 +82,8 @@ const patch=String.raw`
     setRow('section-golden',n=>n==='下一赛季',{time:'预计 2026/12月上旬',focus:'S18于8/20开启；结合金铲铲手游历史主赛季约4个月节奏及TFT Set 19赛事窗口，下一赛季暂预计12月上旬，具体日期待官方确认。',status:'周期预测'});
     setRow('section-delta',n=>n.indexOf('S12')!==-1,{time:'预计 2026/11/14',focus:'近10个完整赛季平均约70.8天、中位数约73.5天，整体约2～2.5个月一轮；S11于9/4开启，据此S12预测约11月中旬，暂以11/14作为周期参考点。',status:'周期预测'});
     ensureNodeRow('section-peace',{time:'2026/9/25',name:'和平精英 × 张雪机车',type:'重点联动',focus:'联动上线 820RR、820X、500F 三款机车内容，并配套联动套装/动作；关注载具联动包装与商业化表现。',status:'已官宣'});
-    const ann=findRow('section-delta',n=>n.indexOf('二洲年庆')!==-1); if(ann) ann.remove();
+    ensureNodeRow('section-yuanmeng',{time:'2026/9/24',name:'「探灵实录」新赛季内容更新',type:'版本节点',focus:'「探灵实录」玩法线更新新禁地、未知怪物及新力量等内容；重点关注多人探险/追逃玩法的规则与内容迭代。',status:'已官宣'});
+    ensureNodeRow('section-delta',{time:'2026/9/25–9/26',name:'二洲年庆典',type:'版本节点',focus:'二洲年进入周年庆典阶段，9/25–9/26 重庆线下庆典，9/26 周年音乐会直播；重点关注周年内容发布、玩家活动与后续版本信息。',status:'已官宣'});
   }
   function applyCompetitorAudit(){
     try{
