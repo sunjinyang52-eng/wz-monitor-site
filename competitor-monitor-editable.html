@@ -97,6 +97,23 @@ const patch=String.raw`
         w.event_time='测试招募已结束｜测试时间待公布';
         w.note='技术保密测试招募已于 9/19 结束；具体测试时间仍待官方公布。';
       }
+      if(!(rows||[]).some(x=>x&&x.game_name==='集合！浆果镇')){
+        rows.push({
+          id:240923,
+          game_name:'集合！浆果镇',
+          service_group:'模拟经营',
+          service_type:'种田 / 建造 / 社交 / 派对 / 多人联机',
+          reason:'朝夕光年多人生活模拟项目，重点观察种田建造、多人社交、派对互动与长期经营循环。',
+          gameplay_link:'',
+          focus:true,
+          level:'A',
+          event_time:'下一节点未公布',
+          note:'9/23 新增重点监控；当前暂无新的测试/上线定档。',
+          sort_order:24,
+          updated_at:'2026-09-23T02:52:00.000Z'
+        });
+        if(typeof normalizeAndSort==='function') rows=normalizeAndSort(rows);
+      }
     }catch(e){}
   }
   if(typeof render==='function'&&!render.__competitorAuditWrapped){
@@ -105,8 +122,36 @@ const patch=String.raw`
     wrappedRender.__competitorAuditWrapped=true;
     render=wrappedRender;
   }
+  /* berry-new-watch-v1 */
+  function injectBerryWatch(){
+    try{
+      const now=new Date();
+      const y=now.getFullYear(),m=now.getMonth()+1,d=now.getDate();
+      const active=(y===2026&&m===9&&d>=23&&d<=25);
+      const body=document.getElementById('watchBody');
+      if(!body||!active||body.querySelector('[data-berry-new="1"]')) return;
+      const el=document.createElement('div');
+      el.className='watch-item today';
+      el.dataset.berryNew='1';
+      el.innerHTML='<span class="watch-badge">新加入</span><div class="watch-main"><div class="watch-name">集合！浆果镇 · A级重点竞品</div><div class="watch-sub">9/23 新增监控 · 种田 / 建造 / 社交 / 派对 / 多人联机</div></div>';
+      el.onclick=()=>{
+        const target=[...document.querySelectorAll('#section-competitors tbody tr')].find(tr=>tr.textContent.includes('集合！浆果镇'))||document.getElementById('section-competitors');
+        if(target){target.scrollIntoView({behavior:'smooth',block:'center'});if(target.tagName==='TR'&&target.animate)target.animate([{backgroundColor:'#fff3b8'},{backgroundColor:''}],{duration:1400,easing:'ease-out'})}
+      };
+      body.prepend(el);
+      const count=document.getElementById('watchCount');
+      if(count){const n=parseInt(count.textContent||'0',10);if(Number.isFinite(n))count.textContent=String(n+1)}
+    }catch(e){}
+  }
+  if(typeof renderThreeDayWatch==='function'&&!renderThreeDayWatch.__berryWrapped){
+    const prevWatch=renderThreeDayWatch;
+    const wrappedWatch=function(){prevWatch();setTimeout(injectBerryWatch,0)};
+    wrappedWatch.__berryWrapped=true;
+    renderThreeDayWatch=wrappedWatch;
+  }
   applyCompetitorAudit();
   if(typeof render==='function') render();
+  setTimeout(injectBerryWatch,100); setTimeout(injectBerryWatch,800);
   applyAudit();
   setTimeout(applyAudit,300); setTimeout(applyAudit,1200);
   if(typeof renderEditableNodes==='function'&&!renderEditableNodes.__auditWrapped){
