@@ -207,6 +207,15 @@ try{
   const bin=atob(b64);
   const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));
   let addon=new TextDecoder().decode(bytes);
+  /* top-watch-local-preference-v1 */
+  addon=addon.replace(
+    "function watchMode(key){const ov=watchOverrideFor(key);return ov?ov.mode:'auto'}",
+    "function watchMode(key){try{const m=JSON.parse(localStorage.getItem('wz_top_watch_modes_v1')||'{}');if(m&&m[key])return m[key]}catch(e){}const ov=watchOverrideFor(key);return ov?ov.mode:'auto'}"
+  );
+  addon=addon.replace(
+    /async function upsertWatchMode\(key,mode,quiet=false\)\{[\s\S]*?return true;\n  \}/,
+    "async function upsertWatchMode(key,mode,quiet=false){try{const storeKey='wz_top_watch_modes_v1';const m=JSON.parse(localStorage.getItem(storeKey)||'{}');if(mode==='auto')delete m[key];else m[key]=mode;localStorage.setItem(storeKey,JSON.stringify(m));return true}catch(e){if(!quiet)toast('本机设置保存失败');return false}\n  }"
+  );
   addon+='\n'+patch+'\n';
   const outBytes=new TextEncoder().encode(addon);
   let outBin=''; const chunk=0x8000;
