@@ -100,6 +100,23 @@ const patch=String.raw`
         w.event_time='9/24 10:00–9/27 12:00 技术保密测试';
         w.note='技术保密测试已于 9/24 10:00 正式开启，持续至 9/27 12:00；当前为测试进行中。';
       }
+      if(!(rows||[]).some(x=>x&&x.game_name==='奇遇动物城')){
+        rows.push({
+          id:260924,
+          game_name:'奇遇动物城',
+          service_group:'生活模拟',
+          service_type:'都市生活 / 家园装修 / 职业体验 / 好友社交 / 动物互动',
+          reason:'莉莉丝生活模拟新品，重点观察都市生活模拟、动物室友、家园装修、职业体验与多人社交等方向。',
+          gameplay_link:'',
+          focus:true,
+          level:'A',
+          event_time:'9/24 首曝并开启预约｜测试时间待公布',
+          note:'9/26 补录重点监控；项目于 9/24 正式首曝并开启预约，具体测试时间待官方公布。',
+          sort_order:25,
+          updated_at:'2026-09-26T00:52:00.000Z'
+        });
+        if(typeof normalizeAndSort==='function') rows=normalizeAndSort(rows);
+      }
       if(!(rows||[]).some(x=>x&&x.game_name==='集合！浆果镇')){
         rows.push({
           id:240923,
@@ -179,8 +196,36 @@ const patch=String.raw`
     wrappedWatch2.__sanrioWrapped=true;
     renderThreeDayWatch=wrappedWatch2;
   }
+  /* animal-city-top-watch-v1 */
+  function injectAnimalCityWatch(){
+    try{
+      const now=new Date();
+      const y=now.getFullYear(),m=now.getMonth()+1,d=now.getDate();
+      const active=(y===2026&&m===9&&d>=26&&d<=28);
+      const body=document.getElementById('watchBody');
+      if(!body||!active||body.querySelector('[data-animal-city-top="1"]')) return;
+      const el=document.createElement('div');
+      el.className='watch-item today';
+      el.dataset.animalCityTop='1';
+      el.innerHTML='<span class="watch-badge">新加入</span><div class="watch-main"><div class="watch-name">奇遇动物城 · A级重点竞品</div><div class="watch-sub">9/24 首曝并开启预约 · 都市生活 / 家园装修 / 动物社交</div></div>';
+      el.onclick=()=>{
+        const target=[...document.querySelectorAll('#section-competitors tbody tr')].find(tr=>tr.textContent.includes('奇遇动物城'))||document.getElementById('section-competitors');
+        if(target){target.scrollIntoView({behavior:'smooth',block:'center'});if(target.tagName==='TR'&&target.animate)target.animate([{backgroundColor:'#fff3b8'},{backgroundColor:''}],{duration:1400,easing:'ease-out'})}
+      };
+      body.prepend(el);
+      const count=document.getElementById('watchCount');
+      if(count){const n=parseInt(count.textContent||'0',10);if(Number.isFinite(n))count.textContent=String(n+1)}
+    }catch(e){}
+  }
+  if(typeof renderThreeDayWatch==='function'&&!renderThreeDayWatch.__animalCityWrapped){
+    const prevWatch3=renderThreeDayWatch;
+    const wrappedWatch3=function(){prevWatch3();setTimeout(injectAnimalCityWatch,30)};
+    wrappedWatch3.__animalCityWrapped=true;
+    renderThreeDayWatch=wrappedWatch3;
+  }
   applyCompetitorAudit();
   if(typeof render==='function') render();
+  setTimeout(injectAnimalCityWatch,220); setTimeout(injectAnimalCityWatch,1000);
   setTimeout(injectBerryWatch,100); setTimeout(injectBerryWatch,800);
   setTimeout(injectSanrioWatch,160); setTimeout(injectSanrioWatch,900);
   applyAudit();
