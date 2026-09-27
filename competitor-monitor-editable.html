@@ -95,6 +95,11 @@ const patch=String.raw`
         r.event_time='9/17 第三期测试招募开启｜测试时间待公布';
         r.note='「位面探索计划」第三期测试招募已开启；具体测试时间待官方通知。';
       }
+      const yimo=(rows||[]).find(x=>x&&x.game_name==='伊莫');
+      if(yimo){
+        yimo.event_time='9/23 全平台正式上线';
+        yimo.note='PC 与移动端均已上线，当前为全平台正式运营状态。';
+      }
       const w=(rows||[]).find(x=>x&&x.game_name==='未眠野');
       if(w){
         w.event_time='9/24 10:00–9/27 12:00 技术保密测试';
