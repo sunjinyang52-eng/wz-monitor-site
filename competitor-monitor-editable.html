@@ -106,8 +106,13 @@ const patch=String.raw`
       }
       const w=(rows||[]).find(x=>x&&x.game_name==='未眠野');
       if(w){
-        w.event_time='9/24 10:00–9/27 12:00 技术保密测试';
-        w.note='技术保密测试已于 9/24 10:00 正式开启，持续至 9/27 12:00；当前为测试进行中。';
+        w.event_time='9/27 技术保密测试结束｜下一节点待公布';
+        w.note='9/24–9/27 技术保密测试已结束，服务器关闭并删档；当前继续保持预约，下一节点待官方公布。';
+      }
+      const lovania=(rows||[]).find(x=>x&&x.game_name==='代号：Lovania');
+      if(lovania){
+        lovania.event_time='9/28 试玩预约开启｜10/2–10/6 RED LAND 线下试玩';
+        lovania.note='9/28 开放 RED LAND 线下试玩预约；10/2–10/6 于上海 RED LAND 开放线下试玩。';
       }
       if(!(rows||[]).some(x=>x&&x.game_name==='奇遇动物城')){
         rows.push({
