@@ -84,11 +84,14 @@ const patch=String.raw`
     setRow('section-identityv',n=>n.indexOf('大理寺日志')!==-1,{time:'2026/9/30',focus:'第一弹 9/30 上线，已公开斗牛士-李饼等联动内容；关注角色映射、双形态表现、活动玩法及后续第二弹信息。',status:'已官宣'});
     setRow('section-roco',n=>n.indexOf('圣龙宝藏')!==-1||n.indexOf('S5 下一赛季')!==-1,{time:'预计 2026/11/5',name:'S5 下一赛季（爆料名「圣龙宝藏」）',focus:'11/5来自S4官方赛季结束时间；「圣龙宝藏」、龙系大版本及新地图仍为第三方解包/社区爆料，S5正式名称与内容待官方确认。',status:'未证实爆料'});
     setRow('section-golden',n=>n==='下一赛季',{time:'预计 2026/12月上旬',focus:'S18于8/20开启；结合金铲铲手游历史主赛季约4个月节奏及TFT Set 19赛事窗口，下一赛季暂预计12月上旬，具体日期待官方确认。',status:'周期预测'});
-    setRow('section-delta',n=>n.indexOf('S12')!==-1,{time:'预计 2026/11/14',focus:'近10个完整赛季平均约70.8天、中位数约73.5天，整体约2～2.5个月一轮；S11于9/4开启，据此S12预测约11月中旬，暂以11/14作为周期参考点。',status:'周期预测'});
+    setRow('section-delta',n=>n.indexOf('S12')!==-1||n==='下一赛季',{time:'2026年11月',name:'下一赛季',focus:'二洲年年度发布会已确认下赛季将进行 UE5 技术升级，并上线全面战场新地图「天际线」；具体开启日期待官方后续公布。',status:'官方预告'});
     ensureNodeRow('section-peace',{time:'2026/9/25',name:'和平精英 × 张雪机车',type:'重点联动',focus:'联动已于 9/25 正式上线，包含 820RR、820X、500F 三款机车内容及联动套装/动作；海岛地图可体验冠军涂装机车，并同步开放张雪机车竞速赛玩法。',status:'已上线'});
     ensureNodeRow('section-yuanmeng',{time:'2026/9/24 17:00',name:'「星愿节·全星版本」',type:'版本节点',focus:'9/24 17:00 全星版本正式上线，广场、农场、奇迹之岛、探灵实录、星世界、晋级赛、狼人杀等多条玩法线同步更新；其中探灵实录新增禁地、未知怪物与新力量，重点关注跨玩法集中更新后的内容组织与活跃拉动。',status:'已上线'});
-    ensureNodeRow('section-supernatural',{time:'时间待定',name:'超自然行动组 ×《哪吒传奇》',type:'重点联动',focus:'官方已公开联动主题时装内容，「逍遥-哪吒」星耀时装具备变身状态；具体上线时间待后续官宣。',status:'官方预告'});
+    ensureNodeRow('section-supernatural',{time:'时间待定',name:'超自然行动组 ×《哪吒传奇》',type:'重点联动',focus:'官方已公开多套联动主题时装：包括具备变身状态的「逍遥-哪吒」星耀时装，以及「艾伦-敖丙」限定典藏时装；具体上线时间待后续官宣。',status:'官方预告'});
     ensureNodeRow('section-delta',{time:'2026/9/25–9/26',name:'二洲年庆典',type:'版本节点',focus:'二洲年庆典已落地，9/25 正式上线「乘锋破浪」「无双超载」两个新玩法，9/25–9/26 同步重庆线下庆典，9/26 周年音乐会直播。',status:'已上线'});
+    ensureNodeRow('section-delta',{time:'2026/9/27',name:'黑潮爆破 Beta赛季',type:'版本节点',focus:'9/27 正式开启黑潮爆破 Beta 赛季，作为独立玩法线重点观察爆破规则、赛季化运营与竞技节奏。',status:'已上线'});
+    ensureNodeRow('section-delta',{time:'时间待定',name:'三角洲行动 ×《影之刃零》',type:'重点联动',focus:'二洲年年度发布会已确认双方联动，具体联动形式、内容与上线时间待后续官宣。',status:'官方预告'});
+    ensureNodeRow('section-delta',{time:'2027年春节',name:'三角洲行动 × 泡泡玛特「共鸣」',type:'重点联动',focus:'官方已预告联动将于 2027 年春节上线，重点关注潮玩 IP 与游戏内角色/外观/活动的结合方式。',status:'官方预告'});
     ensureNodeRow('section-golden',{time:'2026/9/27',name:'「符文大陆传奇」焕新',type:'版本节点',focus:'9/27 正式上线焕新内容，包含返场赛季、英雄/羁绊调整、英雄传说之力及排位相关机制更新，重点关注返场赛季重做与阵容生态变化。',status:'已上线'});
     ensureNodeRow('section-golden',{time:'2026/9/29',name:'「山河入画」主题季 /「画之灵」限时返场',type:'版本节点',focus:'9/29 开启「山河入画」主题季并限时返场「画之灵」赛季，包含羁绊焕新、全新机制「绘境」及收藏家系统更新，重点关注返场内容重做与新机制对阵容生态的影响。',status:'已官宣'});
   }
