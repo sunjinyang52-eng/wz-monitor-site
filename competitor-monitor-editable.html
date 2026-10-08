@@ -20,7 +20,7 @@ const patch=String.raw`
     const main=document.querySelector('.content-main'); if(!main) return;
     const card=document.createElement('section'); card.className='card node-card'; card.id=id;
     const body=rows.map(r=>'<tr><td class="time">'+r[0]+'</td><td class="node-name">'+r[1]+'</td><td><span class="node-type '+(r[2]==='重点联动'?'collab':'version')+'">'+r[2]+'</span></td><td class="node-copy">'+r[3]+'</td><td><span class="node-status '+statusClass(r[4])+'">'+r[4]+'</span></td></tr>').join('');
-    card.innerHTML='<div class="card-head"><div class="node-head-copy"><div class="title">'+title+'</div><div class="node-sub">'+sub+'</div></div><div class="meta"><span>截至 2026/9/17</span></div></div><div class="table-wrap"><table class="node-table"><thead><tr><th>时间</th><th>节点名称</th><th>类型</th><th>重点关注</th><th>信息状态</th></tr></thead><tbody>'+body+'</tbody></table></div><div class="node-legend">'+legend+'</div>';
+    card.innerHTML='<div class="card-head"><div class="node-head-copy"><div class="title">'+title+'</div><div class="node-sub">'+sub+'</div></div><div class="meta"><span>截至 2026/10/8</span></div></div><div class="table-wrap"><table class="node-table"><thead><tr><th>时间</th><th>节点名称</th><th>类型</th><th>重点关注</th><th>信息状态</th></tr></thead><tbody>'+body+'</tbody></table></div><div class="node-legend">'+legend+'</div>';
     main.appendChild(card);
   }
   addCard('section-nishuihan','10. 逆水寒 · 版本节点 / 重点联动','重点跟踪未来大版本、大赛季与高体量联动；历史节点仅用于判断版本周期。',[
@@ -71,27 +71,34 @@ const patch=String.raw`
   function applyAudit(){
     setRow('section-honor',n=>n.indexOf('S45')!==-1,{time:'2026/9/23',name:'S45 新赛季「月照长安」',focus:'S45「月照长安」已于 9/23 正式上线，新英雄王维及赛季玩法/系统调整同步落地。',status:'已上线'});
     setRow('section-honor',n=>n.indexOf('S46')!==-1,{focus:'近10个完整赛季平均约90天、中位数约90.5天，整体约3个月一轮；S45已于9/23开启，据此S46暂预计12/22前后，具体日期以官宣为准。'});
-    setRow('section-honor',n=>n.indexOf('三丽鸥')!==-1,{time:'2026/9/23 官宣',name:'王者荣耀 × 三丽鸥家族第四弹',focus:'官方正式公布第四弹联动：孙尚香「云端乐园」与孙膑「帕恰狗之风」等内容，重点关注联动皮肤包装、活动获取方式与商业化表现。',status:'已官宣'});
+    setRow('section-honor',n=>n.indexOf('三丽鸥')!==-1,{time:'2026/9/23',name:'王者荣耀 × 三丽鸥家族第四弹',focus:'第四弹联动已上线：孙尚香「云端乐园」珍品无双皮肤、孙膑「帕恰狗之风」史诗限定皮肤及主题祈愿/资源同步开放。',status:'已上线'});
     setRow('section-peace',n=>n==='下一赛季切换'||n==='SS41 新赛季',{time:'2026/9/19',name:'SS41 新赛季',focus:'SS41 已于 9/19 正式开启，段位重置、赛季任务、赛季奖励及相关玩法内容同步更新。',status:'已上线'});
     setRow('section-peace',n=>n.indexOf('CH.14')!==-1,{time:'2026/9/19',focus:'地铁逃生 CH.14 已于 9/19 正式开启，新赛季加入传世武装、装甲及收藏馆、黑市等系统优化。',status:'已上线'});
     setRow('section-peace',n=>n.indexOf('古墓迷途')!==-1,{time:'2026/9/19',focus:'「古墓迷途·怪物扮演」已于 9/19 正式上线，新增怪物视角与身份玩法，关注局内规则和体验变化。',status:'已上线'});
     setRow('section-peace',n=>n.indexOf('钻石猎场')!==-1,{time:'2026/9/24',focus:'创意工坊「钻石猎场」已于 9/24 正式开放，重点关注资源争夺、收益目标和对局风险设计；歼灭模式同期限时开放。',status:'已上线'});
     setRow('section-peace',n=>n==='下一轮赛季切换',{focus:'近14个完整赛季平均约60.8天、中位数63天，整体约2个月一轮；若9/19完成本轮切换，则下一轮预测约11/21，具体以官宣为准。'});
     setRow('section-supernatural',n=>n==='下一赛季',{time:'预计 2026/11月下旬',focus:'历史波动较大：S1约246天、S2约112天、S3约168天。剔除明显偏长的首赛季后，仅参考S2/S3平均约140天，S4自7/3起下一赛季大致落在11月下旬；该预测置信度较低。',status:'周期预测'});
-    setRow('section-yuanmeng',n=>n.indexOf('探灵实录')!==-1||n.indexOf('星愿节·全星版本')!==-1,{time:'2026/9/24 17:00',name:'「星愿节·全星版本」',focus:'9/24 17:00 全星版本正式上线，广场、农场、奇迹之岛、探灵实录、星世界、晋级赛、狼人杀等多条玩法线同步更新；其中探灵实录新增禁地、未知怪物与新力量。',status:'已上线'});
+    setRow('section-yuanmeng',n=>n.indexOf('探灵实录')!==-1||n.indexOf('星愿节·全星版本')!==-1,{time:'2026/9/30',name:'「星愿节·全星版本」',focus:'9/30 星愿节正式开启，广场、星宝农场、奇迹之岛、探灵实录、星世界、天天晋级赛、谁是狼人等多条玩法线同步进入「全星版本」；重点关注跨玩法集中更新与节日活跃承接。',status:'已上线'});
     setRow('section-identityv',n=>n.indexOf('第四十五赛季')!==-1,{status:'已上线'});
     setRow('section-identityv',n=>n.indexOf('第四十六赛季')!==-1,{focus:'近13个完整赛季平均约69.6天、中位数70天，整体约10周一轮；第四十五赛季9/10开启，据此第四十六赛季预测约11/19，具体以官宣为准。'});
-    setRow('section-identityv',n=>n.indexOf('大理寺日志')!==-1,{time:'2026/9/30',focus:'第一弹 9/30 上线，已公开斗牛士-李饼等联动内容；关注角色映射、双形态表现、活动玩法及后续第二弹信息。',status:'已官宣'});
+    setRow('section-identityv',n=>n.indexOf('大理寺日志')!==-1,{time:'2026/9/30',focus:'第一弹已于 9/30 正式上线，包含斗牛士-李饼等联动时装及联动活动内容；关注角色映射、双形态表现及后续第二弹信息。',status:'已上线'});
     setRow('section-roco',n=>n.indexOf('圣龙宝藏')!==-1||n.indexOf('S5 下一赛季')!==-1,{time:'预计 2026/11/5',name:'S5 下一赛季（爆料名「圣龙宝藏」）',focus:'11/5来自S4官方赛季结束时间；「圣龙宝藏」、龙系大版本及新地图仍为第三方解包/社区爆料，S5正式名称与内容待官方确认。',status:'未证实爆料'});
     setRow('section-golden',n=>n==='下一赛季',{time:'预计 2026/12月上旬',focus:'S18于8/20开启；结合金铲铲手游历史主赛季约4个月节奏及TFT Set 19赛事窗口，下一赛季暂预计12月上旬，具体日期待官方确认。',status:'周期预测'});
     setRow('section-delta',n=>n.indexOf('S12')!==-1||n==='下一赛季',{time:'2026年11月',name:'下一赛季',focus:'二洲年年度发布会已确认下赛季将进行 UE5 技术升级，并上线全面战场新地图「天际线」；具体开启日期待官方后续公布。',status:'官方预告'});
     ensureNodeRow('section-peace',{time:'2026/9/25',name:'和平精英 × 张雪机车',type:'重点联动',focus:'联动已于 9/25 正式上线，包含 820RR、820X、500F 三款机车内容及联动套装/动作；海岛地图可体验冠军涂装机车，并同步开放张雪机车竞速赛玩法。',status:'已上线'});
-    ensureNodeRow('section-yuanmeng',{time:'2026/9/24 17:00',name:'「星愿节·全星版本」',type:'版本节点',focus:'9/24 17:00 全星版本正式上线，广场、农场、奇迹之岛、探灵实录、星世界、晋级赛、狼人杀等多条玩法线同步更新；其中探灵实录新增禁地、未知怪物与新力量，重点关注跨玩法集中更新后的内容组织与活跃拉动。',status:'已上线'});
-    ensureNodeRow('section-supernatural',{time:'时间待定',name:'超自然行动组 ×《哪吒传奇》',type:'重点联动',focus:'官方已公开多套联动主题时装：包括具备变身状态的「逍遥-哪吒」星耀时装，以及「艾伦-敖丙」限定典藏时装；具体上线时间待后续官宣。',status:'官方预告'});
+    ensureNodeRow('section-yuanmeng',{time:'2026/9/30',name:'「星愿节·全星版本」',type:'版本节点',focus:'9/30 星愿节正式开启，广场、星宝农场、奇迹之岛、探灵实录、星世界、天天晋级赛、谁是狼人等玩法同步进入「全星版本」，重点关注多玩法集中焕新与节日活跃拉动。',status:'已上线'});
+    ensureNodeRow('section-supernatural',{time:'2026/9/30',name:'超自然行动组 ×《哪吒传奇》',type:'重点联动',focus:'联动已于 9/30 正式上线，核心为首款拥有变身状态与专属行走特效的「逍遥-哪吒」星耀限定时装，并同步上线「临云-小龙女」「艾伦-敖丙」等联动内容。',status:'已上线'});
     ensureNodeRow('section-delta',{time:'2026/9/25–9/26',name:'二洲年庆典',type:'版本节点',focus:'二洲年庆典已落地，9/25 正式上线「乘锋破浪」「无双超载」两个新玩法，9/25–9/26 同步重庆线下庆典，9/26 周年音乐会直播。',status:'已上线'});
     ensureNodeRow('section-delta',{time:'2026/9/27',name:'黑潮爆破 Beta赛季',type:'版本节点',focus:'9/27 正式开启黑潮爆破 Beta 赛季，作为独立玩法线重点观察爆破规则、赛季化运营与竞技节奏。',status:'已上线'});
     ensureNodeRow('section-delta',{time:'时间待定',name:'三角洲行动 ×《影之刃零》',type:'重点联动',focus:'二洲年年度发布会已确认双方联动，具体联动形式、内容与上线时间待后续官宣。',status:'官方预告'});
     ensureNodeRow('section-delta',{time:'2027年春节',name:'三角洲行动 × 泡泡玛特「共鸣」',type:'重点联动',focus:'官方已预告联动将于 2027 年春节上线，重点关注潮玩 IP 与游戏内角色/外观/活动的结合方式。',status:'官方预告'});
+    setRow('section-peace',n=>n.indexOf('超体进化回归')!==-1,{time:'2026年9月',focus:'「超体进化-度假岛」已于9月返场，本次提升晶体收集效率，并新增绚彩机师、爆裂萌兔、天籁之音3名导师。',status:'已上线'});
+    setRow('section-nishuihan',n=>n.indexOf('4.1.4 黄金周')!==-1,{status:'已上线'});
+    setRow('section-nishuihan',n=>n.indexOf('盗墓笔记')!==-1,{status:'已上线'});
+    setRow('section-yanyun',n=>n.indexOf('平澜起风波')!==-1,{status:'已上线'});
+    setRow('section-yimeng',n=>n.indexOf('闻风觅踪')!==-1,{status:'已上线'});
+    ensureNodeRow('section-yuanmeng',{time:'2026/9/30',name:'元梦之星 × 小刘鸭',type:'重点联动',focus:'小刘鸭联动已于星愿节期间上线，覆盖联动时装，以及奇迹之岛、星宝农场、小岛等多玩法装饰与活动内容，重点关注跨玩法联动包装与商业化承接。',status:'已上线'});
+    ensureNodeRow('section-identityv',{time:'2026/9/30',name:'第五人格 × 故宫观唐联动返场',type:'重点联动',focus:'联动于9/30限时返场，联动时装、随身物品、家具等内容回归，并新增加页手记联动内容与限定辞章。',status:'已上线'});
     ensureNodeRow('section-golden',{time:'2026/9/27',name:'「符文大陆传奇」焕新',type:'版本节点',focus:'9/27 正式上线焕新内容，包含返场赛季、英雄/羁绊调整、英雄传说之力及排位相关机制更新，重点关注返场赛季重做与阵容生态变化。',status:'已上线'});
     ensureNodeRow('section-golden',{time:'2026/9/29',name:'「山河入画」主题季 /「画之灵」限时返场',type:'版本节点',focus:'9/29 已正式开启「山河入画」主题季并限时返场「画之灵」赛季，包含羁绊焕新、全新机制「绘境」及收藏家系统更新，重点关注返场内容重做与新机制对阵容生态的影响。',status:'已上线'});
   }
