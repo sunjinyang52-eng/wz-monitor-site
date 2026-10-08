@@ -114,6 +114,11 @@ const patch=String.raw`
         yimo.event_time='9/23 全平台正式上线';
         yimo.note='PC 与移动端均已上线，当前为全平台正式运营状态。';
       }
+      const blue=(rows||[]).find(x=>x&&x.game_name==='蓝色星原：旅谣');
+      if(blue){
+        blue.event_time='10/7「旅迹测试」结束｜下一节点待公布';
+        blue.note='9/17–10/7「旅迹测试」已结束，服务器于10/7 16:00关闭并删档；下一测试/公测节点待官方公布。';
+      }
       const w=(rows||[]).find(x=>x&&x.game_name==='未眠野');
       if(w){
         w.event_time='9/27 技术保密测试结束｜下一节点待公布';
@@ -121,8 +126,8 @@ const patch=String.raw`
       }
       const lovania=(rows||[]).find(x=>x&&x.game_name==='代号：Lovania');
       if(lovania){
-        lovania.event_time='9/28 试玩预约开启｜10/2–10/6 RED LAND 线下试玩';
-        lovania.note='9/28 开放 RED LAND 线下试玩预约；10/2–10/6 于上海 RED LAND 开放线下试玩。';
+        lovania.event_time='10/2–10/6 RED LAND 线下试玩结束｜下一节点待公布';
+        lovania.note='10/2–10/6 上海 RED LAND 线下试玩已结束；当前下一测试/上线节点待官方公布。';
       }
       if(!(rows||[]).some(x=>x&&x.game_name==='奇遇动物城')){
         rows.push({
