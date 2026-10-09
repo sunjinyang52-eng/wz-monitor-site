@@ -366,6 +366,11 @@ try{
   const milestoneModeReplace="    items.forEach(it=>{const mode=watchMode(it.watchKey);it.mode=(it.watchKey==='milestone:delta-dau-20261008'&&mode==='auto')?'red':mode});";
   if(!addon.includes(milestoneListNeedle)||!addon.includes(milestoneModeNeedle))throw new Error('每周关注逻辑不匹配，停止更新');
   addon=addon.replace(milestoneListNeedle,milestoneListReplace).replace(milestoneModeNeedle,milestoneModeReplace);
+  /* delete-diagnostics-v1: show exact HTTP error from either delete handler */
+  const deletionNeedle="if(!res.ok){toast('删除失败');return}";
+  const deletionExplain="if(!res.ok){const detail=await res.text().catch(()=> '');alert('删除失败（HTTP '+res.status+'）\\n'+detail.slice(0,450));return}";
+  if(addon.split(deletionNeedle).length!==3)throw new Error('删除处理函数数量异常');
+  addon=addon.split(deletionNeedle).join(deletionExplain);
   addon+='\n'+patch.replace(/setTimeout\(injectDeltaDauWatch,250\);/,'/* DAU now belongs to weekly render list */')+'\n'+patchedLoad+'\n';
   const outBytes=new TextEncoder().encode(addon);
   let outBin=''; const chunk=0x8000;
