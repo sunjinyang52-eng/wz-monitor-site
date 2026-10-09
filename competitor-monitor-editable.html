@@ -53,7 +53,16 @@ const patch=String.raw`
     if(d.time!==undefined){c[0].textContent=d.time;tr.dataset.baseTime=d.time}
     if(d.name!==undefined){c[1].innerHTML='<span class="node-label">'+d.name+'</span>';tr.dataset.baseName=d.name}
     if(d.focus!==undefined){c[3].textContent=d.focus;tr.dataset.baseFocus=d.focus}
-    if(d.status!==undefined){c[4].innerHTML='<span class="node-status '+statusClass(d.status)+'">'+d.status+'</span>';tr.dataset.baseStatus=d.status}
+    if(d.status!==undefined){
+      const statusLabel=c[4].querySelector('.node-status');
+      if(statusLabel){
+        statusLabel.className='node-status '+statusClass(d.status);
+        statusLabel.textContent=d.status;
+      }else{
+        c[4].innerHTML='<span class="node-status '+statusClass(d.status)+'">'+d.status+'</span>';
+      }
+      tr.dataset.baseStatus=d.status;
+    }
   }
   function ensureNodeRow(sectionId,d){
     const sec=document.getElementById(sectionId); if(!sec) return;
@@ -64,6 +73,10 @@ const patch=String.raw`
       tr.innerHTML='<td class="time">'+d.time+'</td><td class="node-name"><span class="node-label">'+d.name+'</span></td><td><span class="node-type '+(d.type==='重点联动'?'collab':'version')+'">'+d.type+'</span></td><td class="node-copy">'+d.focus+'</td><td><span class="node-status '+statusClass(d.status)+'">'+d.status+'</span></td>';
       tr.dataset.baseTime=d.time; tr.dataset.baseName=d.name; tr.dataset.baseFocus=d.focus; tr.dataset.baseStatus=d.status;
       tbody.appendChild(tr);
+      if(typeof initNodeBaseRows==='function'&&typeof applyNodeRow==='function'){
+        initNodeBaseRows();
+        applyNodeRow(tr,{id:'',time:d.time,name:d.name,type:d.type,focus:d.focus,status:d.status});
+      }
     } else {
       setRow(sectionId,n=>n===d.name,{time:d.time,name:d.name,focus:d.focus,status:d.status});
     }
