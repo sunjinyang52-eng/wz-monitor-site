@@ -102,6 +102,73 @@ const patch=String.raw`
     ensureNodeRow('section-golden',{time:'2026/9/27',name:'「符文大陆传奇」焕新',type:'版本节点',focus:'9/27 正式上线焕新内容，包含返场赛季、英雄/羁绊调整、英雄传说之力及排位相关机制更新，重点关注返场赛季重做与阵容生态变化。',status:'已上线'});
     ensureNodeRow('section-golden',{time:'2026/9/29',name:'「山河入画」主题季 /「画之灵」限时返场',type:'版本节点',focus:'9/29 已正式开启「山河入画」主题季并限时返场「画之灵」赛季，包含羁绊焕新、全新机制「绘境」及收藏家系统更新，重点关注返场内容重做与新机制对阵容生态的影响。',status:'已上线'});
   }
+
+  /* oct-09-focus-refresh: archive outdated records without introducing a third node type */
+  function applyOctober9Focus(){
+    setRow('section-yimeng',n=>n.indexOf('长风筵')!==-1,{
+      time:'2026/10/9',name:'平行服二周年版本「长风筵」',status:'已上线',
+      focus:'10/9 平行服二周年版本开启，新设「长风筵」特色年度服永久锁定89级并精简成长系统；其他平行服同步开放129级上限、新数值系统、新副本及帮派玩法，注意区分不同服务器规则。'
+    });
+    setRow('section-yimeng',n=>n.indexOf('丝绸之路')!==-1,{
+      time:'2026/10/9',status:'已上线',
+      focus:'10/9 丝绸之路大型文化联动在经典服与平行服同步上线，含联动剧情「何处仙乡」及「张骞西域记」体验、主题外观等内容。'
+    });
+    setRow('section-roco',n=>n.indexOf('S5 下一赛季')!==-1||n.indexOf('圣龙宝藏')!==-1,{
+      name:'S5 下一赛季',time:'预计 2026/11/5',status:'周期预测',
+      focus:'S4官方赛季周期至11/5，暂预计S5在11/5前后切换；新赛季名称与内容尚未正式公布，不采用第三方解包信息。'
+    });
+    const archive={
+      'section-honor':['王者荣耀 ×《道诡异仙》'],
+      'section-peace':['「金秋龙狮城」版本','超体进化回归'],
+      'section-yuanmeng':['元梦之星 × 奶龙','元梦之星 × 小刘鸭'],
+      'section-identityv':['第五人格 × 上美影《九色鹿》'],
+      'section-roco':['洛克王国：世界 × 旺旺糕饼','S5 双 IP 联动（IP未公开）'],
+      'section-golden':['金铲铲之战 × 海底捞','金铲铲之战 × 邓紫棋「心之歌」'],
+      'section-delta':['三角洲行动 ×《逆战：未来》','吴彦祖联动回归｜「飞虎-彦祖」返场','三角洲行动 × INART']
+    };
+    Object.entries(archive).forEach(([id,names])=>{
+      const sec=document.getElementById(id);if(!sec)return;
+      sec.querySelectorAll('.node-table tbody tr').forEach(tr=>{
+        const name=(tr.querySelector('.node-label,.node-name')?.textContent||'').trim();
+        if(names.includes(name))tr.remove();
+      });
+    });
+    const delta=document.getElementById('section-delta');
+    if(delta&&!delta.querySelector('.delta-dau-milestone')){
+      const el=document.createElement('div');el.className='delta-dau-milestone';
+      el.innerHTML='<span class="delta-dau-date">10/8 官方披露 · 重大产品数据</span><strong>国服日活跃用户数突破 5800 万</strong><span>2026年3月曾公布突破5000万；本次为新的产品规模里程碑。</span><a href="https://www.taptap.cn/moment/857276261045634893" target="_blank" rel="noopener noreferrer">查看官方公告 ↗</a>';
+      const table=delta.querySelector('.table-wrap');if(table)table.before(el);
+    }
+    document.querySelectorAll('.node-card .card-head .meta span').forEach(x=>{
+      if((x.textContent||'').includes('截至 2026/10/8'))x.textContent='截至 2026/10/9';
+    });
+  }
+  const previousAudit=applyAudit;
+  applyAudit=function(){previousAudit();applyOctober9Focus()};
+  if(!document.getElementById('delta-dau-style')){
+    const style=document.createElement('style');style.id='delta-dau-style';
+    style.textContent='.delta-dau-milestone{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin:12px 18px 16px;padding:12px 16px;background:#f3f7fe;border:1px solid #d7e4f5;border-radius:10px;font-size:13px;color:#53637b}.delta-dau-milestone strong{font-size:18px;color:#243955}.delta-dau-date{font-weight:600;color:#466c9a}.delta-dau-milestone a{margin-left:auto;color:#365f97;text-decoration:underline}@media(max-width:700px){.delta-dau-milestone{margin:10px;padding:12px}.delta-dau-milestone a{margin-left:0}}';
+    document.head.appendChild(style);
+  }
+  function injectDeltaDauWatch(){
+    try{
+      const now=new Date(),y=now.getFullYear(),m=now.getMonth()+1,d=now.getDate();
+      if(y!==2026||m!==10||d<8||d>12)return;
+      const body=document.getElementById('watchBody');
+      if(!body||body.querySelector('[data-delta-dau-watch="1"]'))return;
+      const el=document.createElement('div');el.className='watch-item today';el.dataset.deltaDauWatch='1';
+      el.innerHTML='<span class="watch-badge">重要数据</span><div class="watch-main"><div class="watch-name">三角洲行动 · 国服DAU突破5800万</div><div class="watch-sub">10/8 项目组官宣 · 产品规模里程碑</div></div>';
+      el.onclick=()=>{const target=document.getElementById('section-delta');if(target)target.scrollIntoView({behavior:'smooth',block:'center'})};
+      body.prepend(el);
+      const count=document.getElementById('watchCount');if(count){const v=parseInt(count.textContent||'0',10);if(Number.isFinite(v))count.textContent=String(v+1)}
+    }catch(e){}
+  }
+  if(typeof renderThreeDayWatch==='function'&&!renderThreeDayWatch.__deltaDauWrapped){
+    const previousWatch=renderThreeDayWatch;
+    const wrappedWatch=function(){previousWatch();setTimeout(injectDeltaDauWatch,25)};
+    wrappedWatch.__deltaDauWrapped=true;renderThreeDayWatch=wrappedWatch;
+  }
+  setTimeout(injectDeltaDauWatch,250);
   function applyCompetitorAudit(){
     try{
       const r=(rows||[]).find(x=>x&&x.game_name==='崩坏：因缘精灵');
