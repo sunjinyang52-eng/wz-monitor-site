@@ -156,8 +156,22 @@ const patch=String.raw`
       if((x.textContent||'').includes('截至 2026/10/8'))x.textContent='截至 2026/10/9';
     });
   }
+  function ensureAllNodeEditButtons(){
+    if(typeof initNodeBaseRows!=='function'||typeof rowDataFromDom!=='function'||typeof applyNodeRow!=='function')return;
+    initNodeBaseRows();
+    document.querySelectorAll('.node-card .node-table tbody tr').forEach(tr=>{
+      if(tr.style.display==='none'||tr.querySelector('.node-edit-btn'))return;
+      const d=rowDataFromDom(tr);
+      d.id=tr.dataset.nodeRecordId||'';
+      applyNodeRow(tr,d);
+    });
+  }
   const previousAudit=applyAudit;
-  applyAudit=function(){previousAudit();applyOctober9Focus()};
+  applyAudit=function(){
+    previousAudit();
+    applyOctober9Focus();
+    ensureAllNodeEditButtons();
+  };
   if(!document.getElementById('delta-dau-style')){
     const style=document.createElement('style');style.id='delta-dau-style';
     style.textContent='.delta-dau-milestone{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin:12px 18px 16px;padding:12px 16px;background:#f3f7fe;border:1px solid #d7e4f5;border-radius:10px;font-size:13px;color:#53637b}.delta-dau-milestone strong{font-size:18px;color:#243955}.delta-dau-date{font-weight:600;color:#466c9a}.delta-dau-milestone a{margin-left:auto;color:#365f97;text-decoration:underline}@media(max-width:700px){.delta-dau-milestone{margin:10px;padding:12px}.delta-dau-milestone a{margin-left:0}}';
