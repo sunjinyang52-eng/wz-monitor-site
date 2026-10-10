@@ -134,6 +134,16 @@ const patch=String.raw`
       name:'S5 下一赛季',time:'预计 2026/11/5',status:'周期预测',
       focus:'S4官方赛季周期至11/5，暂预计S5在11/5前后切换；新赛季名称与内容尚未正式公布，不采用第三方解包信息。'
     });
+    /* polar-watch-fallback-20261016: offline/initial fallback only; shared DB records win */
+    const polarKey='__NODE_EDIT__:section-delta:new:20261016-polar-watch';
+    if(!sharedNodeRows.some(r=>r.key===polarKey)){
+      const polarSection=document.getElementById('section-delta');
+      if(polarSection&&!Array.from(polarSection.querySelectorAll('.node-table tbody tr')).some(tr=>tr.dataset.nodeKey===polarKey||(tr.querySelector('.node-label,.node-name')?.textContent||'').trim()==="「极星守望」新模式")){
+        ensureNodeRow('section-delta',{"time":"预计 2026/10/16","name":"「极星守望」新模式","type":"版本节点","focus":"全新身份对抗玩法「极星守望」预计10月16日开放。玩家可扮演德穆兰或副官，使用专属能力对抗入侵者；重点关注非对称阵营规则、身份技能及搜打撤玩法的延伸。国服实际开放时间以最新官宣为准。","status":"官方预告"});
+        const polarRow=findRow('section-delta',n=>n==="「极星守望」新模式");
+        if(polarRow){polarRow.dataset.nodeKey=polarKey;polarRow.dataset.nodeAdded='1';}
+      }
+    }
     const archive={
       'section-honor':['王者荣耀 ×《道诡异仙》'],
       'section-peace':['「金秋龙狮城」版本','超体进化回归'],
