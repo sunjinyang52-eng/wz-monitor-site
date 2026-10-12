@@ -82,6 +82,9 @@ const patch=String.raw`
     }
   }
   function applyAudit(){
+    /* approved-two-node-refresh-20261012: preserve Supabase edits and tombstones */
+    if(!sharedNodeRows.some(r=>r.key==="__NODE_EDIT__:section-honor:base:%E7%8E%8B%E8%80%85%E8%8D%A3%E8%80%80%E5%8D%81%E4%B8%80%E5%91%A8%E5%B9%B4%E5%BA%86")) setRow("section-honor",n=>n==="王者荣耀十一周年庆",{"focus":"2026周年庆嘉年华暨KPL奇妙日于10月24日至25日在深圳国际会展中心举行；10月25日18:30举办共创之夜线下演出，19:00开启线上直播。重点关注共创之夜发布的新版本、新玩法及IP规划。"});
+    if(!sharedNodeRows.some(r=>r.key==="__NODE_EDIT__:section-peace:base:%E5%9B%A2%E7%AB%9E%E6%8E%92%E4%BD%8D%20VS.1%20%E5%9B%A2%E7%AB%9E%E8%B5%9B%E5%AD%A3")) setRow("section-peace",n=>n==="团竞排位 VS.1 团竞赛季",{"time":"2026/10/10","focus":"10月10日团竞排位 VS.1 赛季正式开启，更新段位名称、优化分数算法及团竞体验，重点关注副赛季的独立排位结构与匹配竞技体验。","status":"已上线"});
     setRow('section-honor',n=>n.indexOf('S45')!==-1,{time:'2026/9/23',name:'S45 新赛季「月照长安」',focus:'S45「月照长安」已于 9/23 正式上线，新英雄王维及赛季玩法/系统调整同步落地。',status:'已上线'});
     setRow('section-honor',n=>n.indexOf('S46')!==-1,{focus:'近10个完整赛季平均约90天、中位数约90.5天，整体约3个月一轮；S45已于9/23开启，据此S46暂预计12/22前后，具体日期以官宣为准。'});
     setRow('section-honor',n=>n.indexOf('三丽鸥')!==-1,{time:'2026/9/23',name:'王者荣耀 × 三丽鸥家族第四弹',focus:'第四弹联动已上线：孙尚香「云端乐园」珍品无双皮肤、孙膑「帕恰狗之风」史诗限定皮肤及主题祈愿/资源同步开放。',status:'已上线'});
