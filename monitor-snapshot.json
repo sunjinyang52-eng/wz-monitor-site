@@ -3,6 +3,20 @@
   "snapshot_audited_at": "2026-10-09T03:31:00.000Z",
   "competitors": [
     {
+      "id": 63,
+      "game_name": "Loftia 乐浮岛",
+      "service_group": "模拟经营",
+      "service_type": "多人生活模拟 / 社交建造",
+      "reason": "多人在线生活模拟与浮岛社区共建；重点观察共享街区、多人组队解谜、世界共建项目及社交小游戏，对《蛋仔派对》的主城社交、经营与UGC方向具有借鉴价值。",
+      "gameplay_link": "https://store.steampowered.com/app/2320980/Loftia/",
+      "focus": true,
+      "level": "B+",
+      "event_time": "【重点提醒】11/4 02:00 抢先体验上线｜10/20–10/27 免费Demo",
+      "note": "[[玩法链接:https://store.steampowered.com/app/2320980/Loftia/]]\n北京时间10/20–10/27 Steam 免费Demo开放；11/4 02:00（北京时间）开启PC/Mac抢先体验（Early Access），不是完整版正式发售。Demo进度可继承。建议策划优先体验多人合作解谜、共享街区、世界共建和社交小游戏。",
+      "updated_at": "2026-10-22T02:54:14.551762+00:00",
+      "sort_order": -100
+    },
+    {
       "id": 58,
       "game_name": "异人之下",
       "service_group": "综合参考",
